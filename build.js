@@ -1,9 +1,9 @@
 var compressor = require('node-minify'),
-	path = require('path');
+fs = require('fs'),
+async = require('async'),
+_ = require('underscore'),
+path = require('path');
 
-var config = {
-	appEnvironment: 'development'
-}
 
 exports.compile=function(compilerCallback){
 
@@ -35,26 +35,14 @@ exports.compile=function(compilerCallback){
 		});
 		return filenames;
 	}
-
-	var isProduction = config.appEnvironment=="production",
-	isDevelopment = config.appEnvironment=="development";
 	
 	function decorateDependency(filename) {
-		if (isDevelopment) {
-			return "/_lib/dependencies/"+filename+".min.js"
-		}
-		else {
-			return "lib/mast/_lib/dependencies/"+filename+".min.js"
-		}
+		return "lib/dependencies/"+filename+".min.js"
+		
 	}
 
 	function decorateCoreFile(filename) {
-		if (isDevelopment) {
-			return "/_lib/"+filename;
-		}
-		else {
-			return "lib/mast/_lib/"+filename;
-		}
+		return "lib/"+filename;
 	}
 
 	// TODO: Crawl components and determine dependencies
@@ -65,54 +53,30 @@ exports.compile=function(compilerCallback){
 	
 
 	// Define the global array of js filenames
-	_mastJsFiles = _.union(jsDependencies,jsMastCore);
-	console.log("_mastJsFiles",_mastJsFiles);
+	_mastJsFiles = _.union(jsDependencies,jsMastCore);	
 	
-	
-	console.log("Compiling JS and CSS in " + config.appEnvironment + " mode...");
-	var compmileWaitTimer = setInterval(function(){console.log("Still compiling CSS/JS...")},2500);
+	console.log("Compiling client-side assets...",_mastJsFiles);
+	var compileWaitTimer = setInterval(function(){
+		console.log("Still compiling client-side assets...")
+	},2500);
 
-	if (isProduction) {
-
-		async.parallel([
+	async.parallel([
 		
-			function(finishedCss){
-				console.log("MINIFIYING CSS!!!");
-				// Combine and minify css
-				new compressor.minify({
-					type: 'yui',
-					fileIn: _mastCssFiles,
-					fileOut: './public/_target/app.css',
-					callback: finishedCss
-				});
-			},
-		
-			function (finishedJs) {
-				console.log("MINIFIYING JS!!!");
-				// Combine and minify js
-				new compressor.minify({
-					type: 'gcc',
-					fileIn: _mastJsFiles,
-					fileOut: './public/_target/app.js',
-					callback: finishedJs
-				})	
-			}
-			],function() {
-				console.log("******* Finished compiling production assets ********");
-				clearTimeout(compmileWaitTimer);
-				compilerCallback();
-			})
-	}
-
-	else if (isDevelopment) {
-		// Public access to /mast directory is only enabled in development mode
-		// See express's app.configure() in main.js
-
-		// We take advantage of that by directly linking to all of the necessary files
-		clearTimeout(compmileWaitTimer);
-		compilerCallback();
-	}
+		function (finishedJs) {
+			// Combine and minify js
+			new compressor.minify({
+				type: 'gcc',
+				fileIn: _mastJsFiles,
+				fileOut: './app.js',
+				callback: finishedJs
+			})	
+		}
+		],function() {
+			clearTimeout(compileWaitTimer);
+			compilerCallback && compilerCallback();
+		})
 
 }
 
+// Execute
 exports.compile();
