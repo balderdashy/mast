@@ -50,10 +50,11 @@ exports.compile=function(compilerCallback){
 	// Determine all of the files that should be compiled
 	var jsDependencies =	_.map(["jquery","jquery-ui","underscore","backbone","logger","outside","pressFoo"],decorateDependency);
 	var jsMastCore =		_.map(["mast.js"],decorateCoreFile);
+	var jsMastModules =		_.map(["socket.js","pattern.js","component.js","table.js","extend.js"],decorateCoreFile);
 	
 
 	// Define the global array of js filenames
-	_mastJsFiles = _.union(jsDependencies,jsMastCore);	
+	_mastJsFiles = _.union(jsDependencies,jsMastCore,jsMastModules);	
 	
 	console.log("Compiling client-side assets...",_mastJsFiles);
 	var compileWaitTimer = setInterval(function(){
