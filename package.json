@@ -1,9 +1,0 @@
-{
-    "name": "Sails" 
-  , "version": "12.5.7"
-  , "private": true
-  , "dependencies": {
-      "express": "2.5.4"
-    , "ejs": ">= 0.0.1"
-  }
-}
