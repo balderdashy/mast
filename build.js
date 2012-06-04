@@ -59,6 +59,9 @@ exports.compile=function(compilerCallback){
 	var compileWaitTimer = setInterval(function(){
 		console.log("Still compiling client-side assets...")
 	},2500);
+	
+	
+	var outFilename = "./mast-1.0.js";
 
 	async.parallel([
 		
@@ -67,7 +70,7 @@ exports.compile=function(compilerCallback){
 			new compressor.minify({
 				type: 'gcc',
 				fileIn: _mastJsFiles,
-				fileOut: './app.js',
+				fileOut: outFilename,
 				callback: finishedJs
 			})	
 		}
