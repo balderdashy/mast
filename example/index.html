@@ -42,7 +42,15 @@
 		<div style="display:none;" class="template-library" id="template-library">
 
 			<!-- Row markup template -->
-			<li id="template-bird-species">{{name}}</li>
+			<li id="template-bird-species">
+				<label>{{name}}</label>
+				<input type="text"/>
+			</li>
+			
+			<li id="template-bird-species-highlighted" class="highlighted">
+				<label>{{name}}</label>
+				<input type="text"/>
+			</li>
 
 		</div>
 		
@@ -59,13 +67,32 @@
 				padding: 0.5 10%;
 				color: white;
 			}
+			.bird-species-list li.highlighted {
+				background:#aa8;
+			}
 		</style>
 		
 		<script type="text/javascript">
 			// Row component
 			Mast.components.BirdSpeciesRow = Mast.Component.extend({
 				outlet: '.bird-species-list',
-				template: '#template-bird-species'
+				template: '#template-bird-species',
+				
+				
+				events: {
+					"focus input": "focus",
+					"blur input": "blur"
+				},
+				
+				focus: function(e) {
+					debug.log("FOCUS!",$(e.currentTarget));
+					this.$el.addClass('highlighted');
+					
+				},
+				blur: function() {
+					debug.log("......blur.........")
+					this.$el.removeClass('highlighted');
+				}
 			});
 		</script>
 	</body>
