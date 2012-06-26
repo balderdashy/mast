@@ -10,19 +10,21 @@
 			// with defaults (everyone likes blue jays!)
 			Mast.routes.index = function(query,page) {
 				
-				new Mast.components.BirdSpeciesRow({
+				row1 = new Mast.components.BirdSpeciesRow({
 					model:{name: 'Cyanocitta cristata'}
 				});
 				
-				new Mast.components.BirdSpeciesRow({
+				row2 = new Mast.components.BirdSpeciesRow({
 					model:{name: 'Cardinalidae'}
 				});
 			}
 			
 			// Initialize the Mast template library
 			Mast.raise({
+				
+				// Disable the socket for the purpose of this example
 				socket:false
-			});
+			}, function (){});
 		</script>
 	</head>
 	<body>
@@ -31,9 +33,6 @@
 		<div class="container">
 			<h1>My favorite bird species</h1>
 			<ol class="bird-species-list">
-				<li>Bird #1</li>
-				<li>Bird #2</li>
-				<li>Bird #3</li>
 			</ol>
 		</div>
 
@@ -78,20 +77,38 @@
 				outlet: '.bird-species-list',
 				template: '#template-bird-species',
 				
-				
 				events: {
-					"focus input": "focus",
-					"blur input": "blur"
+					"focus input": "highlight",
+					"blur input": "unhighlight",
+					"pressEnter": "submit"
 				},
 				
-				focus: function(e) {
-					debug.log("FOCUS!",$(e.currentTarget));
+				init: function (){
+					this.render();
+				},
+				
+				highlight: function(e) {
 					this.$el.addClass('highlighted');
 					
 				},
-				blur: function() {
-					debug.log("......blur.........")
+				unhighlight: function() {
 					this.$el.removeClass('highlighted');
+				},
+				
+				submit: function (e){
+					var input = this.$el.find("input"),
+						inputValue = input.val();
+					this.setName(inputValue);
+					this.$el.find("input").focus();
+					
+					// Experiment with nested lists inside of a regular component
+					// (probably best to use a subcomponent === table)
+//					var nicknameList = this.pattern.model.nicknames;
+//					console.log(this.pattern.model);
+				},
+				
+				setName: function(newName) {
+					this.set('name',newName);
 				}
 			});
 		</script>
