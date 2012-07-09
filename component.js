@@ -3,7 +3,20 @@
 // they are responsible for calling render on those elements
 Mast.Component = 
 {
-	
+	/**
+         * attributes: properties to be added directly to the component
+         *              i.e. accessible from component as:
+         *                  this.someThing
+         *                  this.someThingElse
+         *                  
+         * modelAttributes: properties to be added directly to the component's Model
+         *              i.e. accessible from component as:
+         *                  this.get('someThing')
+         *                  this.get('someThingElse')
+         *                  
+         * dontRender: whether or not to render this component when it is instantiated
+         *              default: false
+         */
 	initialize: function(attributes,modelAttributes,dontRender){
 
 		// Bind context
@@ -166,7 +179,7 @@ Mast.Component =
 		
 		
 		// Instantiate subcomponent, but don't append/render it yet
-		var subcomponent = new Subcomponent(plist);
+		var subcomponent = new Subcomponent(plist,plist);
 		this.children[key] = subcomponent;
 	},
 			
