@@ -37,12 +37,12 @@ exports.compile=function(compilerCallback){
 	}
 	
 	function decorateDependency(filename) {
-		return "lib/dependencies/"+filename+".min.js"
+		return "dependencies/"+filename+".min.js"
 		
 	}
 
 	function decorateCoreFile(filename) {
-		return "lib/"+filename;
+		return ""+filename;
 	}
 
 	// TODO: Crawl components and determine dependencies
