@@ -15,13 +15,15 @@ Mast = _.extend(Backbone,
 	components: {},	
 		
 	// Mast.raise() instantiates the Mast library with the specified options
-	raise: function (options,afterLoadFn) {
+	raise: function (options,afterLoadFn,beforeRouteFn) {
 			
 		// Extend defaults
 		options = options || {};
 		options = _.extend({
 			socket: true
 		},options);
+		
+		
 			
 		// Convert options.routes into a format Backbone's router will accept
 		// (can't have key:function(){} style routes, must use a string function name)
@@ -64,13 +66,6 @@ Mast = _.extend(Backbone,
 				trigger:true
 			},options));
 		}
-			
-		// when document is ready
-		$(function(){
-			// Launch history manager 
-			Mast.history.start();
-		});
-
 	
 		// Initialize Socket
 		// Override default base URL if one was specified
@@ -104,13 +99,21 @@ Mast = _.extend(Backbone,
 			escape : /\{\{-(.+?)\}\}/g,
 			evaluate : /\{\%(.+?)\%\}/g
 		};
-				
-			
-		// When Mast and $.document are ready, 
-		// trigger afterLoad callback (if specified)
+		
+		// when document is ready
 		$(function(){
+			
+			// Before routing, trigger beforeRouteFn callback (if specified)
+			beforeRouteFn && _.defer(beforeRouteFn);
+			
+			// Launch history manager 
+			Mast.history.start();
+			
+			// When Mast and $.document are ready, 
+			// trigger afterLoad callback (if specified)
 			afterLoadFn && _.defer(afterLoadFn);
-		})
+		});
+
 			
 	}
 },
