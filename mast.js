@@ -1,3 +1,10 @@
+// Add outerHtml to jQuery
+jQuery.fn.outerHTML = function(s) {
+	return s
+	? this.before(s).remove()
+	: jQuery("<p>").append(this.eq(0).clone()).html();
+};
+
 // Build mast objects and set defaults
 Mast = _.extend(Backbone,
 {
@@ -16,7 +23,7 @@ Mast = _.extend(Backbone,
 		
 	// Mast.raise() instantiates the Mast library with the specified options
 	raise: function (options,afterLoadFn,beforeRouteFn) {
-			
+			$(function(){
 		// Extend defaults
 		options = options || {};
 		options = _.extend({
@@ -54,67 +61,66 @@ Mast = _.extend(Backbone,
 		routerConfig.routes[""] = "index";
 		routerConfig.index = indexRoute;
 
-			
-		// Extend and instantiate main router
-		var AppRouter = Mast.Router.extend(routerConfig);
-		Mast.app = new AppRouter();
-			
-		// Mast makes the assumption that you want to trigger
-		// the route handler.  This can be overridden
-		Mast.navigate = function(query,options) {
-			return Mast.app.navigate(query,_.extend({
-				trigger:true
-			},options));
-		}
-	
-		// Initialize Socket
-		// Override default base URL if one was specified
-		if (this.Socket && options.socket) {
-			this.Socket.baseurl = (options && options.baseurl) || this.Socket.baseurl;
-			this.Socket.initialize();
-		}
-	
-	
-		// Add outerHtml to jQuery
-		jQuery.fn.outerHTML = function(s) {
-			return s
-			? this.before(s).remove()
-			: jQuery("<p>").append(this.eq(0).clone()).html();
-		};
-					
-			
 		// Prepare template library
 		// HTML templates can be manually assigned here
 		// otherwise they can be loaded from DOM elements
 		// or from a URL
 		Mast.TemplateLibrary = {}
-			
-		// TODO: Go ahead and absorb all of the templates in the library 
-		// right from the get-go
-			
-		// Set up template settings
-		_.templateSettings = {
-			//				variable: 'data',
-			interpolate : /\{\{(.+?)\}\}/g,
-			escape : /\{\{-(.+?)\}\}/g,
-			evaluate : /\{\%(.+?)\%\}/g
-		};
-		
-		// when document is ready
-		$(function(){
-			
-			// Before routing, trigger beforeRouteFn callback (if specified)
-			beforeRouteFn && _.defer(beforeRouteFn);
-			
-			// Launch history manager 
-			Mast.history.start();
-			
-			// When Mast and $.document are ready, 
-			// trigger afterLoad callback (if specified)
-			afterLoadFn && _.defer(afterLoadFn);
-		});
 
+		// Before routing, trigger beforeRouteFn callback (if specified)
+		beforeRouteFn && beforeRouteFn();
+		// beforeRouteFn && _.defer(beforeRouteFn);
 			
+		// Extend and instantiate main router
+		var AppRouter = Mast.Router.extend(routerConfig);
+		
+		_.defer(function(){
+			Mast.app = new AppRouter();
+
+				
+			// Mast makes the assumption that you want to trigger
+			// the route handler.  This can be overridden
+			Mast.navigate = function(query,options) {
+				return Mast.app.navigate(query,_.extend({
+					trigger:true
+				},options));
+			}
+		
+			// Initialize Socket
+			// Override default base URL if one was specified
+			if (this.Socket && options.socket) {
+				this.Socket.baseurl = (options && options.baseurl) || this.Socket.baseurl;
+				this.Socket.initialize();
+			}
+		
+				
+			// TODO: Go ahead and absorb all of the templates in the library 
+			// right from the get-go
+				
+			// Set up template settings
+			_.templateSettings = {
+				//				variable: 'data',
+				interpolate : /\{\{(.+?)\}\}/g,
+				escape : /\{\{-(.+?)\}\}/g,
+				evaluate : /\{\%(.+?)\%\}/g
+			};
+			
+			// when document is ready
+			$(function(){
+				
+				// Launch history manager 
+				Mast.history.start();
+				
+				// When Mast and $.document are ready, 
+				// trigger afterLoad callback (if specified)
+				afterLoadFn && _.defer(afterLoadFn);
+			});
+		});
+	});		
 	}
 },
 Backbone.Events);
+
+// Add isMobile detection to Mast to detect mobile viewports
+// Looks at the user agent string
+Mast.isMobile = navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry)/);

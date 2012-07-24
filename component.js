@@ -105,7 +105,7 @@ Mast.Component =
 			this.parent && this.parent.$el);
 			
 		this.render();
-		$outlet.append(this.$el);
+		$outlet.append && $outlet.append(this.$el);
 			
 		return this;
 	},
@@ -121,6 +121,7 @@ Mast.Component =
 		
 	// Render the pattern in-place
 	render: function (silent) {
+		var self = this;
 		this.trigger('beforeRender');
 		
 		var $element = this.generate();
@@ -129,15 +130,20 @@ Mast.Component =
 			
 		// If any subcomponents exist, 
 		_.each(this.children,function(subcomponent,key) {
+			
 			// append them to the appropriate outlet
 			_.defer(function() {
 				subcomponent.append();
 			})
+			
 		},this);
 			
-		if (!silent) {
-			this.trigger('afterRender');
-		}
+		_.defer(function() {
+			if (!silent) {
+				self.trigger('afterRender');
+			}
+		})
+
 		
 		return this;
 	},
@@ -191,7 +197,8 @@ Mast.Component =
 			
 	// Set pattern's template selector
 	setTemplate: function (selector){
-		return this.pattern.setTemplate(selector);
+		this.pattern.setTemplate(selector);
+		return this.$el;
 	},
 			
 	// Set pattern's model attribute
@@ -242,8 +249,8 @@ Mast.Component =
 		
 		if ($outlet.length != 1) {
 			
-//			debug.debug($outlet,outlet,this.parent.$el);
-			throw new Error(
+			//			debug.debug($outlet,outlet,this.parent.$el);
+			debug.warn(
 				(($outlet.length > 1)?"More than one ":"No ")+
 				(($outlet.length > 1)?"element exists ":"elements exist ")+
 				(context?"in this template context ("+context+ ")":"") +
