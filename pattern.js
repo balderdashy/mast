@@ -59,23 +59,49 @@ Mast.Pattern = {
 		
 	// Replace this pattern's template and create one with the specified 
 	// template selector.
-	setTemplate: function (template) {
+	setTemplate: function (template,options) {
+		options = _.defaults(options, {
+			render: true
+		});
 		this.absorbTemplate(template);
+		
+		// If a render function is specified, use that
+		if (_.isFunction(options.render)) {
+			// TODO: call custom render function with appropriate arguments
+		}
+		// Otherwise just do a basic render by triggering the default behavior
+		else {
+			// The change event must be manually triggered since there isn't necessarily a model
+			this.trigger('change');
+		}
+		
 				
-		// The change event must be manually triggered since there's no
-		// model watching the templates
-		this.trigger('change');
 	},
 			
 	// Pass-through methods to model
 	set: function(key,value,options) {
+		
+		options = _.defaults(options, {
+			render: true
+		});
+		
+		// If no model exists, create one
+		var m;
 		if (!this.model) {
-			var m = new Mast.Model();
-			m.set(key,value,options);
-			return m;
+			m = new Mast.Model();
 		}
-		else 
-			return this.model.set(key,value);
+		else {
+			m = this.model;
+		}
+		
+		// If a render function is specified, use that
+		if (_.isFunction(options.render)) {
+			// TODO: call custom render function with appropriate arguments
+		}
+		// Otherwise just do a basic render by triggering the default behavior
+		else {
+			m.set(key,value,options);
+		}
 	},
 	get: function(key) {
 		return this.model && this.model.get(key);

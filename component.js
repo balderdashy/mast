@@ -197,8 +197,8 @@ Mast.Component =
 	},
 			
 	// Set pattern's template selector
-	setTemplate: function (selector){
-		this.pattern.setTemplate(selector);
+	setTemplate: function (selector,options){
+		this.pattern.setTemplate(selector,options);
 		return this.$el;
 	},
 			
