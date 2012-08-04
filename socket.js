@@ -26,13 +26,13 @@ Mast.Socket =_.extend(
 					model.id ? Mast.Socket.find(model,options) : Mast.Socket.findAll(model,options);
 					break;
 				case "create":
-					resp = Mast.Socket.create(model);
+					resp = Mast.Socket.create(model,options);
 					break;
 				case "update":
-					resp = Mast.Socket.update(model);
+					resp = Mast.Socket.update(model,options);
 					break;
 				case "delete":
-					resp = Mast.Socket.destroy(model);
+					resp = Mast.Socket.destroy(model,options);
 					break;
 			}
 		};
@@ -44,6 +44,7 @@ Mast.Socket =_.extend(
 		var url = (model.url() || model.collection.url) + "/create";
 
 		this._socket.emit(url,JSON.stringify(model.toJSON()),function(result) {
+			console.log("RETURNED FROM CREATE",result)
 			try {
 				var parsedResult = JSON.parse(result);
 			}

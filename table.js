@@ -28,7 +28,6 @@ Mast.Table = {
 			self.removeRow(model,status.index);
 		});
 		this.collection.on('add',function(model) {
-			//					console.log("ADD fired!",a,b);
 			self.appendRow(model);
 		});
 		this.collection.on('reset',function() {
