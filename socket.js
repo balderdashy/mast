@@ -80,14 +80,14 @@ Mast.Socket =_.extend(
 	update: function(model,options){
 		var url = model.url();
 		
-		// Remove trailing slash and add /destroy to url
+		// Remove trailing slash and add /update to url
 		url = url.replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
-		url = url.replace(/(\/[^\/]+)$/,'/destroy');
+		url = url.replace(/(\/[^\/]+)$/,'/update');
 
-		this._socket.emit(url,JSON.stringify({
+		this._socket.emit(url,JSON.stringify(_.extend({
 			id: id
-		}),function(result) {
+		},model.toJSON())),function(result) {
 			try {
 				var parsedResult = JSON.parse(result);
 			}
