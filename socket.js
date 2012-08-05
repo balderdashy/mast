@@ -146,19 +146,33 @@ Mast.Socket =_.extend(
 					
 		this.baseurl = baseurl || this.baseurl;
 		this._socket = this.io && this.io.connect(this.baseurl);
-					
-		// Map events
-		_.each(this.events,function(eventFn,eventName) {
-			Mast.Socket._socket.on(eventName,this[eventFn]);
-		},this);
 		
-		// Map wildcards
+		// Map server-side events
 		Mast.Socket._socket.on('message',function(data) {
 			console.log("RECEIVED MESSAGE OVER SOCKET:",data)
 			
-			if (data.method && data.method == 'select') {
-				t.collection.get(data.id).set({highlighted:data.highlighted});
+			if (data && (data.model || data.collection) && data.method && Mast.models[data.model]) {
+				if (data.model && data.collection) {
+					debug.warn('model or collection may be specified, but not both!  They are synonyms.',data);
+					throw new Error('Message from server is invalid.');
+				}
+				data.model = data.collection || data.model;
+				
+				// Clean up attributes and pass them as an argument
+				var attributes = _.clone(data);
+				delete attributes['method'];
+				delete attributes['model'];
+				
+				// Access the model cache to update the appropriate models
+				Mast.routeToModel(data.model,data.method,attributes);
 			}
+			else {
+				debug.warn('Unknown message received from server.',data);
+				throw new Error('Unknown message received from server.');
+			}
+//			if (data.method && data.method == 'select') {
+//				t.collection.get(data.id).set({highlighted:data.highlighted});
+//			}
 		});
 					
 		this.connected = true;
