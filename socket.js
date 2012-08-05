@@ -178,11 +178,25 @@ Mast.Socket =_.extend(
 		this.connected = true;
 	},
 	
-	joinRoom: function () {
-		
+	send: function (url,params,callback) {
+		Mast.Socket._socket.emit(url,JSON.stringify(params),function(result) {
+			try {
+				var parsedResult = JSON.parse(result);
+			}
+			catch (e) {
+				throw new Error("Server response could not be parsed:",result,e);
+			}
+			
+			// Call success callback if specified
+			callback && callback(parsedResult);
+		})
 	},
 	
-	leaveRoom: function (){
-		
+	joinRoom: function (room,callback) {
+		this.send ('/joinRoom',{room:room},callback);
+	},
+	
+	leaveRoom: function (room,callback){
+		this.send ('/leaveRoom',{room:room},callback);
 	}
 },Backbone.Events)

@@ -23,10 +23,10 @@ Mast = _.extend(Backbone,
 	
 	// 
 	routeToModel: function(_class,method,attributes) {
-		console.log("routeToModel called",_class,method,attributes);
+//		console.log("routeToModel called",_class,method,attributes);
 		_.each(Mast.modelCache,function(val,key) {
 			if (val._class == _class) {
-				console.log("routeToModel FOUND",val,key,_class,method,attributes);
+//				console.log("routeToModel FOUND",val,key,_class,method,attributes);
 				if (!val[method]) {
 					throw new Error('Method ('+method+') not defined for model, '+_class);
 				}
@@ -143,7 +143,6 @@ Backbone.Events);
 Mast.Model = Mast.Model.extend({
 	initialize: function() {
 		_.bindAll(this);
-		console.log("Initialized model.");
 		Mast.modelCache[this.cid] = this;
 		
 	}
@@ -152,7 +151,6 @@ Mast.Model = Mast.Model.extend({
 Mast.Collection = Mast.Collection.extend({
 	initialize: function() {
 		_.bindAll(this);
-		console.log("Initialized collection.");
 		Mast.modelCache[this.cid] = this;
 		
 	}
