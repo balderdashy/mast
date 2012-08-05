@@ -151,7 +151,24 @@ Mast.Socket =_.extend(
 		_.each(this.events,function(eventFn,eventName) {
 			Mast.Socket._socket.on(eventName,this[eventFn]);
 		},this);
+		
+		// Map wildcards
+		Mast.Socket._socket.on('message',function(data) {
+			console.log("RECEIVED MESSAGE OVER SOCKET:",data)
+			
+			if (data.method && data.method == 'select') {
+				t.collection.get(data.id).set({highlighted:data.highlighted});
+			}
+		});
 					
 		this.connected = true;
+	},
+	
+	joinRoom: function () {
+		
+	},
+	
+	leaveRoom: function (){
+		
 	}
 },Backbone.Events)
