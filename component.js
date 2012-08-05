@@ -205,7 +205,7 @@ Mast.Component =
 	// Set pattern's model attribute
 	set: function (attribute,value,options){
 		
-		var outcome = this.pattern.set(attribute,value,options);		
+		var outcome = this.pattern.set(attribute,value,_.extend(options || {},{silent:true}));		
 		return outcome;
 	},
 	get: function(attribute) {

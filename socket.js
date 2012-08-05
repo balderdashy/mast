@@ -44,7 +44,6 @@ Mast.Socket =_.extend(
 		var url = (model.url() || model.collection.url) + "/create";
 
 		this._socket.emit(url,JSON.stringify(model.toJSON()),function(result) {
-			console.log("RETURNED FROM CREATE",result)
 			try {
 				var parsedResult = JSON.parse(result);
 			}
