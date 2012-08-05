@@ -129,6 +129,19 @@ Mast.Component =
 		this.$el.replaceWith($element);
 		this.setElement($element);
 			
+		this.renderSubcomponents();
+			
+		_.defer(function() {
+			if (!silent) {
+				self.trigger('afterRender');
+			}
+		});
+
+		
+		return this;
+	},
+	
+	renderSubcomponents: function () {
 		// If any subcomponents exist, 
 		_.each(this.children,function(subcomponent,key) {
 			
@@ -138,15 +151,6 @@ Mast.Component =
 			})
 			
 		},this);
-			
-		_.defer(function() {
-			if (!silent) {
-				self.trigger('afterRender');
-			}
-		})
-
-		
-		return this;
 	},
 			
 	// Use pattern to generate a DOM element
@@ -198,14 +202,42 @@ Mast.Component =
 			
 	// Set pattern's template selector
 	setTemplate: function (selector,options){
-		this.pattern.setTemplate(selector,options);
+		options = _.defaults(options || {}, {
+			render: true
+		});
+		
+		// If a render function is specified, use that
+		if (_.isFunction(options.render)) {
+			// call custom render function with current and new elements (in the proper scope)
+			_.bind(options.render,this);
+			options.render(this.$el,this.generate());
+		}
+		// Otherwise just do a basic render by triggering the default behavior
+		else {
+			this.pattern.setTemplate(selector,options);
+		}
 		return this.$el;
 	},
 			
 	// Set pattern's model attribute
 	set: function (attribute,value,options){
+		var outcome;
+		options = _.defaults(options || {}, {
+			render: true
+		});
 		
-		var outcome = this.pattern.set(attribute,value,_.extend(options || {},{silent:true}));		
+		// If a render function is specified, use that
+		if (_.isFunction(options.render)) {
+			// call custom render function with current and new elements (in the proper scope)
+			this.pattern.set(attribute,value,_.extend(options,{silent:true}));
+			_.bind(options.render,this);
+			options.render(this.$el,this.generate());
+			outcome = true;
+		}
+		// Otherwise just do a basic render by triggering the default behavior
+		else {
+			outcome = this.pattern.set(attribute,value,options);		
+		}
 		return outcome;
 	},
 	get: function(attribute) {

@@ -65,25 +65,15 @@ Mast.Pattern = {
 		});
 		this.absorbTemplate(template);
 		
-		// If a render function is specified, use that
-		if (_.isFunction(options.render)) {
-			// TODO: call custom render function with appropriate arguments
-		}
-		// Otherwise just do a basic render by triggering the default behavior
-		else {
+		if (!(options && options.silent)) {
+			
 			// The change event must be manually triggered since there isn't necessarily a model
 			this.trigger('change');
-		}
-		
-				
+		}	
 	},
 			
 	// Pass-through methods to model
 	set: function(key,value,options) {
-		
-		options = _.defaults(options || {}, {
-			render: true
-		});
 		
 		// If no model exists, create one
 		var m;
@@ -94,15 +84,7 @@ Mast.Pattern = {
 			m = this.model;
 		}
 		
-		// If a render function is specified, use that
-		if (_.isFunction(options.render)) {
-			m.set(key,value,_.extend(options,{silent:true}));
-			// TODO: call custom render function with appropriate arguments
-		}
-		// Otherwise just do a basic render by triggering the default behavior
-		else {
-			m.set(key,value,options);
-		}
+		m.set(key,value,options);
 	},
 	get: function(key) {
 		return this.model && this.model.get(key);
