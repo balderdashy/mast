@@ -22,16 +22,14 @@ Mast = _.extend(Backbone,
 	modelCache: {},
 	
 	// 
-	routeToModel: function(_class,method,attributes) {
-//		console.log("routeToModel called",_class,method,attributes);
-		_.each(Mast.modelCache,function(val,key) {
-			if (val._class == _class) {
-//				console.log("routeToModel FOUND",val,key,_class,method,attributes);
-				if (!val[method]) {
-					throw new Error('Method ('+method+') not defined for model, '+_class);
+	routeToModel: function(_class,cometEvent,attributes) {
+		_.each(Mast.modelCache,function(model,key) {
+			if (model._class == _class) {
+				if (!model[cometEvent]) {
+					throw new Error('Handler for comet event ('+cometEvent+') not defined for model, '+_class);
 				}
 				else {
-					val[method](attributes);
+					model[cometEvent](attributes);
 				}
 			}
 		})
@@ -151,6 +149,7 @@ Mast.Model = Mast.Model.extend({
 Mast.Collection = Mast.Collection.extend({
 	initialize: function() {
 		_.bindAll(this);
+		
 		Mast.modelCache[this.cid] = this;
 		
 	}
