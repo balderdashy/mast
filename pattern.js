@@ -60,7 +60,7 @@ Mast.Pattern = {
 	// Replace this pattern's template and create one with the specified 
 	// template selector.
 	setTemplate: function (template,options) {
-		options = _.defaults(options, {
+		options = _.defaults(options || {}, {
 			render: true
 		});
 		this.absorbTemplate(template);
@@ -81,7 +81,7 @@ Mast.Pattern = {
 	// Pass-through methods to model
 	set: function(key,value,options) {
 		
-		options = _.defaults(options, {
+		options = _.defaults(options || {}, {
 			render: true
 		});
 		
@@ -96,6 +96,7 @@ Mast.Pattern = {
 		
 		// If a render function is specified, use that
 		if (_.isFunction(options.render)) {
+			m.set(key,value,_.extend(options,{silent:true}));
 			// TODO: call custom render function with appropriate arguments
 		}
 		// Otherwise just do a basic render by triggering the default behavior
