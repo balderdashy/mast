@@ -242,6 +242,11 @@ Mast.Component =
 		}
 		return outcome;
 	},
+	
+	save: function () {
+		this.pattern.model.save({silent:true});
+	},
+	
 	get: function(attribute) {
 		return this.pattern.get(attribute);
 	},
