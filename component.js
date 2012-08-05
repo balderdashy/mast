@@ -246,7 +246,7 @@ Mast.Component =
 	},
 	
 	save: function () {
-		this.pattern.model.save({silent:true});
+		this.pattern.model.save(null,{silent:true});
 	},
 	
 	get: function(attribute) {
