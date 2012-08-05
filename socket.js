@@ -42,39 +42,35 @@ Mast.Socket =_.extend(
 	// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
 	create: function(model,options){
 		var url = (model.url() || model.collection.url) + "/create";
-
-		this._socket.emit(url,JSON.stringify(model.toJSON()),function(result) {
-			try {
-				var parsedResult = JSON.parse(result);
-			}
-			catch (e) {
-				throw new Error("Server response could not be parsed:",result,e);
-			}
-			
-			// Call success callback if specified
+		
+		this.send('message',_.extend({
+			url: url
+		},model.toJSON()),function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},
-	find: function(model){
-		var url = (model.url || model.collection.url) + "/find";
+	find: function(model,options){
+//		var url = (model.url || model.collection.url) + "/find";
+		var url = model.url();
+		
+		// Remove trailing slash and add /update to url
+		url = url.replace(/\/*$/,'');
+		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
+		url = url.replace(/(\/[^\/]+)$/,'/find');
+		
+		this.send('message',_.extend({
+			id: id,
+			url: url
+		},model.toJSON()),function (parsedResult) {
+			options && options.success && options.success(parsedResult);
+		});
 	},
 	findAll: function(collection,options){
 		var url = (collection.url) + "/findAll";
-
-		this._socket.emit(url,{},function(result) {
-			try {
-				var parsedResult = JSON.parse(result);
-			}
-			catch (e) {
-				debug.debug({
-					result: result,
-					e: e,
-					options: options
-				});
-				throw new Error("Server response could not be parsed:");
-			}
-			
-			options.success(parsedResult);
+		this.send('message',{
+			url: url
+		},function (parsedResult) {
+			options && options.success && options.success(parsedResult);
 		});
 	},
 	update: function(model,options){
@@ -84,18 +80,11 @@ Mast.Socket =_.extend(
 		url = url.replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/update');
-
-		this._socket.emit(url,JSON.stringify(_.extend({
-			id: id
-		},model.toJSON())),function(result) {
-			try {
-				var parsedResult = JSON.parse(result);
-			}
-			catch (e) {
-				throw new Error("Server response could not be parsed:",result,e);
-			}
-			
-			// Call success callback if specified
+		
+		this.send('message',_.extend({
+			id: id,
+			url: url
+		},model.toJSON()),function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},
@@ -106,21 +95,11 @@ Mast.Socket =_.extend(
 		url = url.replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/destroy');
-		debug.debug("-------DESTROYARRA",url,{
-			id:id
-		});
-
-		this._socket.emit(url,JSON.stringify({
-			id: id
-		}),function(result) {
-			try {
-				var parsedResult = JSON.parse(result);
-			}
-			catch (e) {
-				throw new Error("Server response could not be parsed:",result,e);
-			}
-			
-			// Call success callback if specified
+		
+		this.send('message',_.extend({
+			id: id,
+			url: url
+		},model.toJSON()),function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},
@@ -170,16 +149,13 @@ Mast.Socket =_.extend(
 				debug.warn('Unknown message received from server.',data);
 				throw new Error('Unknown message received from server.');
 			}
-//			if (data.method && data.method == 'select') {
-//				t.collection.get(data.id).set({highlighted:data.highlighted});
-//			}
 		});
 					
 		this.connected = true;
 	},
 	
-	send: function (url,params,callback) {
-		Mast.Socket._socket.emit(url,JSON.stringify(params),function(result) {
+	send: function (label,params,callback) {
+		Mast.Socket._socket.emit(label,JSON.stringify(params),function(result) {
 			try {
 				var parsedResult = JSON.parse(result);
 			}

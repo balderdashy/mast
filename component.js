@@ -196,8 +196,10 @@ Mast.Component =
 			
 	// Free the memory for this component and remove it from the DOM
 	destroy: function () {
+		// Remove models from modelCache
 		this.pattern.model.cid && delete Mast.modelCache[this.pattern.model.cid];
 		this.collection && this.collection.cid && delete Mast.modelCache[this.collection.cid];
+			
 		this.undelegateEvents();
 		this.$el.remove();
 	},
