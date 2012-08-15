@@ -1,17 +1,16 @@
 // jQuery plugin to find the closet descendant
-//(function($) {
-	$.fn.closest_descendant = function(filter) {
-		var $found = $(),
-		$currentSet = this; // Current place
-		while ($currentSet.length) {
-			$found = $currentSet.filter(filter);
-			if ($found.length) break;  // At least one match: break loop
-			// Get all children of the current set
-			$currentSet = $currentSet.children();
-		}
-		return $found.first(); // Return first match of the collection
-	}    
-//})(jQuery);
+
+$.fn.closest_descendant = function(filter) {
+	var $found = $(),
+	$currentSet = this; // Current place
+	while ($currentSet.length) {
+		$found = $currentSet.filter(filter);
+		if ($found.length) break;  // At least one match: break loop
+		// Get all children of the current set
+		$currentSet = $currentSet.children();
+	}
+	return $found.first(); // Return first match of the collection
+}    
 		
 // Components are the smallest unit of event handling and logic
 // Components may contain sub-components, but (as of may 12th 2012),
@@ -33,11 +32,31 @@ Mast.Component =
          *              default: false
          */
 	initialize: function(attributes,modelAttributes,dontRender){
-
 		// Bind context
 		_.bindAll(this);
 			
 		_.extend(this,attributes);
+		
+		
+		// Parse special notation in events hash
+		_.each(this.events,function(handler,name) {
+			var splitName = name.split(/\s+/g);
+			if (splitName.length > 1 && splitName[1].substr(0,1) == '>') {
+				
+				// This is a closest_descendant event
+				// so generate new name of event
+				var newName = name.replace(/(\S+\s+)>/g, "$1");
+				delete this.events[name];
+				var newHandler = function (e) {
+					// Stop event from propagating up to parent components
+					e.stopImmediatePropagation();
+					this[handler](e);
+					return false;
+				}
+				_.bind(newHandler,this);
+				this.events[newName] = newHandler;
+			}
+		},this);
 		
 		
 		// Build pattern	
