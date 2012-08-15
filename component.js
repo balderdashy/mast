@@ -1,3 +1,18 @@
+// jQuery plugin to find the closet descendant
+//(function($) {
+	$.fn.closest_descendant = function(filter) {
+		var $found = $(),
+		$currentSet = this; // Current place
+		while ($currentSet.length) {
+			$found = $currentSet.filter(filter);
+			if ($found.length) break;  // At least one match: break loop
+			// Get all children of the current set
+			$currentSet = $currentSet.children();
+		}
+		return $found.first(); // Return first match of the collection
+	}    
+//})(jQuery);
+		
 // Components are the smallest unit of event handling and logic
 // Components may contain sub-components, but (as of may 12th 2012),
 // they are responsible for calling render on those elements
@@ -233,7 +248,9 @@ Mast.Component =
 		// If a render function is specified, use that
 		if (_.isFunction(options.render)) {
 			// call custom render function with current and new elements (in the proper scope)
-			this.pattern.set(attribute,value,_.extend(options,{silent:true}));
+			this.pattern.set(attribute,value,_.extend(options,{
+				silent:true
+			}));
 			_.bind(options.render,this);
 			options.render(this.$el,this.generate());
 			outcome = true;
@@ -246,7 +263,9 @@ Mast.Component =
 	},
 	
 	save: function () {
-		this.pattern.model.save(null,{silent:true});
+		this.pattern.model.save(null,{
+			silent:true
+		});
 	},
 	
 	get: function(attribute) {
@@ -267,12 +286,13 @@ Mast.Component =
 			
 	// Default HTML to display if table is empty and no emptytemplate
 	// is specified
-	emptyHTML: "<span>There are no rows available.</span>",
+	emptyHTML: "<span>There are no children available.</span>",
 			
 			
 			
 	// Determine the proper outlet selector and ensure that it is valid
 	_verifyOutlet: function (outlet,context) {
+		
 		// If a parent component exists, render into that by default
 		outlet = outlet || this.outlet || (this.parent && this.parent.$el);
 		
@@ -283,7 +303,7 @@ Mast.Component =
 				
 		var $outlet;
 		if (_.isString(outlet)) {
-			$outlet = (context && context.find(outlet)) || $(outlet);
+			$outlet = (context && context.closest_descendant(outlet)) || $(outlet);
 		}
 		else {
 			$outlet = outlet;
