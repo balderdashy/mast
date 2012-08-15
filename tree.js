@@ -94,7 +94,7 @@ Mast.Tree = {
 		(new this.branchComponent({
 			parent: this,
 			autorender: false,
-			model: model || this.model,
+			model: model,
 			outlet: this.branchOutlet
 		})).append();
 	},
