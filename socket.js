@@ -160,7 +160,6 @@ Mast.Socket =_.extend(
 	request: function (url,data,options) {
 		// Remove trailing slash
 		url = url.replace(/\/*$/,'');
-//		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 
 		this.send('message',_.extend({
 			url: url
@@ -191,10 +190,10 @@ Mast.Socket =_.extend(
 	},
 	
 	joinRoom: function (room,callback) {
-		this.send ('/joinRoom',{room:room},callback);
+		this.send ('joinRoom',{room:room},callback);
 	},
 	
 	leaveRoom: function (room,callback){
-		this.send ('/leaveRoom',{room:room},callback);
+		this.send ('leaveRoom',{room:room},callback);
 	}
 },Backbone.Events)
