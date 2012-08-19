@@ -46,7 +46,7 @@ Mast.Tree = {
 			
 	// Render the Tree, its subcomponents, and all branch
 	render: function (silent) {
-		console.log("RENDER TREE:",this.get('id'));
+		
 		// Render main pattern
 		Mast.Component.prototype.render.call(this,true);
 				

@@ -155,7 +155,8 @@ Mast.Socket =_.extend(
 	},
 	
 	/**
-	 * 
+	 * If options is a function, treat it as a callback
+	 * Otherwise the "success" property will be treated as the callback
 	 */
 	request: function (url,data,options) {
 		// Remove trailing slash
@@ -164,7 +165,7 @@ Mast.Socket =_.extend(
 		this.send('message',_.extend({
 			url: url
 		},data),function (parsedResult) {
-			options && options.success && options.success(parsedResult);
+			options && ((_.isFunction(options) && options || options.success) (parsedResult));
 		});
 	},
 	
@@ -187,13 +188,13 @@ Mast.Socket =_.extend(
 			// Call success callback if specified
 			callback && callback(parsedResult);
 		})
-	},
-	
-	joinRoom: function (room,callback) {
-		this.send ('joinRoom',{room:room},callback);
-	},
-	
-	leaveRoom: function (room,callback){
-		this.send ('leaveRoom',{room:room},callback);
 	}
+	
+//	joinRoom: function (room,callback) {
+//		this.send ('joinRoom',{room:room},callback);
+//	},
+//	
+//	leaveRoom: function (room,callback){
+//		this.send ('leaveRoom',{room:room},callback);
+//	}
 },Backbone.Events)
