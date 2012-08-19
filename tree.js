@@ -3,8 +3,8 @@ Mast.Tree = {
 			
 	initialize: function (attributes,options,dontRender){
 				
-		// Determine whether specified component is a className, class, or instance
-		this.branchComponent = this._provisionPrototype(this.branchComponent,Mast.components,Mast.Component);
+		// Determine whether specified branch component is a className, class, or instance
+		this.branchComponent = this.branchComponent && this._provisionPrototype(this.branchComponent,Mast.components,Mast.Component);
 		
 		// Determine whether specified collection is a className, class, or instance
 		this.collection = this._provisionInstance(this.collection,Mast.models,Mast.Collection);
@@ -29,15 +29,8 @@ Mast.Tree = {
 			this.collection.on('reset',function() {
 				self.render();
 			});
-			
-			// Verify branchComponent
-			if (!this.branchComponent) {
-				throw new Error("No branchComponent or branchTemplate specified!");
-			}
 		}
-				
-	
-				
+			
 		// Autorender is on by default
 		// Default render type is "append", but you can also specify "replaceOutlet""
 		if (!dontRender && this.autorender!==false) {
