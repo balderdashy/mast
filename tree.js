@@ -19,20 +19,23 @@ Mast.Tree = {
 				
 		// Watch for collection changes
 		var self = this;
-		this.collection.on('remove',function(model,collection,status) {
-			self.removeBranch(model,status.index);
-		});
-		this.collection.on('add',function(model) {
-			self.appendBranch(model);
-		});
-		this.collection.on('reset',function() {
-			self.render();
-		});
-				
-		// Verify branchComponent
-		if (!this.branchComponent) {
-			throw new Error("No branchComponent or branchTemplate specified!");
+		if (this.collection) {
+			this.collection.on('remove',function(model,collection,status) {
+				self.removeBranch(model,status.index);
+			});
+			this.collection.on('add',function(model) {
+				self.appendBranch(model);
+			});
+			this.collection.on('reset',function() {
+				self.render();
+			});
+			
+			// Verify branchComponent
+			if (!this.branchComponent) {
+				throw new Error("No branchComponent or branchTemplate specified!");
+			}
 		}
+				
 	
 				
 		// Autorender is on by default
@@ -50,6 +53,7 @@ Mast.Tree = {
 			
 	// Render the Tree, its subcomponents, and all branch
 	render: function (silent) {
+		console.log("RENDER TREE:",this.get('id'));
 		// Render main pattern
 		Mast.Component.prototype.render.call(this,true);
 				
@@ -66,13 +70,13 @@ Mast.Tree = {
 		}
 				
 		// Empty and append branches to the branch outlet
-		if (this.collection.length == 0 ) {
+		if (this.collection && this.collection.length == 0 ) {
 			this.$branchOutlet.empty();
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 		else {
 			var self = this;
-			this.collection.each(function(model,index){
+			this.collection && this.collection.each(function(model,index){
 				self.appendBranch(model);
 			});
 		}
@@ -87,7 +91,7 @@ Mast.Tree = {
 	appendBranch: function (model) {
 		
 		// If this is the first branch, empty the emptyHTML element
-		if (this.collection.length == 1) {
+		if (this.collection && this.collection.length == 1) {
 			this.$branchOutlet.empty();
 		}
 		
@@ -101,7 +105,7 @@ Mast.Tree = {
 	
 	removeBranch: function (model,index) {
 		this.getBranchEl(index).remove();
-		if (this.collection.length == 0 ) {
+		if (this.collection && this.collection.length == 0 ) {
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 	},

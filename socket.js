@@ -154,6 +154,28 @@ Mast.Socket =_.extend(
 		this.connected = true;
 	},
 	
+	/**
+	 * 
+	 */
+	request: function (url,data,options) {
+		// Remove trailing slash
+		url = url.replace(/\/*$/,'');
+//		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
+
+		this.send('message',_.extend({
+			url: url
+		},data),function (parsedResult) {
+			options && options.success && options.success(parsedResult);
+		});
+	},
+	
+	
+	/**
+	 * Make a call to the server over the socket
+	 *   label:		the request label
+	 *   params:	data to pass with the request
+	 *   callback:	optional callback fired when server responds
+	 */
 	send: function (label,params,callback) {
 		Mast.Socket._socket.emit(label,JSON.stringify(params),function(result) {
 			try {

@@ -50,7 +50,12 @@ Mast.Component =
 				var newHandler = function (e) {
 					// Stop event from propagating up to parent components
 					e.stopImmediatePropagation();
-					this[handler](e);
+					if (_.isString(handler)) {
+						this[handler](e);
+					}
+					else {
+						_.bind(handler,this)(e);
+					}
 					return false;
 				}
 				_.bind(newHandler,this);
