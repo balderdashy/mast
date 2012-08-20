@@ -128,19 +128,16 @@ Mast.Socket =_.extend(
 		
 		// Map server-side events
 		Mast.Socket._socket.on('message',function(data) {
-			console.log("RECEIVED MESSAGE OVER SOCKET:",data)
 			
-			if (data && (data.model || data.collection) && data.method && Mast.models[data.model]) {
+			if (data && (data.model || data.collection) && data.method) {
 				if (data.model && data.collection) {
 					debug.warn('model or collection may be specified, but not both!  They are synonyms.',data);
 					throw new Error('Message from server is invalid.');
 				}
 				data.model = data.collection || data.model;
 				
-				// Clean up attributes and pass them as an argument
-				var attributes = _.clone(data);
-				delete attributes['method'];
-				delete attributes['model'];
+				// Clone attributes
+				var attributes = _.clone(data.attributes);
 				
 				// Access the model cache to update the appropriate models
 				Mast.routeToModel(data.model,data.method,attributes);

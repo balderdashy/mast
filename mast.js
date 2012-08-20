@@ -24,7 +24,7 @@ Mast = _.extend(Backbone,
 	// 
 	routeToModel: function(_class,cometEvent,attributes) {
 		_.each(Mast.modelCache,function(model,key) {
-			if (model._class == _class) {
+			if (model._class && model._class.toLowerCase() == _class.toLowerCase()) {
 				if (!model[cometEvent]) {
 					throw new Error('Handler for comet event ('+cometEvent+') not defined for model, '+_class);
 				}
@@ -142,7 +142,7 @@ Mast.Model = Mast.Model.extend({
 	initialize: function() {
 		_.bindAll(this);
 		Mast.modelCache[this.cid] = this;
-		
+		// TODO: Make model cache smarter (instead of cids, use id+class name)
 	}
 })
 
@@ -151,8 +151,9 @@ Mast.Collection = Mast.Collection.extend({
 		_.bindAll(this);
 		
 		Mast.modelCache[this.cid] = this;
-		
 	}
+	
+	// TODO: handle string model definitions to maintain parity with Mast.Component
 })
 
 // Add isMobile detection to Mast to detect mobile viewports
