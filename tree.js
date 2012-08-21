@@ -45,10 +45,11 @@ Mast.Tree = {
 	},
 			
 	// Render the Tree, its subcomponents, and all branch
-	render: function (silent) {
+	render: function (silent,changes) {
+		var self = this;
 		
 		// Render main pattern
-		Mast.Component.prototype.render.call(this,true);
+		Mast.Component.prototype.render.call(this,true,changes);
 				
 		// Determine and verify branch outlet
 		if (!this.branchOutlet) {
@@ -62,16 +63,25 @@ Mast.Tree = {
 			this.$branchOutlet = this._verifyOutlet(this.branchOutlet,this.$el);
 		}
 				
-		// Empty and append branches to the branch outlet
-		if (this.collection && this.collection.length == 0 ) {
-			this.$branchOutlet.empty();
-			this.$branchOutlet.append(this._generateEmptyHTML());
-		}
-		else {
-			var self = this;
-			this.collection && this.collection.each(function(model,index){
-				self.appendBranch(model);
-			});
+		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
+			return (self.bindings[attrName]);
+		});
+				
+		
+		// If not all of the changed attributes were accounted for, 
+		// go ahead and trigger a complete rerender
+		if (!allCustomChanges) {		
+			// Empty and append branches to the branch outlet
+			if (this.collection && this.collection.length == 0 ) {
+				this.$branchOutlet.empty();
+				this.$branchOutlet.append(this._generateEmptyHTML());
+			}
+			else {
+				var self = this;
+				this.collection && this.collection.each(function(model,index){
+					self.appendBranch(model);
+				});
+			}
 		}
 				
 		if (!silent) {

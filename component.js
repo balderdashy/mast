@@ -169,7 +169,6 @@ Mast.Component =
 		
 		// Check bindings hash for custom render event
 		// Perform custom render for this attr if it exists
-		changes && console.log("CHANGES",changes);
 		changes && _.each(changes,function(v,attrName) {
 			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
 		});

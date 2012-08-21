@@ -54,9 +54,9 @@ Mast.Table = {
 	},
 			
 	// Render the Table, its subcomponents, and all rows
-	render: function (silent) {
+	render: function (silent,changes) {
 		// Render main pattern
-		Mast.Component.prototype.render.call(this,true);
+		Mast.Component.prototype.render.call(this,true,changes);
 				
 		// Determine and verify row outlet
 		if (!this.rowoutlet) {
@@ -70,22 +70,26 @@ Mast.Table = {
 			this.$rowoutlet = this._verifyOutlet(this.rowoutlet,this.$el);
 		}
 				
-		// Empty and append rows to the outlet
-		if (this.collection.length == 0 ) {
-			this.$rowoutlet.empty();
-			this.$rowoutlet.append(this._generateEmptyHTML());
-		}
-		else {
-			var self = this;
-			this.collection.each(function(model,index){
-				self.appendRow(model);
-			});
-		}
+		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
+			return (self.bindings[attrName]);
+		});
 				
-		// Redelegate events
-//		console.log("DDDD!");
-//		this.delegateEvents();
-				
+		// If not all of the changed attributes were accounted for, 
+		// go ahead and trigger a complete rerender
+		if (!allCustomChanges) {		
+			// Empty and append rows to the outlet
+			if (this.collection.length == 0 ) {
+				this.$rowoutlet.empty();
+				this.$rowoutlet.append(this._generateEmptyHTML());
+			}
+			else {
+				var self = this;
+				this.collection.each(function(model,index){
+					self.appendRow(model);
+				});
+			}
+		}
+		
 		if (!silent) {
 			this.trigger('afterRender');
 		}
