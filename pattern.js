@@ -18,7 +18,7 @@ Mast.Pattern = {
 		
 		// Listen for changes in model and bubble them up
 		this.model && this.model.on('change',function(model,parameters){
-			self.trigger('change');
+			self.trigger('change',!parameters.render,parameters.changes);
 		});
 			
 		// Initialize init method if specified

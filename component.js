@@ -17,6 +17,9 @@ $.fn.closest_descendant = function(filter) {
 // they are responsible for calling render on those elements
 Mast.Component = 
 {
+	// Custom event bindings for specific model attributes
+	bindings: {},
+
 	/**
          * attributes: properties to be added directly to the component
          *              i.e. accessible from component as:
@@ -160,15 +163,31 @@ Mast.Component =
 	},
 		
 	// Render the pattern in-place
-	render: function (silent) {
+	render: function (silent,changes) {
 		var self = this;
 		this.trigger('beforeRender');
 		
-		var $element = this.generate();
-		this.$el.replaceWith($element);
-		this.setElement($element);
-			
-		this.renderSubcomponents();
+		// Check bindings hash for custom render event
+		// Perform custom render for this attr if it exists
+		changes && console.log("CHANGES",changes);
+		changes && _.each(changes,function(v,attrName) {
+			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
+		});
+		
+		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
+			return (self.bindings[attrName]);
+		});
+		
+		// If not all of the changed attributes were accounted for, 
+		// go ahead and trigger a complete rerender
+		if (!allCustomChanges) {
+			var $element = this.generate();
+			this.$el.replaceWith($element);
+			this.setElement($element);
+
+			this.renderSubcomponents();
+		}
+		
 			
 		_.defer(function() {
 			if (!silent) {
