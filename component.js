@@ -167,11 +167,6 @@ Mast.Component =
 		var self = this;
 		this.trigger('beforeRender');
 		
-		// Check bindings hash for custom render event
-		// Perform custom render for this attr if it exists
-		changes && _.each(changes,function(v,attrName) {
-			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
-		});
 		
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
 			return (self.bindings[attrName]);
@@ -187,6 +182,14 @@ Mast.Component =
 			this.renderSubcomponents();
 		}
 		
+		// Check bindings hash for custom render event
+		// Perform custom render for this attr if it exists
+//		changes && _.each(changes,function(v,attrName) {
+//			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
+//		});
+		_.each(self.bindings,function(v,attrName) {
+			(_.bind(self.bindings[attrName],self))(self.get(attrName));
+		});
 			
 		_.defer(function() {
 			if (!silent) {
