@@ -27,8 +27,8 @@ Mast.Table = {
 		this.collection.on('remove',function(model,collection,status) {
 			self.removeRow(model,status.index);
 		});
-		this.collection.on('add',function(model) {
-			self.appendRow(model);
+		this.collection.on('add',function(model,collection,options) {
+			self.appendRow(model,options);
 		});
 		this.collection.on('reset',function() {
 			self.render();
@@ -97,18 +97,30 @@ Mast.Table = {
 			
 	
 	
-	appendRow: function (model) {
+	appendRow: function (model,options) {
 		// If this is the first row, empty the emptyHTML element
 		if (this.collection.length == 1) {
 			this.$rowoutlet.empty();
 		}
 		
-		(new this.rowcomponent({
+		var r = (new this.rowcomponent({
 			parent: this,
 			autorender: false,
 			model: model,
 			outlet: this.rowoutlet
-		})).append();
+		}));
+
+
+		if (options && !_.isUndefined(options.at)) {
+			var $outlet = r._verifyOutlet(null,
+				r.parent && r.parent.$el);
+			r.render();
+			$outlet.children().eq(options.at) && $outlet.children().eq(options.at).before(r.$el);
+		}
+		else {
+			r.append();
+		}
+
 	},
 	
 	removeRow: function (model,index) {
