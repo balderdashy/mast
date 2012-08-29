@@ -43,6 +43,7 @@ Mast.Pattern = {
 			// Absorb template (removes id attr!)
 			$template.removeAttr("id");
 			this._template = $template.outerHTML();
+			this._template = this._template.replace('%7B%7B', '{{').replace('%7D%7D', '}}')
 			$template.remove();
 				
 			// Remember html in template library
