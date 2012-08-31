@@ -21,7 +21,7 @@ Mast = _.extend(Backbone,
 	// Cache of models and collections, by cid
 	modelCache: {},
 	
-	// 
+	// Comet route handler
 	routeToModel: function(_class,cometEvent,attributes) {
 		_.each(Mast.modelCache,function(model,key) {
 			if (model._class && model._class.toLowerCase() == _class.toLowerCase()) {
@@ -29,6 +29,7 @@ Mast = _.extend(Backbone,
 					throw new Error('Handler for comet event ('+cometEvent+') not defined for model, '+_class);
 				}
 				else {
+					// TODO: check model id before triggering method
 					model[cometEvent](attributes);
 				}
 			}
