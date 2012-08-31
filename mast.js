@@ -49,6 +49,16 @@ Mast = _.extend(Backbone,
 		},options);
 		
 		
+		// Manage dependencies/inheritance
+		var capitalize = function (str){return str.length > 0 && str[0].toUpperCase()+str.substr(1);}
+		_.each(Mast._registerQueue,function(v,i) {
+			var entitySet = Mast[v.type+'s'],
+				parent = v.definition.extendsFrom ? entitySet[v.definition.extendsFrom] : Mast[capitalize(v.type)],
+				newEntity = parent.extend(v.definition);
+				
+			entitySet[v.name] = newEntity;
+		});
+		
 			
 		// Convert options.routes into a format Backbone's router will accept
 		// (can't have key:function(){} style routes, must use a string function name)

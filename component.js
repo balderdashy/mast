@@ -40,7 +40,6 @@ Mast.Component =
 			
 		_.extend(this,attributes);
 		
-		
 		// Parse special notation in events hash
 		_.each(this.events,function(handler,name) {
 			var splitName = name.split(/\s+/g);

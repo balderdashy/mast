@@ -5,17 +5,17 @@ Mast.Table = Mast.Component.extend(Mast.Table);
 Mast.Tree = Mast.Component.extend(Mast.Tree);
 
 
-
-
-var extendFn = function (entityType,entityName,definition) {
+// Define registration methods (required to extend other components/models in the app)
+Mast._registerQueue = [];
+var registerFn = function(entityType) {
 	return function (entityName,definition) {
-		var parent = Mast[entityType+'s'][entityName];
-		if (!parent) throw new Error('Cannot extend "'+entityName+'".  No such '+entityType+' exists!')
-		return parent.extend(definition);
+		Mast._registerQueue.push({
+			name:		entityName,
+			type:		entityType,
+			definition:	definition
+		});
 	}
 }
-
-// Define Mast.extend*() methods
-Mast.extendComponent = extendFn('component');
-Mast.extendModel = extendFn('model');
-Mast.extendCollection = extendFn('model');
+Mast.registerComponent =	registerFn('component');
+Mast.registerModel =		registerFn('model');
+Mast.registerCollection =	registerFn('model');
