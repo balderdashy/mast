@@ -50,7 +50,18 @@ Mast.Tree = {
 		
 		// Render main pattern
 		Mast.Component.prototype.render.call(this,true,changes);
+		
+		this.renderBranches(changes);
 				
+		if (!silent) {
+			this.trigger('afterRender');
+		}
+	},
+	
+	renderBranches: function (changes) {
+//		console.log(changes);
+		var self = this;
+		
 		// Determine and verify branch outlet
 		if (!this.branchOutlet) {
 			// If no branchOutlet is explicitly specified,
@@ -82,10 +93,6 @@ Mast.Tree = {
 					self.appendBranch(model);
 				});
 			}
-		}
-				
-		if (!silent) {
-			this.trigger('afterRender');
 		}
 	},
 			
