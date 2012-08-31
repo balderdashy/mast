@@ -56,8 +56,14 @@ Mast = _.extend(Backbone,
 				parent = v.definition.extendsFrom ? entitySet[v.definition.extendsFrom] : Mast[capitalize(v.type)],
 				newEntity = parent.extend(v.definition);
 				
+			// Extend events hash as well
+			newEntity.prototype.events = _.extend({},parent.prototype.events,newEntity.prototype.events);
+			
 			entitySet[v.name] = newEntity;
+			
 		});
+		
+		
 		
 			
 		// Convert options.routes into a format Backbone's router will accept
