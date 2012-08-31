@@ -149,6 +149,27 @@ Mast = _.extend(Backbone,
 },
 Backbone.Events);
 
+// Accept:
+// - Mast object 
+// - string referencing object name
+Mast._provisionPrototype= function (identity, identitySet) {
+
+	if (identity && _.isObject(identity) && _.isFunction(identity)) {
+		return identity;
+	}
+	else if (_.isString(identity)) {
+		// A string component name
+		if (! (identitySet[identity])) {
+			throw new Error("No entity with that name ("+identity+") exists!");
+		}
+		identity = identitySet[identity];
+	}
+	else {
+		throw new Error ("Invalid identity provided: " + identity);
+	}
+	return identity;
+}
+
 Mast.Model = Mast.Model.extend({
 	initialize: function() {
 		_.bindAll(this);
@@ -162,10 +183,14 @@ Mast.Collection = Mast.Collection.extend({
 		_.bindAll(this);
 		
 		Mast.modelCache[this.cid] = this;
+		
+		// handle string model definitions to maintain parity with Mast.Component
+		// and allow for dependencies to exist between files
+		this.model = this.model && Mast._provisionPrototype(this.model,Mast.models);
 	}
-	
-	// TODO: handle string model definitions to maintain parity with Mast.Component
-})
+});
+
+
 
 // Add isMobile detection to Mast to detect mobile viewports
 // Looks at the user agent string

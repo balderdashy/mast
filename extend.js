@@ -12,7 +12,7 @@ var registerFn = function(entityType) {
 		Mast._registerQueue.push({
 			name:		entityName,
 			type:		entityType,
-			definition:	definition
+			definition:	_.extend({_class:entityName},definition)
 		});
 	}
 }
