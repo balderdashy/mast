@@ -27,7 +27,7 @@ Mast.Tree = {
 				self.appendBranch(model);
 			});
 			this.collection.on('reset',function() {
-				self.render();
+				self.renderBranches();
 			});
 		}
 			
@@ -59,7 +59,7 @@ Mast.Tree = {
 	},
 	
 	renderBranches: function (changes) {
-//		console.log(changes);
+
 		var self = this;
 		
 		// Determine and verify branch outlet
@@ -89,6 +89,7 @@ Mast.Tree = {
 			}
 			else {
 				var self = this;
+				this.$branchOutlet.empty();
 				this.collection && this.collection.each(function(model,index){
 					self.appendBranch(model);
 				});
