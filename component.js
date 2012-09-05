@@ -183,9 +183,9 @@ Mast.Component =
 		
 		// Check bindings hash for custom render event
 		// Perform custom render for this attr if it exists
-//		changes && _.each(changes,function(v,attrName) {
-//			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
-//		});
+		//		changes && _.each(changes,function(v,attrName) {
+		//			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
+		//		});
 		_.each(self.bindings,function(v,attrName) {
 			(_.bind(self.bindings[attrName],self))(self.get(attrName));
 		});
@@ -283,8 +283,19 @@ Mast.Component =
 	},
 			
 	// Set pattern's model attribute
-	set: function (attribute,value,options){
-		var outcome;
+	// If the first argument is an object, value can also be an options hash
+	set: function (key,value,options){
+		var outcome,attrs;
+		
+		// Handle both `"key", value` and `{key: value}` -style arguments.
+		if (_.isObject(key) || key == null) {
+			attrs = key;
+			options = value;
+		} else {
+			attrs = {};
+			attrs[key] = value;
+		}
+		
 		options = _.defaults(options || {}, {
 			render: true
 		});
@@ -292,16 +303,16 @@ Mast.Component =
 		// If a render function is specified, use that
 		if (_.isFunction(options.render)) {
 			// call custom render function with current and new elements (in the proper scope)
-			this.pattern.set(attribute,value,_.extend(options,{
+			this.pattern.set(attrs,_.extend(options,{
 				silent:true
 			}));
-			_.bind(options.render,this);
+			options.render =_.bind(options.render,this);
 			options.render(this.$el,this.generate());
 			outcome = true;
 		}
 		// Otherwise just do a basic render by triggering the default behavior
 		else {
-			outcome = this.pattern.set(attribute,value,options);		
+			outcome = this.pattern.set(attrs,options);		
 		}
 		return outcome;
 	},
