@@ -23,6 +23,7 @@ Mast = _.extend(Backbone,
 	
 	// Comet route handler
 	routeToModel: function(_class,cometEvent,attributes) {
+		console.log("Received request for model: " + _class + " event: " + cometEvent);
 		_.each(Mast.modelCache,function(model,key) {
 			if (model._class && model._class.toLowerCase() == _class.toLowerCase()) {
 				if (!model[cometEvent]) {
@@ -182,6 +183,9 @@ Mast.Model = Mast.Model.extend({
 		_.bindAll(this);
 		Mast.modelCache[this.cid] = this;
 	// TODO: Make model cache smarter (instead of cids, use id+class name)
+		// 
+		// Trigger init event
+		_.result(this,'init');
 	}
 })
 
@@ -194,6 +198,9 @@ Mast.Collection = Mast.Collection.extend({
 		// handle string model definitions to maintain parity with Mast.Component
 		// and allow for dependencies to exist between files
 		this.model = this.model && Mast._provisionPrototype(this.model,Mast.models);
+		
+		// Trigger init event
+		_.result(this,'init');
 	}
 });
 
