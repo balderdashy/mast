@@ -127,8 +127,7 @@ Mast.Socket =_.extend(
 		this._socket = this.io && this.io.connect(this.baseurl);
 		
 		// Map server-side events
-		Mast.Socket._socket.on('message',function(data) {
-			
+		Mast.Socket._socket.on('message',function(data) {	
 			if (data && (data.model || data.collection) && data.method) {
 				if (data.model && data.collection) {
 					debug.warn('model or collection may be specified, but not both!  They are synonyms.',data);
