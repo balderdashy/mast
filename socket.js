@@ -1,9 +1,4 @@
-var bbGetValue = function(object, prop) {
-	if (!(object && object[prop])) return null;
-	return _.isFunction(object[prop]) ? object[prop]() : object[prop];
-};
-  
-// // Mast.Socket wraps around socket.io to provide a universal API  
+// Mast.Socket wraps around socket.io to provide a universal API  
 // for programatic communication with the Sails backend
 Mast.Socket =_.extend(
 {	
@@ -116,6 +111,12 @@ Mast.Socket =_.extend(
 
 	// Connect to socket
 	connect: function(baseurl) {
+		if (!this.io) {
+			throw new Error(
+			"Can't connect to socket because the Socket.io "+
+			"client library (io) cannot be found!"
+			);
+		};
 		if (this.connected) {
 			throw new Error(
 				"Can't connect to "+baseurl+ " because you're "+
@@ -124,9 +125,15 @@ Mast.Socket =_.extend(
 		}
 					
 		this.baseurl = baseurl || this.baseurl;
-		this._socket = this.io && this.io.connect(this.baseurl);
 		
-		// Map server-side events
+		this._socket = this.io.connect(this.baseurl);
+		
+		// Listen for latest session data from server and update local store
+		Mast.Socket._socket.on('sessionUpdated',function(data) {
+			Mast.Session = data;
+		});
+		
+		// Route server-sent comet events
 		Mast.Socket._socket.on('message',function(data) {	
 			if (data && (data.model || data.collection) && data.method) {
 				if (data.model && data.collection) {
