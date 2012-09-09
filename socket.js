@@ -151,9 +151,7 @@ Mast.Socket =_.extend(
 	
 	// Simulate an HTTP request to the backend
 	request: function (url,data,options, method) {
-		// Remove trailing slash
-		url = url.replace(/\/*$/,'');
-		
+		url = url.replace(/\/*$/,'');											// Remove trailing slash
 		this._send('message',{
 			url: url,
 			data: data,
