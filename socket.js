@@ -69,17 +69,17 @@ Mast.Socket =_.extend(
 		this.connected = true;
 	},
 	
-	// Comet route handler
+	// Route an incoming comet request to the appropriate context and action
 	route: function (serverUri,serverData) {
 		var extractParams = Backbone.Router.prototype._extractParameters,
 			calculateRegex = Backbone.Router.prototype._routeToRegExp;
-		_.each(Mast.Socket.routes,function(instances,routeUri) {
+		_.each(Mast.Socket.routes,function(instances,routeUri) {				// Match the request's URI against each subcribed route
 			var regex=calculateRegex(routeUri);
 			if (serverUri.match(regex)) {
-				var params=extractParams(regex,serverUri);
+				var params=extractParams(regex,serverUri);						// Grab named uri parameters and include them as arguments
 				_.each(instances,function(instance,index) {
 					params.push(serverData);
-					instance.action.apply(instance.context,params);
+					instance.action.apply(instance.context,params);				// Run the appropriate action on each matching, subscribed instance
 				});
 			}
 		});
