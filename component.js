@@ -140,11 +140,10 @@ Mast.Component =
 			}
 		}
 		
-		// Bind comet subscriptions to methods
+		// Bind actions to comet events
 		if (this.subscriptions) {
-			// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
-			_.each(this.subscriptions,function(method,route) {
-				Mast.Socket.subscribe(route,_.isFunction(method) ? method : this[method],this);
+			_.each(this.subscriptions,function(action,route) {					// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
+				Mast.Socket.subscribe(route,_.isFunction(action) ? action: this[action],this);
 			},this)
 		}
 	},

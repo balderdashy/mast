@@ -45,7 +45,6 @@ Mast.Socket =_.extend(
 		});
 	},
 	find: function(model,options){
-//		var url = (model.url || model.collection.url) + "/find";
 		var url = model.url();
 		
 		// Remove trailing slash and add /update to url
@@ -153,21 +152,21 @@ Mast.Socket =_.extend(
 				var params=extractParams(regex,serverUri);
 				_.each(instances,function(instance,index) {
 					params.push(serverData);
-					instance.method.apply(instance.context,params);
+					instance.action.apply(instance.context,params);
 				});
 			}
 		});
 	},
 	
-	// Subscribe a client-side method to a server-sent event
-	subscribe: function (routeUri,method,context) {
+	// Subscribe a client-side handler action to a server-sent event
+	subscribe: function (routeUri,action,context) {
 		if (!Mast.Socket.routes[routeUri]) {
 			Mast.Socket.routes[routeUri] = [];
 		}
 		
 		Mast.Socket.routes[routeUri].push({
-			method: method,
-			context: context
+			action: action,														// The function to trigger
+			context: context													// Component where the logic will run
 		})
 	},
 	
@@ -178,10 +177,12 @@ Mast.Socket =_.extend(
 	request: function (url,data,options) {
 		// Remove trailing slash
 		url = url.replace(/\/*$/,'');
-
-		this.send('message',_.extend({
-			url: url
-		},data),function (parsedResult) {
+		
+		this.send('message',{
+			url: url,
+			method: options.verb || options.method || 'GET',
+			data: data
+		},function (parsedResult) {
 			options && ((_.isFunction(options) && options || options.success) (parsedResult));
 		});
 	},
