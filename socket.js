@@ -139,7 +139,7 @@ Mast.Socket =_.extend(
 	},
 	
 	// Map of entities and actions, by uri
-	router: {},
+	routes: {},
 	
 	// Comet route handler
 	route: function (serverUri,serverData) {
@@ -147,10 +147,10 @@ Mast.Socket =_.extend(
 			calculateRegex = Backbone.Router.prototype._routeToRegExp;
 			
 //		debug.debug("routing "+serverUri+"...");
-		_.each(Mast.Socket.router,function(instances,routeUri) {
-			var regex=calculateRegex(routeUri),
-				params=extractParams(regex,routeUri);
+		_.each(Mast.Socket.routes,function(instances,routeUri) {
+			var regex=calculateRegex(routeUri);
 			if (serverUri.match(regex)) {
+				var params=extractParams(regex,serverUri);
 				_.each(instances,function(instance,index) {
 					params.push(serverData);
 					instance.method.apply(instance.context,params);
@@ -160,13 +160,12 @@ Mast.Socket =_.extend(
 	},
 	
 	// Subscribe a client-side method to a server-sent event
-	subscribe: function (regex,method,context) {
-		if (!Mast.Socket.router[regex]) {
-			Mast.Socket.router[regex] = [];
+	subscribe: function (routeUri,method,context) {
+		if (!Mast.Socket.routes[routeUri]) {
+			Mast.Socket.routes[routeUri] = [];
 		}
 		
-		Mast.Socket.router[regex].push({
-			regex: regex,
+		Mast.Socket.routes[routeUri].push({
 			method: method,
 			context: context
 		})
