@@ -108,16 +108,14 @@ Mast.Socket =_.extend(
 		url = model.url().replace(/\/*$/,'');									// Remove trailing slash and add /update to url
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/find');
-		var data = _.extend({id:id},model.toJSON());							// Add id to data params
-		
-		this.get(url, data, function (parsedResult) {
+		this.get(url, {id:id}, function (parsedResult) {						// Add id to params
 			options && options.success && options.success(parsedResult);
 		});
 	},
 	
 	findAll: function(collection,options){
 		var url = (collection.url) + "/findAll";
-		this.get(url, model.toJSON(), function (parsedResult) {
+		this.get(url, {}, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},
@@ -127,7 +125,6 @@ Mast.Socket =_.extend(
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/update');
 		var data = _.extend({id:id},model.toJSON());							// Add id to data params
-		
 		this.put(url, data, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
@@ -137,9 +134,7 @@ Mast.Socket =_.extend(
 		var url = model.url().replace(/\/*$/,'');								// Remove trailing slash and add /destroy to url
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/destroy');
-		var data = _.extend({id:id},model.toJSON());							// Add id to data params
-		
-		this['delete'](url,data,function (parsedResult) {
+		this['delete'](url,{id:id},function (parsedResult) {					// Add id to data params
 			options && options.success && options.success(parsedResult);
 		});
 	},
