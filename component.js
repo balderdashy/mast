@@ -139,6 +139,14 @@ Mast.Component =
 				this.afterConnect();
 			}
 		}
+		
+		// Bind comet subscriptions to methods
+		if (this.subscriptions) {
+			// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
+			_.each(this.subscriptions,function(method,route) {
+				Mast.Socket.subscribe(route,_.isFunction(method) ? method : this[method],this);
+			},this)
+		}
 	},
 		
 	// Append the pattern to the outlet

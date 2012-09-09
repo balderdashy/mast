@@ -21,22 +21,6 @@ Mast = _.extend(Backbone,
 	// Cache of models and collections, by cid
 	modelCache: {},
 	
-	// Comet route handler
-	routeToModel: function(_class,cometEvent,attributes) {
-		console.log("Received request for model: " + _class + " event: " + cometEvent);
-		_.each(Mast.modelCache,function(model,key) {
-			if (model._class && model._class.toLowerCase() == _class.toLowerCase()) {
-				if (!model[cometEvent]) {
-					throw new Error('Handler for comet event ('+cometEvent+') not defined for model, '+_class);
-				}
-				else {
-					// TODO: check model id before triggering method
-					model[cometEvent](attributes);
-				}
-			}
-		})
-	},
-	
 	// Component dictionary that will be populated by user definitions
 	components: {},	
 	
@@ -181,6 +165,7 @@ Mast._provisionPrototype= function (identity, identitySet) {
 Mast.Model = Mast.Model.extend({
 	initialize: function() {
 		_.bindAll(this);
+		
 		Mast.modelCache[this.cid] = this;
 	// TODO: Make model cache smarter (instead of cids, use id+class name)
 		// 

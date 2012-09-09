@@ -55,6 +55,8 @@ Mast.Table = {
 			
 	// Render the Table, its subcomponents, and all rows
 	render: function (silent,changes) {
+		var self = this;
+		
 		// Render main pattern
 		Mast.Component.prototype.render.call(this,true,changes);
 				

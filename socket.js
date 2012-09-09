@@ -2,7 +2,7 @@
 // for programatic communication with the Sails backend
 Mast.Socket =_.extend(
 {	
-	io: window.io,
+	io: window.io,	
 	baseurl: window.location.origin,
 	autoconnect: true,
 	initialize: function() {
@@ -98,16 +98,6 @@ Mast.Socket =_.extend(
 			options && options.success && options.success(parsedResult);
 		});
 	},
-				
-	// TODO: Investigate removing this and doing it all automatically
-	events: {
-		connect: "status"
-	},
-
-	// Report status of socket
-	status: function() {
-		debug.debug("Socket " + (this.connected ? "connected to "+this.baseurl+".":"not connected!!!"));
-	},
 
 	// Connect to socket
 	connect: function(baseurl) {
@@ -116,7 +106,8 @@ Mast.Socket =_.extend(
 			"Can't connect to socket because the Socket.io "+
 			"client library (io) cannot be found!"
 			);
-		};
+		}
+		
 		if (this.connected) {
 			throw new Error(
 				"Can't connect to "+baseurl+ " because you're "+
@@ -134,27 +125,51 @@ Mast.Socket =_.extend(
 		});
 		
 		// Route server-sent comet events
-		Mast.Socket._socket.on('message',function(data) {	
-			if (data && (data.model || data.collection) && data.method) {
-				if (data.model && data.collection) {
-					debug.warn('model or collection may be specified, but not both!  They are synonyms.',data);
-					throw new Error('Message from server is invalid.');
-				}
-				data.model = data.collection || data.model;
-				
-				// Clone attributes
-				var attributes = _.clone(data.attributes);
-				
-				// Access the model cache to update the appropriate models
-				Mast.routeToModel(data.model,data.method,attributes);
+		Mast.Socket._socket.on('message',function(cometMessage) {
+			if (cometMessage.uri) {
+				Mast.Socket.route(cometMessage.uri,_.clone(cometMessage.data));
 			}
 			else {
-				debug.warn('Unknown message received from server.',data);
+				debug.warn('Unknown message received from server.',cometMessage);
 				throw new Error('Unknown message received from server.');
 			}
 		});
 					
 		this.connected = true;
+	},
+	
+	// Map of entities and actions, by uri
+	router: {},
+	
+	// Comet route handler
+	route: function (serverUri,serverData) {
+		var extractParams = Backbone.Router.prototype._extractParameters,
+			calculateRegex = Backbone.Router.prototype._routeToRegExp;
+			
+//		debug.debug("routing "+serverUri+"...");
+		_.each(Mast.Socket.router,function(instances,routeUri) {
+			var regex=calculateRegex(routeUri),
+				params=extractParams(regex,routeUri);
+			if (serverUri.match(regex)) {
+				_.each(instances,function(instance,index) {
+					params.push(serverData);
+					instance.method.apply(instance.context,params);
+				});
+			}
+		});
+	},
+	
+	// Subscribe a client-side method to a server-sent event
+	subscribe: function (regex,method,context) {
+		if (!Mast.Socket.router[regex]) {
+			Mast.Socket.router[regex] = [];
+		}
+		
+		Mast.Socket.router[regex].push({
+			regex: regex,
+			method: method,
+			context: context
+		})
 	},
 	
 	/**
@@ -192,12 +207,4 @@ Mast.Socket =_.extend(
 			callback && callback(parsedResult);
 		})
 	}
-	
-//	joinRoom: function (room,callback) {
-//		this.send ('joinRoom',{room:room},callback);
-//	},
-//	
-//	leaveRoom: function (room,callback){
-//		this.send ('leaveRoom',{room:room},callback);
-//	}
 },Backbone.Events)
