@@ -39,8 +39,21 @@ Mast = _.extend(Backbone,
 				return str.length > 0 && str[0].toUpperCase()+str.substr(1);
 			}
 			_.each(Mast._registerQueue,function(v,i) {
-				var entitySet = Mast[v.type+'s'],
-				parent = v.definition.extendsFrom ? entitySet[v.definition.extendsFrom] : Mast[capitalize(v.type)],
+				var entitySet = Mast[v.type+'s'];
+				if (v.type == 'table' || v.type == 'tree') {
+					entitySet = Mast.components;
+				}
+				else if (v.type == 'collection') {
+					entitySet = Mast.models;
+				}
+				
+				if (v.definition.extendsFrom) {
+					parent = entitySet[v.definition.extendsFrom];
+				}
+				else {
+					parent = Mast[capitalize(v.type)];
+				}
+				
 				newEntity = parent.extend(v.definition);
 				
 				// Extend events hash as well

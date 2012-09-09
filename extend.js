@@ -16,6 +16,9 @@ var registerFn = function(entityType) {
 		});
 	}
 }
-Mast.registerComponent =	registerFn('component');
-Mast.registerModel =		registerFn('model');
-Mast.registerCollection =	registerFn('model');
+Mast.registerComponent	= registerFn('component');
+Mast.registerTable		= registerFn('table');
+Mast.registerTree		= registerFn('tree');
+
+Mast.registerModel		= registerFn('model');
+Mast.registerCollection = registerFn('collection');
