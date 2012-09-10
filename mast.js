@@ -21,44 +21,37 @@ Mast = _.extend(Backbone,
 	// Component dictionary that will be populated by user definitions
 	components: {},	
 	
+	// Detect mobile viewports (looks at the user agent string)
+	isMobile: navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry)/),
+	
+	// Register models, collections, components, and trees and manage dependencies/inheritance
+	registerEntities: function () {
+		_.each(Mast._registerQueue,function(v,i) {							
+			var entitySet =													// Determine entity set (i.e. Mast.components, Mast.models)
+			( v.type == 'tree' || v.type == 'component') ?
+			Mast.components : Mast.models;
+			v.definition = v.definition || {};								// Support undefined definition
+			var parent = (v.definition.extendsFrom) ?						// Determine parent
+			entitySet[v.definition.extendsFrom] : 
+			Mast[_.str.capitalize(v.type)];				
+			var newEntity = parent.extend(v.definition);					// Extend parent
+			newEntity.prototype.events =									// Extend events hash as well
+			_.extend({},parent.prototype.events,
+				newEntity.prototype.events);
+			entitySet[v.name] = newEntity;									// Register new instance in entity set
+		});
+	},
+	
 	// Mast.raise() instantiates the Mast library with the specified options
 	raise: function (options,afterLoadFn,beforeRouteFn) {
 		$(function(){
-			// Extend defaults
-			options = _.defaults(options || {},{
+			options = _.defaults(options || {},{								// Extend defaults
 				socket			: true,
 				afterLoadFn		: afterLoadFn,
 				beforeRouteFn	: beforeRouteFn
 			});
 			
-			// Register models, collections, components, and trees and manage dependencies/inheritance
-			_.each(Mast._registerQueue,function(v,i) {
-				var entitySet = Mast[v.type+'s'];
-				if ( v.type == 'tree' ) {
-					entitySet = Mast.components;
-				}
-				else if (v.type == 'collection') {
-					entitySet = Mast.models;
-				}
-				
-				if (v.definition.extendsFrom) {
-					parent = entitySet[v.definition.extendsFrom];
-				}
-				else {
-					parent = Mast[_.str.capitalize(v.type)];
-				}
-				
-				newEntity = parent.extend(v.definition);
-				
-				// Extend events hash as well
-				newEntity.prototype.events = _.extend({},parent.prototype.events,newEntity.prototype.events);
-				
-				entitySet[v.name] = newEntity;
-			
-			});
-			
-			
-			
+			Mast.registerEntities();											// Register Mast.entities and enable inheritance
 			
 			// Convert options.routes into a format Backbone's router will accept
 			// (can't have key:function(){} style routes, must use a string function name)
@@ -148,22 +141,21 @@ Mast = _.extend(Backbone,
 },
 Backbone.Events);
 
-// Accept:
+// Accepts:
 // - Mast object 
 // - string referencing object name
 Mast._provisionPrototype= function (identity, identitySet) {
 	
-	if (identity && _.isObject(identity) && _.isFunction(identity)) {
+	if (identity && _.isObject(identity) && _.isFunction(identity)) {			// A Mast entity definition
 		return identity;
 	}
 	else if (_.isString(identity)) {
-		// A string component name
-		if (! (identitySet[identity])) {
+		if (! (identitySet[identity])) {										// A string component name
 			throw new Error("No entity with that name ("+identity+") exists!");
 		}
 		identity = identitySet[identity];
 	}
-	else {
+	else {																		// Any other definition is invalid
 		throw new Error ("Invalid identity provided: " + identity);
 	}
 	return identity;
@@ -174,7 +166,7 @@ Mast.Model = Mast.Model.extend({
 		_.bindAll(this);
 		
 		Mast.modelCache[this.cid] = this;
-	// TODO: Make model cache smarter (instead of cids, use id+class name)
+		// TODO: Make model cache smarter (instead of cids, use id+class name)
 		// 
 		// Trigger init event
 		_.result(this,'init');
@@ -195,9 +187,3 @@ Mast.Collection = Mast.Collection.extend({
 		_.result(this,'init');
 	}
 });
-
-
-
-// Add isMobile detection to Mast to detect mobile viewports
-// Looks at the user agent string
-Mast.isMobile = navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry)/);
