@@ -11,12 +11,31 @@ var registerFn = function(entityType) {
 		Mast._registerQueue.push({
 			name:		entityName,
 			type:		entityType,
-			definition:	_.extend({_class:entityName},definition)
+			definition:	_.extend({
+				_class:entityName
+			},definition)
 		});
 	}
 }
+
 Mast.registerComponent	= registerFn('component');
 Mast.registerTree		= registerFn('tree');
 
 Mast.registerModel		= registerFn('model');
 Mast.registerCollection = registerFn('collection');
+
+// "Smart"-register
+Mast.register = function (entityName,definition) {
+//	var entityType = 
+//		(definition && 
+//			definition.template) || 
+//		'component';
+	var entityType = 'component';
+	Mast._registerQueue.push({
+		name:		entityName,
+		type:		entityType,
+		definition:	_.extend({
+			_class:entityName
+		},definition)
+	});
+}

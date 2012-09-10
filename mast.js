@@ -26,20 +26,36 @@ Mast = _.extend(Backbone,
 	
 	// Register models, collections, components, and trees and manage dependencies/inheritance
 	registerEntities: function () {
-		_.each(Mast._registerQueue,function(v,i) {							
-			var entitySet =														// Determine entity set (i.e. Mast.components, Mast.models)
-				( v.type == 'tree' || v.type == 'component') ?
-				Mast.components : Mast.models;
+
+		var infinityCounter = 0;
+		while(Mast._registerQueue.length > 0) {
+			_.each(Mast._registerQueue,function(v,i) {
 				v.definition = v.definition || {};								// Support undefined definition
-			var parent = (v.definition.extendsFrom) ?							// Determine parent
-				entitySet[v.definition.extendsFrom] : 
-				Mast[_.str.capitalize(v.type)];				
-			var newEntity = parent.extend(v.definition);						// Extend parent
-			newEntity.prototype.events =										// Extend events hash as well
-				_.extend({},parent.prototype.events,
-				newEntity.prototype.events);
-			entitySet[v.name] = newEntity;										// Register new instance in entity set
-		});
+				var entitySet =													// Determine entity set (i.e. Mast.components, Mast.models)
+					( v.type == 'tree' || v.type == 'component') ?
+					Mast.components : Mast.models;
+				var parent = (v.definition.extendsFrom) ?						// Determine parent
+					entitySet[v.definition.extendsFrom] : 
+					Mast[_.str.capitalize(v.type)];
+				if (parent) {
+					var newEntity = parent.extend(v.definition);				// Extend parent
+					newEntity.prototype.events =								// Extend events hash as well
+					_.extend({},parent.prototype.events,
+						newEntity.prototype.events);
+					entitySet[v.name] = newEntity;								// Register new instance in entity set
+					Mast._registerQueue.splice(i,1);
+				}
+				else {
+					infinityCounter++;
+					if (infinityCounter > 1000) {
+						debug.warn('Parent does not seem to be registered',
+							v.definition.extendsFrom,"in:",entitySet
+						);
+						throw new Error("Could find parent, "+v.definition.extendsFrom+"!");	
+					}
+				}
+			});
+		}
 	},
 	
 	// Mast.raise() instantiates the Mast library with the specified options
