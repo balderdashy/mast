@@ -1,7 +1,6 @@
 // Extend Backbone structures
 Mast.Pattern = Mast.View.extend(Mast.Pattern);
 Mast.Component = Mast.Pattern.extend(Mast.Component);
-Mast.Table = Mast.Component.extend(Mast.Table);
 Mast.Tree = Mast.Component.extend(Mast.Tree);
 
 
@@ -17,7 +16,6 @@ var registerFn = function(entityType) {
 	}
 }
 Mast.registerComponent	= registerFn('component');
-Mast.registerTable		= registerFn('table');
 Mast.registerTree		= registerFn('tree');
 
 Mast.registerModel		= registerFn('model');

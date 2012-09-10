@@ -9,9 +9,6 @@ jQuery.fn.outerHTML = function(s) {
 Mast = _.extend(Backbone,
 {
 	
-	// CSS class for Mast rows in a Table
-	rowCSSClass: 'mast-row',
-	
 	// Route map that will be populated by user definitions
 	routes: {},
 	
@@ -37,7 +34,7 @@ Mast = _.extend(Backbone,
 			// Register models, collections, components, and trees and manage dependencies/inheritance
 			_.each(Mast._registerQueue,function(v,i) {
 				var entitySet = Mast[v.type+'s'];
-				if (v.type == 'table' || v.type == 'tree') {
+				if ( v.type == 'tree' ) {
 					entitySet = Mast.components;
 				}
 				else if (v.type == 'collection') {

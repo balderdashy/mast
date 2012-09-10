@@ -23,8 +23,8 @@ There are a few different kinds of built in components:
 Component
 - may contain multiple named subomponents
 
-Table
+Tree
 - extends component
-- contains a list of subcomponent rows which correspond with a collection of Mast.Models
+- contains a list of subcomponent branches which correspond with a collection of Mast.Models
 
 

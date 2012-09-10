@@ -1,4 +1,9 @@
-
+// A Tree is a special Component that may handle events for a
+// homogenous collection of child components.
+// 
+// It also provides an API for performing CRUD operations on that
+// collection, both on the clientside and over the Socket using
+// Backbone REST-style semantics.
 Mast.Tree = {
 			
 	initialize: function (attributes,options,dontRender){
@@ -132,7 +137,7 @@ Mast.Tree = {
 		return this.$branchOutlet.children();
 	},
 			
-	// Generate empty table html
+	// Generate empty tree html
 	_generateEmptyHTML: function () {
 		if (this.emptytemplate) {
 			var pattern = new Mast.Pattern({
