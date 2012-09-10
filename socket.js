@@ -105,7 +105,7 @@ Mast.Socket =_.extend(
 	},
 	
 	find: function(model,options){
-		url = model.url().replace(/\/*$/,'');									// Remove trailing slash and add /update to url
+		url = model.url().replace(/\/*$/,'');									// Remove trailing slash and add /find to url
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/find');
 		this.get(url, {id:id}, function (parsedResult) {						// Add id to params
