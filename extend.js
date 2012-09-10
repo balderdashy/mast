@@ -24,13 +24,18 @@ Mast.registerTree		= registerFn('tree');
 Mast.registerModel		= registerFn('model');
 Mast.registerCollection = registerFn('collection');
 
-// "Smart"-register
+// "Smart"-register (take a guess at what sort of entity this is)
 Mast.register = function (entityName,definition) {
-//	var entityType = 
-//		(definition && 
-//			definition.template) || 
-//		'component';
-	var entityType = 'component';
+	var entityType;
+	if (!definition.template) {
+		entityType = definition.model ? 'collection' : 'model';
+	}
+	else {
+		entityType = 
+			(definition.collection || 
+			definition.branchOutlet || 
+			definition.branchComponent) ? 'tree' : 'component';
+	}
 	Mast._registerQueue.push({
 		name:		entityName,
 		type:		entityType,
