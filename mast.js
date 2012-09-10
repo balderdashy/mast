@@ -34,10 +34,7 @@ Mast = _.extend(Backbone,
 				beforeRouteFn	: beforeRouteFn
 			});
 			
-			// Manage dependencies/inheritance
-			var capitalize = function (str){
-				return str.length > 0 && str[0].toUpperCase()+str.substr(1);
-			}
+			// Register models, collections, components, and trees and manage dependencies/inheritance
 			_.each(Mast._registerQueue,function(v,i) {
 				var entitySet = Mast[v.type+'s'];
 				if (v.type == 'table' || v.type == 'tree') {
@@ -51,7 +48,7 @@ Mast = _.extend(Backbone,
 					parent = entitySet[v.definition.extendsFrom];
 				}
 				else {
-					parent = Mast[capitalize(v.type)];
+					parent = Mast[_.str.capitalize(v.type)];
 				}
 				
 				newEntity = parent.extend(v.definition);

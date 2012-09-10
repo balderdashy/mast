@@ -4,7 +4,8 @@ Mast.Tree = {
 	initialize: function (attributes,options,dontRender){
 				
 		// Determine whether specified branch component is a className, class, or instance
-		this.branchComponent = this.branchComponent && this._provisionPrototype(this.branchComponent,Mast.components,Mast.Component);
+		this.branchComponent = (this.branchComponent && 
+			this._provisionPrototype(this.branchComponent,Mast.components,Mast.Component));
 		
 		// Determine whether specified collection is a className, class, or instance
 		this.collection = this._provisionInstance(this.collection,Mast.models,Mast.Collection);
@@ -73,7 +74,7 @@ Mast.Tree = {
 			// the branchOutlet element inside of this.$el
 			this.$branchOutlet = this._verifyOutlet(this.branchOutlet,this.$el);
 		}
-				
+
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
 			return (self.bindings[attrName]);
 		});
@@ -88,7 +89,6 @@ Mast.Tree = {
 				this.$branchOutlet.append(this._generateEmptyHTML());
 			}
 			else {
-				var self = this;
 				this.$branchOutlet.empty();
 				this.collection && this.collection.each(function(model,index){
 					self.appendBranch(model);
@@ -102,10 +102,10 @@ Mast.Tree = {
 	appendBranch: function (model) {
 		
 		// If this is the first branch, empty the emptyHTML element
+		if (!this.branchComponent) { throw new Error ('No branchComponent specified!'); }
 		if (this.collection && this.collection.length == 1) {
 			this.$branchOutlet.empty();
 		}
-		
 		(new this.branchComponent({
 			parent: this,
 			autorender: false,

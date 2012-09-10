@@ -98,27 +98,27 @@ Mast.Pattern = {
 	
 	// Whether specified identity is a className, class, dictionary, or instance,
 	// return an instance
+	// Create an instance if necessary
 	_provisionInstance: function (identity, identitySet, identityPrototype) {
 		
-		// Create an instance if necessary
+		// Function (Mast definition)
 		if (identity && _.isObject(identity) && _.isFunction(identity)) {
-			// Function (class definition)
-			return new identity({
-				// While not necessary for everything, setting autorender to false
-				// doesn't hurt, and takes care of anything that DOES render
-				autorender: false
-			});
+			var def;
+			if (identityPrototype == Mast.Component || identityPrototype == Mast.Tree) {
+				def = { autorender: false	}
+			}
+			return new identity(def);
 		}
+		// A string component name			
 		else if (_.isString(identity)) {
-			// A string component name			
 			if (!identitySet[identity]) {
 				throw new Error("No identity with that name ("+identity+") exists!");
 			}
 			return new identitySet[identity];
 		}
 		else if (_.isObject(identity)) {
-			// an attribute list
-			if (!identity.cid) {
+			// an attribute list or list of attribute lists
+			if (!identity.cid && !identity._byCid) {
 				try {
 					return new identityPrototype(identity);
 				}
@@ -126,9 +126,13 @@ Mast.Pattern = {
 					debug.error("Invalid identity definition: "+identity);
 				}
 			}
+			// an existing Mast instance
+			else {
+				return identity;
+			}
 		}
 		
 		// Else already a Mast component instance, in which case we're good.
-		return identity;
+		return identityPrototype;
 	}
 }
