@@ -27,18 +27,18 @@ Mast = _.extend(Backbone,
 	// Register models, collections, components, and trees and manage dependencies/inheritance
 	registerEntities: function () {
 		_.each(Mast._registerQueue,function(v,i) {							
-			var entitySet =													// Determine entity set (i.e. Mast.components, Mast.models)
-			( v.type == 'tree' || v.type == 'component') ?
-			Mast.components : Mast.models;
-			v.definition = v.definition || {};								// Support undefined definition
-			var parent = (v.definition.extendsFrom) ?						// Determine parent
-			entitySet[v.definition.extendsFrom] : 
-			Mast[_.str.capitalize(v.type)];				
-			var newEntity = parent.extend(v.definition);					// Extend parent
-			newEntity.prototype.events =									// Extend events hash as well
-			_.extend({},parent.prototype.events,
+			var entitySet =														// Determine entity set (i.e. Mast.components, Mast.models)
+				( v.type == 'tree' || v.type == 'component') ?
+				Mast.components : Mast.models;
+				v.definition = v.definition || {};								// Support undefined definition
+			var parent = (v.definition.extendsFrom) ?							// Determine parent
+				entitySet[v.definition.extendsFrom] : 
+				Mast[_.str.capitalize(v.type)];				
+			var newEntity = parent.extend(v.definition);						// Extend parent
+			newEntity.prototype.events =										// Extend events hash as well
+				_.extend({},parent.prototype.events,
 				newEntity.prototype.events);
-			entitySet[v.name] = newEntity;									// Register new instance in entity set
+			entitySet[v.name] = newEntity;										// Register new instance in entity set
 		});
 	},
 	
