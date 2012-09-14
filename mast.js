@@ -60,8 +60,6 @@ Mast = _.extend(Backbone,
 	
 	// Mast.raise() instantiates the Mast library with the specified options
 	raise: function (options,afterLoadFn,beforeRouteFn) {
-		// Legacy support
-		Mast.Table = Mast.Tree;
 		
 		$(function(){
 			options = _.defaults(options || {},{								// Extend defaults
