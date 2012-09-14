@@ -1,4 +1,4 @@
-//// A Table is a special Component that may handle events for a
+////// A Table is a special Component that may handle events for a
 //// homogenous collection of child components.
 //// 
 //// It also provides an API for performing CRUD operations on that
