@@ -2,6 +2,7 @@
 Mast.Pattern = Mast.View.extend(Mast.Pattern);
 Mast.Component = Mast.Pattern.extend(Mast.Component);
 Mast.Tree = Mast.Component.extend(Mast.Tree);
+Mast.Table = Mast.Component.extend(Mast.Table);
 
 
 // Define registration methods (required to extend other components/models in the app)
