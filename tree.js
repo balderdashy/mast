@@ -10,7 +10,7 @@ Mast.Tree = {
 				
 		// Determine whether specified branch component is a className, class, or instance
 		this.branchComponent = (this.branchComponent && 
-			this._provisionPrototype(this.branchComponent,Mast.components,Mast.Component));
+			Mast.mixins.provisionPrototype(this.branchComponent,Mast.components,Mast.Component));
 		
 		// Determine whether specified collection is a className, class, or instance
 		this.collection = this._provisionInstance(this.collection,Mast.models,Mast.Collection);

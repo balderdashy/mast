@@ -226,8 +226,8 @@ Mast.Component =
 		}
 		
 		// Provision prototype for subcomponent
-		Subcomponent = this._provisionPrototype(Subcomponent,Mast.components,Mast.Component)
-				
+		Subcomponent = Mast.mixins.provisionPrototype(Subcomponent,Mast.components,Mast.Component)
+		
 		// Build property list with specified pieces
 		var plist = {
 			parent: this,
@@ -372,24 +372,6 @@ Mast.Component =
 
 			
 		return $outlet;
-	},
-	
-	// Accept direct reference to prototype or a string and return a prototype
-	_provisionPrototype: function (identity, identitySet, identityPrototype) {
-		
-		if (identity && _.isObject(identity) && _.isFunction(identity)) {
-			return identity;
-		}
-		else if (_.isString(identity)) {
-			// A string component name
-			if (!(identity = (identitySet[identity]))) {
-				throw new Error("No identity with that name ("+identity+") exists!");
-			}
-		}
-		else {
-			throw new Error ("Invalid identity provided: " + identity);
-		}
-		return identity;
 	},
 			
 	// Used for debugging

@@ -14,7 +14,7 @@ Mast.Pattern = {
 		this.absorbTemplate(this.template);
 			
 		// Determine whether specified model is a className, class, or instance
-		this.model = this._provisionInstance(this.model,Mast.models,Mast.Model);
+		this.model = Mast.mixins.provisionInstance(this.model,Mast.models,Mast.Model);
 		
 		// Listen for changes in model and bubble them up
 		this.model && this.model.on('change',function(model,parameters){
@@ -94,45 +94,5 @@ Mast.Pattern = {
 	_normalizeData: function (data) {
 		var modelData = this.model && this.model.toJSON && this.model.toJSON();
 		return data ? _.extend(_.clone(modelData), data) : modelData || {};
-	},
-	
-	// Whether specified identity is a className, class, dictionary, or instance,
-	// return an instance
-	// Create an instance if necessary
-	_provisionInstance: function (identity, identitySet, identityPrototype) {
-		
-		// Function (Mast definition)
-		if (identity && _.isObject(identity) && _.isFunction(identity)) {
-			var def;
-			if (identityPrototype == Mast.Component || identityPrototype == Mast.Tree) {
-				def = { autorender: false	}
-			}
-			return new identity(def);
-		}
-		// A string component name			
-		else if (_.isString(identity)) {
-			if (!identitySet[identity]) {
-				throw new Error("No identity with that name ("+identity+") exists!");
-			}
-			return new identitySet[identity];
-		}
-		else if (_.isObject(identity)) {
-			// an attribute list or list of attribute lists
-			if (!identity.cid && !identity._byCid) {
-				try {
-					return new identityPrototype(identity);
-				}
-				catch (e) {
-					debug.error("Invalid identity definition: "+identity);
-				}
-			}
-			// an existing Mast instance
-			else {
-				return identity;
-			}
-		}
-		
-		// Else already a Mast component instance, in which case we're good.
-		return identityPrototype;
 	}
 }
