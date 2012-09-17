@@ -13,7 +13,7 @@ Mast.Tree = {
 			Mast.mixins.provisionPrototype(this.branchComponent,Mast.components,Mast.Component));
 		
 		// Determine whether specified collection is a className, class, or instance
-		this.collection = this._provisionInstance(this.collection,Mast.models,Mast.Collection);
+		this.collection = Mast.mixins.provisionInstance(this.collection,Mast.models,Mast.Collection);
 				
 		// Initialize main component
 		Mast.Component.prototype.initialize.call(this,attributes,options,true);
