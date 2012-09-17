@@ -120,13 +120,13 @@ Mast = _.extend(Backbone,
 			
 			var self = this;
 			_.defer(function(){
-				Mast.app = new AppRouter();
+				Mast.appRouter = new AppRouter();
 				
 				
 				// Mast makes the assumption that you want to trigger
 				// the route handler.  This can be overridden
 				Mast.navigate = function(query,options) {
-					return Mast.app.navigate(query,_.extend({
+					return Mast.appRouter.navigate(query,_.extend({
 						trigger:true
 					},options));
 				}
