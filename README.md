@@ -46,58 +46,41 @@ We build badass web apps as a service, and after much frustration, we built Sail
 At its core, Mast is made up of Components, Models, and Collections.  Components are very closely related to Backbone Views, and Models and Collections are exactly like their Backbone equivalents.
 
 
-## Your First Realtime App in < 50 Lines of Code
+## A Realtime App in **< 30** Lines of Code
 
 ```
-Mast.registerComponent('App',{
-  regions: {
-    navbar : 'Navbar', 
-    content : {
-      components: ['LeaderBoard','Login']
-    }, 
-    footer : 'Footer'
+// This Tree brings life to the leaderboard and its items
+Mast.registerTree('LeaderBoard',{
+  template        : '.template-leaderboard',
+  collection      : { model: 'Leader' }     // Associate a collection with the leaderboard
+  branchComponent : 'LeaderBoardItem',      // An instance of branchComponent will be created for each item in the collection
+  branchOutlet    : '.item-outlet',         // A CSS selector, automatically scoped within the component, to identify where new branches should be appended
+  events: {
+    'click a.add-points' : function () {             // Add 5 points to the selected Leader
+        var currentlySelectedItem = this.get('selected');
+        currentlySelectedItem && currentlySelectedItem.set({ 
+          points: currentlySelectedItem.get('points')+5 
+        }); 
+      }
   }
 });
-Mast.registerComponent('Navbar',{           // Register a component for the navbar
-  template: '.template-navbar'              // The template property specifies which HTML template to render
-});
-Mast.registerModel('Leader',{               // Register a model to represent a Leader in the UI
-  defaults: { selected: false }             // Include defaults for any non-persistent attributes
-});            
-Mast.registerCollection('Leaders',{         // Register a collection to represent a list of Leader models
-  model: 'Leader'
-});
+
+// This component represents a single row of the leaderboard
 Mast.registerComponent('LeaderBoardItem',{
   template  : '.template-leaderboard-item',
-  events    : {                             // Listen for DOM events on this element and its decendants
-    click : 'toggleSelect',               
-    'click a.add-points' : 'addFivePoints'
-  },
-  toggleSelect : function () {              // Toggle whether this Leader is selected
-    this.set({ selected: !this.get('selected') }); 
-  },
-  addFivePoints : function () {             // Add 5 points to this Leader
-    this.set({ points: this.get('points')+5 }); 
+  events    : {
+    click : function () {                 // When te 
+      this.parent.set({ selected: this });
+    }
   }
 });
-Mast.registerTree('LeaderBoard',{           // Register a tree to display the leaderboard templates
-  template        : '.template-leaderboard',
-  collection      : 'Leaders'               // Associate a collection with the leaderboard
-  branchComponent : 'LeaderBoardItem',      // An instance of branchComponent will be created for each item in the collection
-  branchOutlet    : '.item-outlet'          // A CSS selector, automatically scoped within the component, to identify where new branches should be appended
-});
-Mast.registerComponent('Login',{            // Register a component to display the login template
-  template: '.template-login'
-})
-Mast.registerComponent('Footer',{           // Register a component to display the footer template
-  template: '.template-footer'
-})
+
 Mast.raise(function () {                    // Raise the mast
-  new Mast.components.App();                // Create an instance of the App component to manage the rest
+  new Mast.components.LeaderBoard();        // Create an instance of the LeaderBoard
 });
 ```
 
-Here's an example server-side, assuming you're using the Sails server: 
+And here's an example of the server-side, assuming you're using Sails: 
 
 */models/Leader.js*
 ```
