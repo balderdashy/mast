@@ -1,17 +1,3 @@
-// jQuery plugin to find the closet descendant
-
-$.fn.closest_descendant = function(filter) {
-	var $found = $(),
-	$currentSet = this; // Current place
-	while ($currentSet.length) {
-		$found = $currentSet.filter(filter);
-		if ($found.length) break;  // At least one match: break loop
-		// Get all children of the current set
-		$currentSet = $currentSet.children();
-	}
-	return $found.first(); // Return first match of the collection
-}    
-		
 // Components are the smallest unit of event handling and logic
 // Components may contain sub-components, but (as of may 12th 2012),
 // they are responsible for calling render on those elements
