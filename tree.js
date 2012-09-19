@@ -104,7 +104,7 @@ Mast.Tree = {
 			
 	
 	
-	appendBranch: function (model) {
+	appendBranch: function (model,options) {
 		
 		// If this is the first branch, empty the emptyHTML element
 		if (!this.branchComponent) { throw new Error ('No branchComponent specified!'); }
