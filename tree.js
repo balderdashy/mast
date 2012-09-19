@@ -29,7 +29,7 @@ Mast.Tree = {
 			this.collection.on('remove',function(model,collection,status) {
 				self.removeBranch(model,status.index);
 			});
-			this.collection.on('add',function(model,options) {
+			this.collection.on('add',function(model,collection,options) {
 				self.appendBranch(model,options);
 			});
 			this.collection.on('reset',function() {
