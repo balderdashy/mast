@@ -111,12 +111,22 @@ Mast.Tree = {
 		if (this.collection && this.collection.length == 1) {
 			this.$branchOutlet.empty();
 		}
-		(new this.branchComponent({
+		r = new this.branchComponent({
 			parent: this,
 			autorender: false,
 			model: model,
 			outlet: this.branchOutlet
-		})).append();
+		});
+		
+		if (options && !_.isUndefined(options.at)) {
+			var $outlet = r._verifyOutlet(null,
+				r.parent && r.parent.$el);
+			r.render();
+			$outlet.children().eq(options.at) && $outlet.children().eq(options.at).before(r.$el);
+		}
+		else {
+			r.append();
+		}
 	},
 	
 	removeBranch: function (model,index) {
