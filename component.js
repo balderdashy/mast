@@ -155,11 +155,12 @@ Mast.Component =
 	render: function (silent,changes) {
 		this.renderPattern(silent,changes);
 		this.renderSubcomponents();
-		_.defer(function(self) {
-			if (!silent) {
-				self.trigger('afterRender');
-			}
-		},this);
+		// Make sure afterRender is fired after anything else on the call stack
+		if (!silent) {
+			_.defer(function(self) {
+					self.trigger('afterRender');
+			},this);
+		}
 	},
 		
 	// Render the pattern in-place
