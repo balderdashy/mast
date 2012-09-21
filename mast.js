@@ -15,7 +15,7 @@ Mast = _.extend(Backbone,
 	components: {},	
 	
 	// Detect mobile viewports (looks at the user agent string)
-	isMobile: navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry)/),
+	isMobile: navigator.userAgent.match(/(iPhone|iPod|Android|BlackBerry)/ig),
 	
 	// Register models, collections, components, and trees and manage dependencies/inheritance
 	registerEntities: function () {
