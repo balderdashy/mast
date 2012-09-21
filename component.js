@@ -136,8 +136,11 @@ Mast.Component =
 		var $outlet = this._verifyOutlet(outlet,
 			this.parent && this.parent.$el);
 			
-		this.render();
+		// Render without firing the afterRender event
+		this.render(true);
 		$outlet.append && $outlet.append(this.$el);
+		// Then trigger afterRender after appending the element to the DOM
+		this.trigger('afterRender');
 			
 		return this;
 	},
@@ -155,11 +158,8 @@ Mast.Component =
 	render: function (silent,changes) {
 		this.renderPattern(silent,changes);
 		this.renderSubcomponents();
-		// Make sure afterRender is fired after anything else on the call stack
 		if (!silent) {
-			_.defer(function(self) {
-					self.trigger('afterRender');
-			},this);
+			this.trigger('afterRender');
 		}
 	},
 		

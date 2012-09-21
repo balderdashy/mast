@@ -6,7 +6,7 @@
 // Backbone REST-style semantics.
 Mast.Tree = {
 			
-	initialize: function (attributes,options,dontRender){
+	initialize: function (attributes,options){
 				
 		// Determine whether specified branch component is a className, class, or instance
 		this.branchComponent = (this.branchComponent && 
@@ -36,9 +36,9 @@ Mast.Tree = {
 			
 	// Render the branches and underlying component+subcomponents
 	render: function (silent,changes) {
-		this.renderComponent(silent,changes);
-		this.renderBranches(changes);
-		// Fire the afterRender event if silent is set
+		this.renderComponent(true,changes);
+		this.renderBranches(true,changes);
+		// Fire the afterRender event if silent is not set
 		if (!silent) {
 			this.trigger('afterRender');
 		}
@@ -46,29 +46,22 @@ Mast.Tree = {
 	
 	// Render the underlying component and subcomponents
 	renderComponent: function (silent,changes) {
-		Mast.Component.prototype.render.call(this,true,changes);
+		Mast.Component.prototype.render.call(this,silent,changes);
+		if (!silent) {
+			this.trigger('afterRender');
+		}
 	},
 	
 	// Render the Tree's branches
-	renderBranches: function (changes) {
-
-		var self = this;
+	renderBranches: function (silent,changes) {
 		
-		// Determine and verify branch outlet
-		if (!this.branchOutlet) {
-			// If no branchOutlet is explicitly specified,
-			// just append the branch elements to this.$el
-			this.$branchOutlet = this.$el;
-		}
-		else {
-			// Otherwise use the branchOutlet selector to find
-			// the branchOutlet element inside of this.$el
-			this.$branchOutlet = this._verifyOutlet(this.branchOutlet,this.$el);
-		}
+		// If no branchOutlet is explicitly specified, just append the branch elements to this.$el
+		// Otherwise use the branchOutlet selector to find the branchOutlet element inside of this.$el
+		this.$branchOutlet = (this.branchOutlet) ? this._verifyOutlet(this.branchOutlet,this.$el) : this.$el;
 
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
-			return (self.bindings[attrName]);
-		});
+			return (this.bindings[attrName]);
+		},this);
 				
 		
 		// If not all of the changed attributes were accounted for, 
@@ -81,10 +74,14 @@ Mast.Tree = {
 			}
 			else {
 				this.$branchOutlet.empty();
+				var self = this;
 				this.collection && this.collection.each(function(model,index){
 					self.appendBranch(model);
 				});
 			}
+		}
+		if (!silent) {
+			this.trigger('afterRender');
 		}
 	},
 			
