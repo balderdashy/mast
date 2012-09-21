@@ -20,7 +20,7 @@ Mast.Pattern = {
 		this.model && this.model.on('change',function(model,parameters){
 			self.trigger('change',!parameters.render,parameters.changes);
 		});
-			
+		
 		// Initialize init method if specified
 		_.result(this,'init');
 	},

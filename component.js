@@ -3,6 +3,9 @@
 // they are responsible for calling render on those elements
 Mast.Component = 
 {
+	// Automatic rendering is enabled by default
+	autoRender: true,
+
 	// Custom event bindings for specific model attributes
 	bindings: {},
 
@@ -23,27 +26,24 @@ Mast.Component =
 	initialize: function(attributes,modelAttributes,dontRender){
 		// Bind context
 		_.bindAll(this);
-			
-		_.extend(this,attributes);
+		
+		// Bring in attributes
+		_.extend(this,attributes);		
+		
+		// Backwards compatibility for autorender / autoRender
+		this.autoRender = (this.autorender!==undefined) ? this.autorender : this.autoRender;
 		
 		// Parse special notation in events hash
 		_.each(this.events,function(handler,name) {
 			var splitName = name.split(/\s+/g);
 			if (splitName.length > 1 && splitName[1].substr(0,1) == '>') {
-				
-				// This is a closest_descendant event
-				// so generate new name of event
-				var newName = name.replace(/(\S+\s+)>/g, "$1");
+				// This is a closest_descendant event so generate new name of event
+				var newName = name.replace(/(\S+\s+)>/g, "$1");					// i.e. "click >.button"
 				delete this.events[name];
 				var newHandler = function (e) {
 					// Stop event from propagating up to parent components
 					e.stopImmediatePropagation();
-					if (_.isString(handler)) {
-						this[handler](e);
-					}
-					else {
-						_.bind(handler,this)(e);
-					}
+					_.isString(handler) ? this[handler](e) : _.bind(handler,this)(e);
 					return false;
 				}
 				_.bind(newHandler,this);
@@ -58,10 +58,15 @@ Mast.Component =
 				throw new Error ("No pattern or template selector specified for component!");
 			}
 			else {
+				// Create pattern from model and template
 				this.pattern = new Mast.Pattern({
 					template: this.template,
 					model: this.model ? this.model : new Mast.Model
 				});
+				
+				// Provide direct access to model from component
+				this._modelIdentifier = this.model;
+				this.model = this.pattern.model;
 			}
 		}
 		else {
@@ -72,19 +77,18 @@ Mast.Component =
 			}
 		}
 				
-		// If this belongs to another component, disable autorender
+		// If this belongs to another component, disable autoRender
 		if (this.parent) {
-			this.autorender = false;
+			this.autoRender = false;
 		}
 				
 		// Maintain dictionary of subcomponents
 		this.children = {};
 			
 		// Extend model with properties specified
-		var me = this;
 		_.each(modelAttributes,function(val,key){
-			me.pattern.set(key,val);
-		});
+			this.pattern.set(key,val);
+		},this);
 			
 		// Watch for changes to pattern
 		this.pattern.on('change',this.render);
@@ -102,20 +106,13 @@ Mast.Component =
 		this.on('beforeRender',this.beforeRender);
 				
 		// Autorender is on by default
-		// Default render type is "append", but you can also specify "replaceOutlet""
-		if (!dontRender && this.autorender!==false) {
-			if (this.replaceOutlet) {
-				this.replace()
-			}
-			else {
-				this.append();
-			}
+		if (!dontRender && this.autoRender!==false) {
+			this.append();
 		}
 				
 		// Listen for when the socket is live
 		// (unless it's already live)
 		if (Mast.Socket) {
-			
 			if (!Mast.Socket.connected) {
 				Mast.Socket.off('connect', this.afterConnect);
 				Mast.Socket.on('connect', this.afterConnect);
@@ -154,15 +151,24 @@ Mast.Component =
 		return this;
 	},
 		
-	// Render the pattern in-place
+	// Render the pattern and subcomponents
 	render: function (silent,changes) {
-		var self = this;
-		this.trigger('beforeRender');
+		this.renderPattern(silent,changes);
+		this.renderSubcomponents();
+		_.defer(function(self) {
+			if (!silent) {
+				self.trigger('afterRender');
+			}
+		},this);
+	},
 		
+	// Render the pattern in-place
+	renderPattern: function (silent,changes) {
+		this.trigger('beforeRender');		
 		
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
-			return (self.bindings[attrName]);
-		});
+			return (this.bindings[attrName]);
+		},this);
 		
 		// If not all of the changed attributes were accounted for, 
 		// go ahead and trigger a complete rerender
@@ -170,39 +176,31 @@ Mast.Component =
 			var $element = this.generate();
 			this.$el.replaceWith($element);
 			this.setElement($element);
-
-			this.renderSubcomponents();
 		}
 		
 		// Check bindings hash for custom render event
 		// Perform custom render for this attr if it exists
-		//		changes && _.each(changes,function(v,attrName) {
-		//			self.bindings[attrName] && (_.bind(self.bindings[attrName],self))(self.get(attrName));
-		//		});
-		_.each(self.bindings,function(v,attrName) {
-			(_.bind(self.bindings[attrName],self))(self.get(attrName));
-		});
-			
-		_.defer(function() {
-			if (!silent) {
-				self.trigger('afterRender');
-			}
-		});
-
+		_.each(this.bindings,function(handler,attrName) {
+			var newHandler = _.isString(handler) ? this[handler] : handler;
+			if (!_.isFunction(newHandler)) throw new Error ("Bindings contain invalid or non-existent function.");
+			newHandler = _.bind(newHandler,this);
+			newHandler(this.get(attrName));
+		},this);
 		
 		return this;
 	},
 	
 	renderSubcomponents: function () {
+		// TODO
 		// If any subcomponents exist, 
-		_.each(this.children,function(subcomponent,key) {
-			
-			// append them to the appropriate outlet
-			_.defer(function() {
-				subcomponent.append();
-			})
-			
-		},this);
+//		_.each(this.children,function(subcomponent,key) {
+//			
+//			// append them to the appropriate outlet
+//			_.defer(function() {
+//				subcomponent.append();
+//			})
+//			
+//		},this);
 	},
 			
 	// Use pattern to generate a DOM element

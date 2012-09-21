@@ -13,16 +13,12 @@ Mast.Tree = {
 			Mast.mixins.provisionPrototype(this.branchComponent,Mast.components,Mast.Component));
 		
 		// Determine whether specified collection is a className, class, or instance
+		// and replace with a valid instance if necessary
 		this.collection = Mast.mixins.provisionInstance(this.collection,Mast.models,Mast.Collection);
 				
 		// Initialize main component
-		Mast.Component.prototype.initialize.call(this,attributes,options,true);
-				
-		_.bindAll(this);
-				
-		_.extend(this,attributes);
-				
-				
+		Mast.Component.prototype.initialize.call(this,attributes,options);
+		
 		// Watch for collection changes
 		var self = this;
 		if (this.collection) {
@@ -36,34 +32,24 @@ Mast.Tree = {
 				self.renderBranches();
 			});
 		}
-			
-		// Autorender is on by default
-		// Default render type is "append", but you can also specify "replaceOutlet""
-		if (!dontRender && this.autorender!==false) {
-			if (this.replaceOutlet) {
-				this.replace()
-			}
-			else {
-				this.append();
-			}
-		}
-				
 	},
 			
-	// Render the Tree, its subcomponents, and all branch
+	// Render the branches and underlying component+subcomponents
 	render: function (silent,changes) {
-		var self = this;
-		
-		// Render main pattern
-		Mast.Component.prototype.render.call(this,true,changes);
-		
+		this.renderComponent(silent,changes);
 		this.renderBranches(changes);
-				
+		// Fire the afterRender event if silent is set
 		if (!silent) {
 			this.trigger('afterRender');
 		}
 	},
 	
+	// Render the underlying component and subcomponents
+	renderComponent: function (silent,changes) {
+		Mast.Component.prototype.render.call(this,true,changes);
+	},
+	
+	// Render the Tree's branches
 	renderBranches: function (changes) {
 
 		var self = this;
@@ -103,7 +89,7 @@ Mast.Tree = {
 	},
 			
 	
-	
+	// Add a new branch
 	appendBranch: function (model,options) {
 		
 		// If this is the first branch, empty the emptyHTML element
@@ -113,7 +99,7 @@ Mast.Tree = {
 		}
 		r = new this.branchComponent({
 			parent: this,
-			autorender: false,
+			autoRender: false,
 			model: model,
 			outlet: this.branchOutlet
 		});
@@ -129,14 +115,14 @@ Mast.Tree = {
 		}
 	},
 	
+	// Remove a branch
 	removeBranch: function (model,index) {
 		this.getBranchEl(index).remove();
 		if (this.collection && this.collection.length == 0 ) {
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 	},
-
-
+	
 	// Lookup the element for the id'th branch
 	getBranchEl: function (id) {
 		return this.getBranchesEl().eq(id);
