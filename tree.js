@@ -22,13 +22,13 @@ Mast.Tree = {
 		// Watch for collection changes
 		var self = this;
 		if (this.collection) {
-			this.collection.on('remove',function(model,collection,status) {
-				self.removeBranch(model,status.index);
+			this.collection.on('remove',function(model,collection,options) {
+				self.removeBranch(model,options);
 			});
 			this.collection.on('add',function(model,collection,options) {
 				self.appendBranch(model,options);
 			});
-			this.collection.on('reset',function() {
+			this.collection.on('reset',function(collection,options) {
 				self.renderBranches();
 			});
 		}
@@ -46,26 +46,25 @@ Mast.Tree = {
 	
 	// Render the underlying component and subcomponents
 	renderComponent: function (silent,changes) {
+		!silent && this.trigger('beforeRender');
 		Mast.Component.prototype.render.call(this,silent,changes);
-		if (!silent) {
-			this.trigger('afterRender');
-		}
+		!silent && this.trigger('afterRender');
 	},
 	
 	// Render the Tree's branches
 	renderBranches: function (silent,changes) {
-		
+		!silent && this.trigger('beforeRender');
 		// If no branchOutlet is explicitly specified, just append the branch elements to this.$el
 		// Otherwise use the branchOutlet selector to find the branchOutlet element inside of this.$el
 		this.$branchOutlet = (this.branchOutlet) ? this._verifyOutlet(this.branchOutlet,this.$el) : this.$el;
 
+		// customchanges = the set of bindings for _remove, _add, and _reset
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
 			return (this.bindings[attrName]);
 		},this);
-				
 		
-		// If not all of the changed attributes were accounted for, 
-		// go ahead and trigger a complete rerender
+		// If not all of the special tree bindings were accounted for, 
+		// go ahead and trigger a naive rerender
 		if (!allCustomChanges) {		
 			// Empty and append branches to the branch outlet
 			if (this.collection && this.collection.length == 0 ) {
@@ -76,48 +75,53 @@ Mast.Tree = {
 				this.$branchOutlet.empty();
 				var self = this;
 				this.collection && this.collection.each(function(model,index){
-					self.appendBranch(model);
+					self.appendBranch(model,{},true);
 				});
 			}
 		}
-		if (!silent) {
-			this.trigger('afterRender');
-		}
+		!silent && this.trigger('afterRender');
 	},
 			
 	
 	// Add a new branch
-	appendBranch: function (model,options) {
-		
-		// If this is the first branch, empty the emptyHTML element
+	appendBranch: function (model,options,silent) {
 		if (!this.branchComponent) { throw new Error ('No branchComponent specified!'); }
+		// If this is the first branch, empty the emptyHTML element
 		if (this.collection && this.collection.length == 1) {
 			this.$branchOutlet.empty();
 		}
-		r = new this.branchComponent({
+		// Generate component
+		var r = new this.branchComponent({
 			parent: this,
 			autoRender: false,
 			model: model,
 			outlet: this.branchOutlet
 		});
 		
+		// TODO keep track of branch components for memory management
+		// (and to unbind backbone + socket events)
+		
+		// Add at a position
 		if (options && !_.isUndefined(options.at)) {
 			var $outlet = r._verifyOutlet(null,
 				r.parent && r.parent.$el);
 			r.render();
 			$outlet.children().eq(options.at) && $outlet.children().eq(options.at).before(r.$el);
 		}
+		// or append to the end
 		else {
 			r.append();
 		}
+		!silent && this.trigger('afterRender');
 	},
 	
 	// Remove a branch
-	removeBranch: function (model,index) {
-		this.getBranchEl(index).remove();
+	removeBranch: function (model,options,silent) {
+		this.getBranchEl(options.index).remove();
 		if (this.collection && this.collection.length == 0 ) {
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
+		!silent && this.trigger('afterRender');
 	},
 	
 	// Lookup the element for the id'th branch

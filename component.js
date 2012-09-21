@@ -91,11 +91,11 @@ Mast.Component =
 		},this);
 			
 		// Watch for changes to pattern
-		this.pattern.on('change',this.render);
+		this.pattern.on('change',this.renderPattern);
 				
 		// Register any subcomponents
 		_.each(this.subcomponents,function(properties,key) {
-			this.registerSubcomponent(properties,key);
+			this.registerSubcomponent(component,properties);
 		},this);
 				
 		// Trigger init event
@@ -156,16 +156,15 @@ Mast.Component =
 		
 	// Render the pattern and subcomponents
 	render: function (silent,changes) {
-		this.renderPattern(silent,changes);
-		this.renderSubcomponents();
-		if (!silent) {
-			this.trigger('afterRender');
-		}
+		!silent && this.trigger('beforeRender');
+		this.renderPattern(true,changes);
+		this.renderSubcomponents(true,changes);
+		!silent && this.trigger('afterRender');
 	},
 		
 	// Render the pattern in-place
 	renderPattern: function (silent,changes) {
-		this.trigger('beforeRender');		
+		!silent && this.trigger('beforeRender');
 		
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
 			return (this.bindings[attrName]);
@@ -188,20 +187,13 @@ Mast.Component =
 			newHandler(this.get(attrName));
 		},this);
 		
+		!silent && this.trigger('afterRender');
 		return this;
 	},
 	
-	renderSubcomponents: function () {
-		// TODO
-		// If any subcomponents exist, 
-//		_.each(this.children,function(subcomponent,key) {
-//			
-//			// append them to the appropriate outlet
-//			_.defer(function() {
-//				subcomponent.append();
-//			})
-//			
-//		},this);
+	renderSubcomponents: function (silent,changes) {
+		!silent && this.trigger('beforeRender');
+		!silent && this.trigger('afterRender');
 	},
 			
 	// Use pattern to generate a DOM element
@@ -211,38 +203,38 @@ Mast.Component =
 	},
 			
 	// Register a new subcomponent from a definition
-	registerSubcomponent: function(options,key) {
+	registerSubcomponent: function(componentName,properties) {
 		var Subcomponent;
 				
-		if (!options.component) {
-			throw new Error("Cannot register subcomponent because 'component' was not defined!");
-		}
-		else if ( typeof Mast.components[options.component] == "undefined" ) {
-			throw new Error("Cannot register subcomponent because specified component, '"+options.component+"', does not exist!");
-		}
-		else {
-			Subcomponent = options.component;
-		}
-		
-		// Provision prototype for subcomponent
-		Subcomponent = Mast.mixins.provisionPrototype(Subcomponent,Mast.components,Mast.Component)
-		
-		// Build property list with specified pieces
-		var plist = {
-			parent: this,
-			outlet: options.outlet
-		};
-		// Remove stuff from definition that shouldn't be transfered as params
-		_.each(options,function(val,key) {
-			if (key!='component' && key!='outlet') {
-				plist[key]=val;
-			}
-		});
-		
-		
-		// Instantiate subcomponent, but don't append/render it yet
-		var subcomponent = new Subcomponent(plist,plist);
-		this.children[key] = subcomponent;
+//		if (!Mast.components[componentName]) {
+//			throw new Error("Cannot register subcomponent because 'component' was not defined!");
+//		}
+//		else if ( typeof Mast.components[options.component] == "undefined" ) {
+//			throw new Error("Cannot register subcomponent because specified component, '"+options.component+"', does not exist!");
+//		}
+//		else {
+//			Subcomponent = options.component;
+//		}
+//		
+//		// Provision prototype for subcomponent
+//		Subcomponent = Mast.mixins.provisionPrototype(Subcomponent,Mast.components,Mast.Component)
+//		
+//		// Build property list with specified pieces
+//		var plist = {
+//			parent: this,
+//			outlet: options.outlet
+//		};
+//		// Remove stuff from definition that shouldn't be transfered as params
+//		_.each(options,function(val,key) {
+//			if (key!='component' && key!='outlet') {
+//				plist[key]=val;
+//			}
+//		});
+//		
+//		
+//		// Instantiate subcomponent, but don't append/render it yet
+//		var subcomponent = new Subcomponent(plist,plist);
+//		this.children[key] = subcomponent;
 	},
 			
 	// Free the memory for this component and remove it from the DOM
