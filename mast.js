@@ -32,9 +32,15 @@ Mast = _.extend(Backbone,
 					Mast[_.str.capitalize(v.type)];
 				if (parent) {
 					var newEntity = parent.extend(v.definition);				// Extend parent
-					newEntity.prototype.events =								// Extend events hash as well
-					_.extend({},parent.prototype.events,
-						newEntity.prototype.events);
+					newEntity.prototype.events =								// Extend events hash 
+						_.extend({},parent.prototype.events,
+							newEntity.prototype.events);
+					newEntity.prototype.bindings =								// Extend bindings hash 
+						_.extend({},parent.prototype.bindings,
+							newEntity.prototype.bindings);
+					newEntity.prototype.subscriptions =							// Extend subscriptions hash 
+						_.extend({},parent.prototype.subscriptions,
+							newEntity.prototype.subscriptions);
 					entitySet[v.name] = newEntity;								// Register new instance in entity set
 					Mast._registerQueue.splice(i,1);
 				}
