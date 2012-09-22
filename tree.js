@@ -34,21 +34,17 @@ Mast.Tree = {
 		}
 	},
 			
-	// Render the branches and underlying component+subcomponents
+	// Render the underlying component+subcomponents (and branches if necessary)
 	render: function (silent,changes) {
-		this.renderComponent(true,changes);
-		this.renderBranches(true,changes);
-		// Fire the afterRender event if silent is not set
-		if (!silent) {
-			this.trigger('afterRender');
-		}
+		!silent && this.trigger('beforeRender');
+		Mast.Component.prototype.render.call(this,true,changes);
+		!silent && this.trigger('afterRender');
 	},
 	
-	// Render the underlying component and subcomponents
-	renderComponent: function (silent,changes) {
-		!silent && this.trigger('beforeRender');
-		Mast.Component.prototype.render.call(this,silent,changes);
-		!silent && this.trigger('afterRender');
+	// Do a standard component naive render, but also rerender branches
+	naiveRender: function (silent,changes) {
+		Mast.Component.prototype.naiveRender.call(this,silent,changes);
+		this.renderBranches(silent,changes);
 	},
 	
 	// Render the Tree's branches
@@ -57,31 +53,21 @@ Mast.Tree = {
 		// If no branchOutlet is explicitly specified, just append the branch elements to this.$el
 		// Otherwise use the branchOutlet selector to find the branchOutlet element inside of this.$el
 		this.$branchOutlet = (this.branchOutlet) ? this._verifyOutlet(this.branchOutlet,this.$el) : this.$el;
-
-		// customchanges = the set of bindings for _remove, _add, and _reset
-		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
-			return (this.bindings[attrName]);
-		},this);
 		
-		// If not all of the special tree bindings were accounted for, 
-		// go ahead and trigger a naive rerender
-		if (!allCustomChanges) {		
-			// Empty and append branches to the branch outlet
-			if (this.collection && this.collection.length == 0 ) {
-				this.$branchOutlet.empty();
-				this.$branchOutlet.append(this._generateEmptyHTML());
-			}
-			else {
-				this.$branchOutlet.empty();
-				var self = this;
-				this.collection && this.collection.each(function(model,index){
-					self.appendBranch(model,{},true);
-				});
-			}
+		// Empty and append branches to the branch outlet
+		if (this.collection && this.collection.length == 0 ) {
+			this.$branchOutlet.empty();
+			this.$branchOutlet.append(this._generateEmptyHTML());
+		}
+		else {
+			this.$branchOutlet.empty();
+			var self = this;
+			this.collection && this.collection.each(function(model,index){
+				self.appendBranch(model,{},true);
+			});
 		}
 		!silent && this.trigger('afterRender');
 	},
-			
 	
 	// Add a new branch
 	appendBranch: function (model,options,silent) {

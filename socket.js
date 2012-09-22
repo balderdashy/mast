@@ -32,7 +32,7 @@ Mast.Socket =_.extend(
 					Mast.Socket.update(model,options);
 					break;
 				case "delete":
-					Mast.Socket['delete'](model,options);
+					Mast.Socket.destroy(model,options);
 					break;
 			}
 		};
@@ -130,7 +130,7 @@ Mast.Socket =_.extend(
 		});
 	},
 	
-	'delete': function(model,options){
+	destroy: function(model,options){
 		var url = model.url().replace(/\/*$/,'');								// Remove trailing slash and add /destroy to url
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/destroy');
@@ -138,7 +138,8 @@ Mast.Socket =_.extend(
 			options && options.success && options.success(parsedResult);
 		});
 	},
-		
+	
+	// Request wrappers for each of the CRUD HTTP verbs
 	get: function (url,data,options) { this.request(url,data,options,'get') },
 	post: function (url,data,options) { this.request(url,data,options,'post') },
 	put: function (url,data,options) { this.request(url,data,options,'put') },

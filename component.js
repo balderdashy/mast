@@ -91,12 +91,12 @@ Mast.Component =
 		},this);
 			
 		// Watch for changes to pattern
-		this.pattern.on('change',this.renderPattern);
+		this.pattern.on('change',this.render);
 				
 		// Register any subcomponents
-		_.each(this.subcomponents,function(properties,key) {
-			this.registerSubcomponent(component,properties);
-		},this);
+//		_.each(this.subcomponents,function(properties,key) {
+//			this.registerSubcomponent(component,properties);
+//		},this);
 				
 		// Trigger init event
 		_.result(this,'init');
@@ -157,29 +157,18 @@ Mast.Component =
 	// Render the pattern and subcomponents
 	render: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
-		this.renderPattern(true,changes);
-		this.renderSubcomponents(true,changes);
-		!silent && this.trigger('afterRender');
-	},
 		
-	// Render the pattern in-place
-	renderPattern: function (silent,changes) {
-		!silent && this.trigger('beforeRender');
-		
+		// Determine if all changed attributes were accounted for
 		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
 			return (this.bindings[attrName]);
 		},this);
 		
-		// If not all of the changed attributes were accounted for, 
-		// go ahead and trigger a complete rerender
+		// if not, go ahead and trigger a complete rerender
 		if (!allCustomChanges) {
-			var $element = this.generate();
-			this.$el.replaceWith($element);
-			this.setElement($element);
+			this.naiveRender(true,changes);
 		}
 		
-		// Check bindings hash for custom render event
-		// Perform custom render for this attr if it exists
+		// Perform attribute render bindings
 		_.each(this.bindings,function(handler,attrName) {
 			var newHandler = _.isString(handler) ? this[handler] : handler;
 			if (!_.isFunction(newHandler)) throw new Error ("Bindings contain invalid or non-existent function.");
@@ -191,8 +180,28 @@ Mast.Component =
 		return this;
 	},
 	
+	// Rip existing element out of DOM, replace with new element, then render subcomponents
+	naiveRender: function (silent,changes) {
+		var $element = this.generate();
+		this.$el.replaceWith($element);
+		this.setElement($element);
+		this.renderSubcomponents(silent);
+	},
+	
+	// Render the subcomponents for this component
 	renderSubcomponents: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
+		
+		_.each(this.subcomponents,function(outletSelector,componentName) {
+			// destroy existing component: 
+			this.children[componentName] && this.children[componentName].destroy()
+			this.children[componentName] = new Mast.components[componentName]({
+				outlet: outletSelector,
+				parent: this
+			});
+			this.children[componentName].append();
+		},this);
+		
 		!silent && this.trigger('afterRender');
 	},
 			
