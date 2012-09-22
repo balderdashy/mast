@@ -271,6 +271,8 @@ Mast.Component =
 			options.render =_.bind(options.render,this);
 			options.render(this.$el,this.generate());
 			outcome = true;
+			// Fire afterRender unless silent:true was set in options
+			!options.silent && this.afterRender();
 		}
 		// Otherwise just do a basic render by triggering the default behavior
 		else {
