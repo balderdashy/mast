@@ -93,11 +93,6 @@ Mast.Component =
 		// Watch for changes to pattern
 		this.pattern.on('change',this.render);
 				
-		// Register any subcomponents
-//		_.each(this.subcomponents,function(properties,key) {
-//			this.registerSubcomponent(component,properties);
-//		},this);
-				
 		// Trigger init event
 		_.result(this,'init');
 				
@@ -158,30 +153,39 @@ Mast.Component =
 	render: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
 		
-		// Determine if all changed attributes were accounted for
-		var allCustomChanges = changes && _.all(changes,function(v,attrName) {
-			return (this.bindings[attrName]);
+		// Determine if all changed attributes are bound
+		var allBound = _.all(changes,function(attrVal,attrName) {
+			return this.bindings[attrName];// || this.get(attrName)===attrVal;
 		},this);
 		
-		// if not, go ahead and trigger a complete rerender
-		if (!allCustomChanges) {
+		// if not all attribute changes are bound, or there are no explicit changes, naively rerender
+		if (!allBound || !changes ) {
 			this.naiveRender(true,changes);
 		}
-		
-		// Perform attribute render bindings
-		_.each(this.bindings,function(handler,attrName) {
-			var newHandler = _.isString(handler) ? this[handler] : handler;
-			if (!_.isFunction(newHandler)) throw new Error ("Bindings contain invalid or non-existent function.");
-			newHandler = _.bind(newHandler,this);
-			newHandler(this.get(attrName));
-		},this);
+		// Otherwise, perform the specific bindings for this changeset
+		else {
+			this.renderBindings(changes);
+		}
 		
 		!silent && this.trigger('afterRender');
 		return this;
 	},
 	
+	// Render the binding functions as they apply to the specified changeset
+	// or if no changeset is specified, render all bindings
+	renderBindings: function (changes) {
+		var bindingsToPerform = _.keys(changes || this.bindings);
+		_.each(bindingsToPerform,function(attrName) {
+			var handler = this.bindings[attrName];
+			handler = _.isString(handler) ? this[handler] : handler;
+			if (!_.isFunction(handler)) throw new Error ("Bindings contain invalid or non-existent function.");
+			handler = _.bind(handler,this);
+			handler(this.get(attrName));
+		},this);
+	},
+	
 	// Rip existing element out of DOM, replace with new element, then render subcomponents
-	naiveRender: function (silent,changes) {
+	naiveRender: function (silent) {
 		var $element = this.generate();
 		this.$el.replaceWith($element);
 		this.setElement($element);
@@ -210,42 +214,7 @@ Mast.Component =
 		data = this._normalizeData(data);
 		return $(this.pattern.generate(data));
 	},
-			
-	// Register a new subcomponent from a definition
-	registerSubcomponent: function(componentName,properties) {
-		var Subcomponent;
-				
-//		if (!Mast.components[componentName]) {
-//			throw new Error("Cannot register subcomponent because 'component' was not defined!");
-//		}
-//		else if ( typeof Mast.components[options.component] == "undefined" ) {
-//			throw new Error("Cannot register subcomponent because specified component, '"+options.component+"', does not exist!");
-//		}
-//		else {
-//			Subcomponent = options.component;
-//		}
-//		
-//		// Provision prototype for subcomponent
-//		Subcomponent = Mast.mixins.provisionPrototype(Subcomponent,Mast.components,Mast.Component)
-//		
-//		// Build property list with specified pieces
-//		var plist = {
-//			parent: this,
-//			outlet: options.outlet
-//		};
-//		// Remove stuff from definition that shouldn't be transfered as params
-//		_.each(options,function(val,key) {
-//			if (key!='component' && key!='outlet') {
-//				plist[key]=val;
-//			}
-//		});
-//		
-//		
-//		// Instantiate subcomponent, but don't append/render it yet
-//		var subcomponent = new Subcomponent(plist,plist);
-//		this.children[key] = subcomponent;
-	},
-			
+	
 	// Free the memory for this component and remove it from the DOM
 	destroy: function () {
 		// Remove models from modelCache
