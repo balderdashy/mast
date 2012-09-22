@@ -5,7 +5,10 @@
 // collection, both on the clientside and over the Socket using
 // Backbone REST-style semantics.
 Mast.Tree = {
-			
+	
+	// Keeps track of hot branch components for memory management
+	_branchStack: [],
+	
 	initialize: function (attributes,options){
 				
 		// Determine whether specified branch component is a className, class, or instance
@@ -54,13 +57,16 @@ Mast.Tree = {
 		// Otherwise use the branchOutlet selector to find the branchOutlet element inside of this.$el
 		this.$branchOutlet = (this.branchOutlet) ? this._verifyOutlet(this.branchOutlet,this.$el) : this.$el;
 		
-		// Empty and append branches to the branch outlet
+		// Empty branch outlet and destroy any lingering branch components
+		this.$branchOutlet.empty();
+		_.invoke(this._branchStack,'destroy');
+		this._branchStack = [];
+		
+		// Append branches or empty HTML to the branchOutlet
 		if (this.collection && this.collection.length == 0 ) {
-			this.$branchOutlet.empty();
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 		else {
-			this.$branchOutlet.empty();
 			var self = this;
 			this.collection && this.collection.each(function(model,index){
 				self.appendBranch(model,{},true);
@@ -84,9 +90,6 @@ Mast.Tree = {
 			outlet: this.branchOutlet
 		});
 		
-		// TODO keep track of branch components for memory management
-		// (and to unbind backbone + socket events)
-		
 		// Add at a position
 		if (options && !_.isUndefined(options.at)) {
 			var $outlet = r._verifyOutlet(null,
@@ -98,16 +101,36 @@ Mast.Tree = {
 		else {
 			r.append();
 		}
+		
+		// Push or splice branch component to stack for garbage collection
+		// (and to unbind backbone + socket events)
+		options.at ? this._branchStack.splice(options.at,0,r) : this._branchStack.push(r);
+		
 		!silent && this.trigger('afterRender');
 	},
 	
 	// Remove a branch
 	removeBranch: function (model,options,silent) {
-		this.getBranchEl(options.index).remove();
+		// Garbage collect branch
+		var branch = this._branchStack[options.index];
+		if (!branch) debug.warn('Branch missing from memory manager!');
+		else {
+			branch.destroy();
+			this._branchStack.splice(options.index,1);
+		}
+		
+		// Render empty HTML if necessary
 		if (this.collection && this.collection.length == 0 ) {
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 		!silent && this.trigger('afterRender');
+	},
+	
+	// Extend Component's destroy method to also free branches
+	destroy: function () {
+		_.invoke(this._branchStack,'destroy');
+		this._branchStack = [];
+		Mast.Component.prototype.destroy.call(this);
 	},
 	
 	// Lookup the element for the id'th branch

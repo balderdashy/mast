@@ -217,12 +217,22 @@ Mast.Component =
 	
 	// Free the memory for this component and remove it from the DOM
 	destroy: function () {
-		// Remove models from modelCache
+		// Destroy all subcomponents
+		_.invoke(this.children,'destroy');
+		
+		// Unsubscribe to model change events
+		this.pattern.off();
+		this.off();
+		
+		// Remove models from modelCache (TODO: remove this, it's no longer being used)
 		this.pattern.model.cid && delete Mast.modelCache[this.pattern.model.cid];
 		this.collection && this.collection.cid && delete Mast.modelCache[this.collection.cid];
-			
-		this.undelegateEvents();
+		
+		// Remove from DOM
 		this.$el.remove();
+		
+		// TODO: Unsubscribe to comet updates
+				
 	},
 			
 	// Set pattern's template selector
