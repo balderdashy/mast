@@ -3,6 +3,12 @@
 // they are responsible for calling render on those elements
 Mast.Component = 
 {
+	// Default HTML to display if table is empty and no emptytemplateis specified
+	emptyHTML: "<span>This collection is empty.</span>",
+	
+	// HTML to display if nothing can be loaded from the server
+	errorHTML: "<span>The specified URL did not return valid data.</span>",
+
 	// Automatic rendering is enabled by default
 	autoRender: true,
 
@@ -339,12 +345,6 @@ Mast.Component =
 	afterConnect: function(){
 	// stub
 	},
-			
-	// Default HTML to display if table is empty and no emptytemplate
-	// is specified
-	emptyHTML: "<span>There are no children available.</span>",
-			
-			
 			
 	// Determine the proper outlet selector and ensure that it is valid
 	_verifyOutlet: function (outlet,context) {
