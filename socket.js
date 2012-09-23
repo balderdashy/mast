@@ -74,6 +74,7 @@ Mast.Socket =_.extend(
 		var extractParams = Backbone.Router.prototype._extractParameters,
 			calculateRegex = Backbone.Router.prototype._routeToRegExp;
 		_.each(Mast.Socket.routes,function(instances,routeUri) {				// Match the request's URI against each subcribed route
+			routeUri = _.str.trim(routeUri,'/');								// Trim traliing and leading slashes
 			var regex=calculateRegex(routeUri);
 			if (serverUri.match(regex)) {
 				var params=extractParams(regex,serverUri);						// Grab named uri parameters and include them as arguments
@@ -108,14 +109,14 @@ Mast.Socket =_.extend(
 		url = model.url().replace(/\/*$/,'');									// Remove trailing slash and add /find to url
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/find');
-		this.get(url, {id:id}, function (parsedResult) {						// Add id to params
+		this.get(url, _.extend({id:id},options.data), function (parsedResult) {	// Add id to params
 			options && options.success && options.success(parsedResult);
 		});
 	},
 	
 	findAll: function(collection,options){
 		var url = (collection.url) + "/findAll";
-		this.get(url, {}, function (parsedResult) {
+		this.get(url, options.data || {}, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},

@@ -254,12 +254,9 @@ Mast.Component =
 		return this.$el;
 	},
 			
-	// Set pattern's model attribute
-	// If the first argument is an object, value can also be an options hash
-	set: function (key,value,options){
-		var outcome,attrs;
-		
-		// Handle both `"key", value` and `{key: value}` -style arguments.
+	// Handle both `"key", value` and `{key: value}` -style arguments.
+	_normalizeArgs: function(key,value,options,transformedFn) {
+		var attrs;
 		if (_.isObject(key) || key == null) {
 			attrs = key;
 			options = value;
@@ -267,7 +264,11 @@ Mast.Component =
 			attrs = {};
 			attrs[key] = value;
 		}
-		
+		transformedFn(attrs,options);
+	},
+	
+	// Change model as a result of set, increment, or decrement
+	_changeModel: function (attrs,options) {
 		options = _.defaults(options || {}, {
 			render: true
 		});
@@ -280,15 +281,41 @@ Mast.Component =
 			}));
 			options.render =_.bind(options.render,this);
 			options.render(this.$el,this.generate());
-			outcome = true;
 			// Fire afterRender unless silent:true was set in options
 			!options.silent && this.afterRender();
 		}
 		// Otherwise just do a basic render by triggering the default behavior
 		else {
-			outcome = this.pattern.set(attrs,options);		
+			this.pattern.set(attrs,options);		
 		}
-		return outcome;
+	},
+			
+	// Set pattern's model attribute
+	// If the first argument is an object, value can also be an options hash
+	set: function (key,value,options){
+		var self = this;
+		self._normalizeArgs(key, value, options, function(attrs,options) {
+			self._changeModel(attrs,options);
+		});
+	},
+	
+	increment: function(key,amount,options) {
+		var self = this;
+		self._normalizeArgs(key, amount, options, function(attrs,options) {
+			attrs = _.objMap(attrs,function(amt,key) {
+				return self.get(key)+amt;
+			});
+			self._changeModel(attrs,options);
+		});
+	},
+	decrement: function(key,amount,options) {
+		var self = this;
+		self._normalizeArgs(key, amount, options, function(attrs,options) {
+			attrs = _.objMap(attrs,function(amt,key) {
+				return self.get(key)-amt;
+			});
+			self._changeModel(attrs,options);
+		});
 	},
 	
 	save: function () {

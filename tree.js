@@ -19,6 +19,24 @@ Mast.Tree = {
 		// and replace with a valid instance if necessary
 		this.collection = Mast.mixins.provisionInstance(this.collection,Mast.models,Mast.Collection);
 				
+		// Mixin scaffold subscriptions
+		// Default subscriptions (for scaffolds)
+		var defaultSubscriptions = {},entity = this.collection.url;
+		if (entity) {
+			defaultSubscriptions[entity+'/create'] = function (attributes) {
+				this.collection.add(attributes);
+				this.collection.sort();
+			};
+			defaultSubscriptions[entity+'/:id/update'] = function (id,attributes) {
+				this.collection.get(id).set(attributes);
+				this.collection.sort();
+			};
+			defaultSubscriptions[entity+'/:id/destroy'] = function (id) {
+				this.collection.remove(id);
+			};
+			this.subscriptions = _.defaults(this.subscriptions,defaultSubscriptions);
+		}
+				
 		// Initialize main component
 		Mast.Component.prototype.initialize.call(this,attributes,options);
 		
