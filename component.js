@@ -161,7 +161,7 @@ Mast.Component =
 		
 		// Determine if all changed attributes are bound
 		var allBound = _.all(changes,function(attrVal,attrName) {
-			return this.bindings[attrName];// || this.get(attrName)===attrVal;
+			return !_.isUndefined(this.bindings[attrName]); 
 		},this);
 		
 		// if not all attribute changes are bound, or there are no explicit changes, naively rerender
@@ -184,9 +184,11 @@ Mast.Component =
 		_.each(bindingsToPerform,function(attrName) {
 			var handler = this.bindings[attrName];
 			handler = _.isString(handler) ? this[handler] : handler;
-			if (!_.isFunction(handler)) throw new Error ("Bindings contain invalid or non-existent function.");
-			handler = _.bind(handler,this);
-			handler(this.get(attrName));
+			if (handler) {
+				if (!_.isFunction(handler)) throw new Error ("Bindings contain invalid or non-existent function.");
+				handler = _.bind(handler,this);
+				handler(this.get(attrName));
+			}
 		},this);
 	},
 	
@@ -377,8 +379,6 @@ Mast.Component =
 				"outlet selector! ('"+outlet+"')");
 			return false;
 		}
-
-			
 		return $outlet;
 	},
 			
