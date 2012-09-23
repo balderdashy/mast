@@ -173,7 +173,7 @@ Mast.Component =
 			this.renderBindings(changes);
 		}
 		
-		!silent && this.trigger('afterRender');
+		!silent && this.trigger('afterRender',changes);
 		return this;
 	},
 	
@@ -214,7 +214,7 @@ Mast.Component =
 			this.children[componentName].append();
 		},this);
 		
-		!silent && this.trigger('afterRender');
+		!silent && this.trigger('afterRender',changes);
 	},
 			
 	// Use pattern to generate a DOM element
@@ -290,7 +290,7 @@ Mast.Component =
 			options.render =_.bind(options.render,this);
 			options.render(this.$el,this.generate());
 			// Fire afterRender unless silent:true was set in options
-			!options.silent && this.afterRender();
+			!options.silent && this.trigger('afterRender',attrs);
 		}
 		// Otherwise just do a basic render by triggering the default behavior
 		else {
