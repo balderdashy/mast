@@ -21,15 +21,13 @@ Mast.Tree = {
 				
 		// Mixin scaffold subscriptions
 		// Default subscriptions (for scaffolds)
-		var defaultSubscriptions = {},entity = this.collection.url;
+		var defaultSubscriptions = {},entity = _.str.trim(this.collection.url,'/');
 		if (entity) {
 			defaultSubscriptions[entity+'/create'] = function (attributes) {
 				this.collection.add(attributes);
-				this.collection.sort();
 			};
 			defaultSubscriptions[entity+'/:id/update'] = function (id,attributes) {
 				this.collection.get(id).set(attributes);
-				this.collection.sort();
 			};
 			defaultSubscriptions[entity+'/:id/destroy'] = function (id) {
 				this.collection.remove(id);
