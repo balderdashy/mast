@@ -65,8 +65,8 @@ And here's an example of the server-side, assuming you're using Sails:
 */models/Leader.js*
 ```javascript
 Leader = Model.extend({
-  name    : STRING,
-  points  : { type: INT, defaultValue: 0 }
+  title    : STRING,
+  votes  : { type: INT, defaultValue: 0 }
 });
 ```
 
