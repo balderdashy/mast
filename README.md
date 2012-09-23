@@ -8,37 +8,55 @@ With Mast, building the front-end for your app is *faster*, *'funner'* and requi
 
 
 
-## A Realtime App in **< 30** Lines of Code
+## A Realtime App in **< 50 ** Lines of Code
 
 ```javascript
+// This Collection is synced with the server
+Mast.registerCollection('Leaders',{
+  url		: '/leader',
+	model	: {
+		defaults: {				// Fields specified exclusively on the client are not shared
+			highlight: false
+		}
+	},
+	comparator: function(model) {
+		return -model.get('votes');
+	}
+});
+
 // This Tree brings life to the leaderboard and its items
 Mast.registerTree('LeaderBoard',{
-  template        : '.template-leaderboard',  // Identify an HTML template to represent the leaderboard frame
-  collection      : { model: 'Leader' }       // Associate a collection with the leaderboard
-  branchComponent : 'LeaderBoardItem',        // An instance of branchComponent will be created for each item in the collection
-  branchOutlet    : '.item-outlet',           // A CSS selector, automatically scoped within the component, to identify where new branches should be appended
-  events: {
-    'click a.add-points' : function () {             // Add 5 points to the selected Leader
-        var currentlySelectedItem = this.get('selected');
-        currentlySelectedItem && currentlySelectedItem.set({ 
-          points: currentlySelectedItem.get('points')+5 
-        }); 
-      }
-  }
+	template        : '.template-leaderboard',  // Identify an HTML template to represent the leaderboard frame
+	model			: {
+		selected: null
+	},
+	collection      : 'Leaders',				// Associate a collection with the leaderboard
+	branchComponent : 'LeaderBoardItem',        // An instance of branchComponent will be created for each item in the collection
+	branchOutlet    : '.item-outlet',           // A CSS selector, automatically scoped within the component, to identify where new branches should be appended
+	events: {
+		'click a.add-points' : 'add5Points'     // Add 5 points to the selected Leader
+	},
+	init: function(){
+		this.collection.fetch();
+	},
+	add5Points: function (){
+		this.get('selected').increment('votes',5);
+		this.get('selected').save();
+		this.collection.sort();
+	}
 });
 
 // This component represents a single row of the leaderboard
 Mast.registerComponent('LeaderBoardItem',{
-  template  : '.template-leaderboard-item',   // Identify an HTML template to represent each leaderboard item
-  events    : {
-    click : function () {                     // When an item is clicked on, mark it as selected
-      this.parent.set({ selected: this });
-    }
-  }
-});
-
-Mast.raise(function () {                    // Raise the mast
-  new Mast.components.LeaderBoard();        // Create an instance of the LeaderBoard
+	template  : '.template-leaderboard-item',   // Identify an HTML template to represent each leaderboard item
+	events    : {
+		click : 'select'
+	},
+	select: function () {                     // When an item is clicked on, mark it as selected
+		this.parent.get('selected') && this.parent.get('selected').set('highlight',false);
+		this.set('highlight',true);
+		this.parent.set('selected',this);
+	}
 });
 ```
 
