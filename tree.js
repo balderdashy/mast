@@ -111,16 +111,19 @@ Mast.Tree = {
 			var $outlet = r._verifyOutlet(null,
 				r.parent && r.parent.$el);
 			r.render();
-			$outlet.children().eq(options.at) && $outlet.children().eq(options.at).before(r.$el);
+			var elementAtIndex = $outlet.children().eq(options.at);
+			elementAtIndex.before(r.$el);
+			
+			// Push or splice branch component to stack for garbage collection
+			this._branchStack.splice(options.at,0,r)
 		}
 		// or append to the end
 		else {
 			r.append();
+			// Push or splice branch component to stack for garbage collection
+			this._branchStack.push(r);
 		}
 		
-		// Push or splice branch component to stack for garbage collection
-		// (and to unbind backbone + socket events)
-		options.at ? this._branchStack.splice(options.at,0,r) : this._branchStack.push(r);
 		
 		!silent && this.trigger('afterRender');
 	},
