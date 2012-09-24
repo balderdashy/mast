@@ -8,9 +8,6 @@ Mast = _.extend(Backbone,
 	// Model/collection dictionary that will be populated by user definitions
 	models: {},
 	
-	// Cache of models and collections, by cid
-	modelCache: {},
-	
 	// Component dictionary that will be populated by user definitions
 	components: {},	
 	

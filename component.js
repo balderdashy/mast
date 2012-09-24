@@ -102,9 +102,11 @@ Mast.Component =
 		// Trigger init event
 		_.result(this,'init');
 				
-		// Watch for and announce statechange events
+		// Watch for and announce events
 		this.on('afterRender',this.afterRender);
 		this.on('beforeRender',this.beforeRender);
+		this.on('beforeDestroy',this.beforeDestroy);
+		this.on('afterDestroy',this.afterDestroy);
 				
 		// Autorender is on by default
 		if (!dontRender && this.autoRender!==false) {
@@ -224,7 +226,9 @@ Mast.Component =
 	},
 	
 	// Free the memory for this component and remove it from the DOM
-	destroy: function () {
+	destroy: function (silent) {
+		!silent && this.trigger('beforeDestroy');
+	
 		// Destroy all subcomponents
 		_.invoke(this.children,'destroy');
 		
@@ -232,15 +236,12 @@ Mast.Component =
 		this.pattern.off();
 		this.off();
 		
-		// Remove models from modelCache (TODO: remove this, it's no longer being used)
-		this.pattern.model.cid && delete Mast.modelCache[this.pattern.model.cid];
-		this.collection && this.collection.cid && delete Mast.modelCache[this.collection.cid];
-		
 		// Remove from DOM
 		this.$el.remove();
 		
 		// TODO: Unsubscribe to comet updates
 				
+		!silent && this.trigger('afterDestroy');
 	},
 			
 	// Set pattern's template selector
@@ -341,6 +342,14 @@ Mast.Component =
 	},
 	
 	afterRender: function(){
+	// stub
+	},
+	
+	beforeDestroy: function(){
+	// stub
+	},
+	
+	afterDestroy: function(){
 	// stub
 	},
 			
