@@ -206,17 +206,31 @@ Mast.Component =
 	renderSubcomponents: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
 		
-		_.each(this.subcomponents,function(outletSelector,componentName) {
-			// destroy existing component: 
-			this.children[componentName] && this.children[componentName].destroy()
-			this.children[componentName] = new Mast.components[componentName]({
+		_.each(this.subcomponents,function(componentName,outletSelector) {
+			// destroy existing component
+			this.children[outletSelector] && this.children[outletSelector].destroy();
+			
+			// Create and save new component
+			this.children[outletSelector] = new Mast.components[componentName]({
 				outlet: outletSelector,
 				parent: this
 			});
-			this.children[componentName].append();
+			
+			// append new component to DOM
+			this.children[outletSelector].append(); 
 		},this);
 		
 		!silent && this.trigger('afterRender',changes);
+	},
+		
+	// Attach a new subcomponent to an outlet in this component
+	attach: function(){
+		// TODO
+	},
+	
+	// Detach all subcomponents from an outlet
+	detach: function(){
+		// TODO
 	},
 			
 	// Use pattern to generate a DOM element
