@@ -56,6 +56,7 @@ Mast.Socket =_.extend(
 		this._socket = this.io.connect(this.baseurl);
 		Mast.Socket._socket.on('sessionUpdated',function(data) {				// Listen for latest session data from server and update local store
 			Mast.Session = data;
+			this.connected = true;
 		});
 		Mast.Socket._socket.on('message',function(cometMessage) {				// Route server-sent comet events
 			if (cometMessage.uri) {
@@ -66,7 +67,6 @@ Mast.Socket =_.extend(
 				throw new Error('Unknown message received from server.');
 			}
 		});
-		this.connected = true;
 	},
 	
 	// Route an incoming comet request to the appropriate context and action

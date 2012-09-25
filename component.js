@@ -15,6 +15,9 @@ Mast.Component =
 	// Custom event bindings for specific model attributes
 	bindings: {},
 
+	subcomponents: {},
+	children: {},
+
 	/**
          * attributes: properties to be added directly to the component
          *              i.e. accessible from component as:
@@ -205,32 +208,38 @@ Mast.Component =
 	// Render the subcomponents for this component
 	renderSubcomponents: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
-		
-		_.each(this.subcomponents,function(componentName,outletSelector) {
-			// destroy existing component
-			this.children[outletSelector] && this.children[outletSelector].destroy();
-			
-			// Create and save new component
-			this.children[outletSelector] = new Mast.components[componentName]({
-				outlet: outletSelector,
-				parent: this
-			});
-			
-			// append new component to DOM
-			this.children[outletSelector].append(); 
-		},this);
-		
+		_.each(this.subcomponents,this.renderSubcomponent,this);
 		!silent && this.trigger('afterRender',changes);
 	},
+	
+	// Render a particular subcomponent
+	renderSubcomponent: function(subcomponent,outletSelector) {
+		// destroy existing component
+		this.children[outletSelector] && this.children[outletSelector].destroy();
 		
+		// Create and save new component
+//		var subcomponentPrototype = Mast.mixins.provisionPrototype(subcomponent,Mast.components,Mast.Component);
+		this.children[outletSelector] = new Mast.components[subcomponent]({
+			outlet: outletSelector,
+			parent: this
+		})
+			
+		// append new component to DOM
+		this.children[outletSelector].append(); 
+	},	
+			
 	// Attach a new subcomponent to an outlet in this component
-	attach: function(){
-		// TODO
+	attach: function(outletSelector, subcomponent){
+		this.subcomponents[outletSelector] = subcomponent;
+		this.renderSubcomponent(subcomponent,outletSelector);
 	},
 	
 	// Detach all subcomponents from an outlet
-	detach: function(){
-		// TODO
+	detach: function(outletSelector){
+		if (this.children[outletSelector]) {
+			this.children.destroy();
+			delete this.subcomponents[outletSelector];
+		}
 	},
 			
 	// Use pattern to generate a DOM element
