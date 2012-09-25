@@ -250,7 +250,7 @@ Mast.Component =
 	},
 	
 	// Free the memory for this component and remove it from the DOM
-	uninitialize: function (silent) {
+	close: function (silent) {
 		!silent && this.trigger('beforeClose');
 	
 		// Destroy all subcomponents
