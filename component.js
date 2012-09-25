@@ -351,30 +351,6 @@ Mast.Component =
 		});
 	},
 	
-	// Pass-thru to model.save()
-	save: function () {
-		this.pattern.model.save(null,{
-			silent:true
-		});
-	},
-	
-	// Pass-thru to model.create()
-	create: function(attributes) {
-		return this.model.create(attributes);
-	},
-	
-	// Pass-thru to model.destroy()
-	destroy: function() {
-		this.on('destroy',function(){
-			console.log("FIRED DESTROY!");
-		})
-		
-		this.model.on('destroy',function(){
-			console.log("MODEL FIRED DESTROY!");
-		})
-		return this.model.destroy();
-	},
-	
 	// Pass-thru to model.get()
 	get: function(attribute) {
 		return this.pattern.get(attribute);
