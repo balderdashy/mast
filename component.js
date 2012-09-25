@@ -120,11 +120,13 @@ Mast.Component =
 		// Listen for when the socket is live
 		// (unless it's already live)
 		if (Mast.Socket) {
-			if (!Mast.Socket.connected) {
+//			if (!Mast.Socket.connected) {
+			if (!_.isObject(Mast.Session)) {
 				Mast.Socket.off('sessionUpdated', this.afterConnect);
 				Mast.Socket.on('sessionUpdated',this.afterConnect);
 			}
 			else {
+				Mast.Socket.off('sessionUpdated', this.afterConnect);
 				this.afterConnect();
 			}			
 		}
