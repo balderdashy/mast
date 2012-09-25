@@ -119,21 +119,19 @@ Mast.Component =
 		// Listen for when the socket is live
 		// (unless it's already live)
 		if (Mast.Socket) {
-//			if (!Mast.Socket.connected) {
-//				Mast.Socket.off('connect', this.afterConnect);
-//				Mast.Socket.on('connect', this.afterConnect);
-//			}
-//			else {
-//				Mast.Socket.off('connect', this.afterConnect);
-//				this.afterConnect();
-//			}
-			
-			Mast.Socket.on('sessionUpdated',this.afterConnect);
+			if (!Mast.Socket.connected) {
+				Mast.Socket.off('sessionUpdated', this.afterConnect);
+				Mast.Socket.on('sessionUpdated',this.afterConnect);
+			}
+			else {
+				this.afterConnect();
+			}			
 		}
 		
 		// Bind actions to comet events
 		if (this.subscriptions) {
-			_.each(this.subscriptions,function(action,route) {					// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
+			// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
+			_.each(this.subscriptions,function(action,route) {					
 				Mast.Socket.subscribe(route,_.isFunction(action) ? action: this[action],this);
 			},this)
 		}
@@ -301,7 +299,7 @@ Mast.Component =
 		transformedFn(attrs,options);
 	},
 	
-	// Change model as a result of set, increment, or decrement
+	// Change model as a result of set
 	_changeModel: function (attrs,options) {
 		options = _.defaults(options || {}, {
 			render: true
