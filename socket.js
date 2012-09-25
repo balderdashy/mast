@@ -15,9 +15,9 @@ Mast.Socket =_.extend(
 	routes: {},
 	
 	// Override backbone.sync when Socket object is instantiated
-	initialize: function() {
+	initialize: function(cb) {
 		_.bindAll(this);
-		this.autoconnect && this.connect();
+		this.autoconnect && this.connect(cb);
 		Backbone.sync = function(method, model, options) {						// Override Backbone.sync	
 			switch (method) {													// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
 				case "read":
@@ -39,7 +39,8 @@ Mast.Socket =_.extend(
 	},
 	
 	// Connect to socket
-	connect: function(baseurl) {
+	connect: function(baseurl,cb) {
+		var self = this;
 		if (!this.io) {
 			throw new Error(
 			"Can't connect to socket because the Socket.io "+
@@ -56,7 +57,7 @@ Mast.Socket =_.extend(
 		this._socket = this.io.connect(this.baseurl);
 		Mast.Socket._socket.on('sessionUpdated',function(data) {				// Listen for latest session data from server and update local store
 			Mast.Session = data;
-			this.connected = true;
+			Mast.Socket.trigger('sessionUpdated');
 		});
 		Mast.Socket._socket.on('message',function(cometMessage) {				// Route server-sent comet events
 			if (cometMessage.uri) {
@@ -67,6 +68,7 @@ Mast.Socket =_.extend(
 				throw new Error('Unknown message received from server.');
 			}
 		});
+		this.connected = true;
 	},
 	
 	// Route an incoming comet request to the appropriate context and action

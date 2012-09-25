@@ -119,14 +119,16 @@ Mast.Component =
 		// Listen for when the socket is live
 		// (unless it's already live)
 		if (Mast.Socket) {
-			if (!Mast.Socket.connected) {
-				Mast.Socket.off('connect', this.afterConnect);
-				Mast.Socket.on('connect', this.afterConnect);
-			}
-			else {
-				Mast.Socket.off('connect', this.afterConnect);
-				this.afterConnect();
-			}
+//			if (!Mast.Socket.connected) {
+//				Mast.Socket.off('connect', this.afterConnect);
+//				Mast.Socket.on('connect', this.afterConnect);
+//			}
+//			else {
+//				Mast.Socket.off('connect', this.afterConnect);
+//				this.afterConnect();
+//			}
+			
+			Mast.Socket.on('sessionUpdated',this.afterConnect);
 		}
 		
 		// Bind actions to comet events
