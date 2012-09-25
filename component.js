@@ -12,12 +12,6 @@ Mast.Component =
 	// Automatic rendering is enabled by default
 	autoRender: true,
 
-	// Custom event bindings for specific model attributes
-	bindings: {},
-
-	subcomponents: {},
-	children: {},
-
 	/**
          * attributes: properties to be added directly to the component
          *              i.e. accessible from component as:
@@ -37,7 +31,17 @@ Mast.Component =
 		_.bindAll(this);
 		
 		// Bring in attributes
-		_.extend(this,attributes);		
+		_.extend(this,attributes);	
+		
+		// Maintain dictionaries of subcomponent prototypes 
+		this.regions = this.regions || {};
+		
+		// and instances
+		this.children = {};
+		
+		// Custom event bindings for specific model attributes
+		this.bindings = this.bindings || {};
+			
 		
 		// Backwards compatibility for autorender / autoRender
 		this.autoRender = (this.autorender!==undefined) ? this.autorender : this.autoRender;
@@ -50,7 +54,7 @@ Mast.Component =
 				var newName = name.replace(/(\S+\s+)>/g, "$1");					// i.e. "click >.button"
 				delete this.events[name];
 				var newHandler = function (e) {
-					// Stop event from propagating up to parent components
+					// Stop event from propagating up to superclass
 					e.stopImmediatePropagation();
 					_.isString(handler) ? this[handler](e) : _.bind(handler,this)(e);
 					return false;
@@ -91,9 +95,6 @@ Mast.Component =
 			this.autoRender = false;
 		}
 				
-		// Maintain dictionary of subcomponents
-		this.children = {};
-			
 		// Extend model with properties specified
 		_.each(modelAttributes,function(val,key){
 			this.pattern.set(key,val);
@@ -175,16 +176,16 @@ Mast.Component =
 		}
 		// Otherwise, perform the specific bindings for this changeset
 		else {
-			this.renderBindings(changes);
+			this.runBindings(changes);
 		}
 		
 		!silent && this.trigger('afterRender',changes);
 		return this;
 	},
 	
-	// Render the binding functions as they apply to the specified changeset
+	// Run the binding functions as they apply to the specified changeset
 	// or if no changeset is specified, render all bindings
-	renderBindings: function (changes) {
+	runBindings: function (changes) {
 		var bindingsToPerform = _.keys(changes || this.bindings);
 		_.each(bindingsToPerform,function(attrName) {
 			var handler = this.bindings[attrName];
@@ -202,24 +203,24 @@ Mast.Component =
 		var $element = this.generate();
 		this.$el.replaceWith($element);
 		this.setElement($element);
-		this.renderSubcomponents(silent);
+		this.renderRegions(silent);
 	},
 	
-	// Render the subcomponents for this component
-	renderSubcomponents: function (silent,changes) {
+	// Render the regions for this component
+	renderRegions: function (silent,changes) {
 		!silent && this.trigger('beforeRender');
-		_.each(this.subcomponents,this.renderSubcomponent,this);
+		_.each(this.regions,this.renderRegion,this);
 		!silent && this.trigger('afterRender',changes);
 	},
 	
-	// Render a particular subcomponent
-	renderSubcomponent: function(subcomponent,outletSelector) {
+	// Render a particular region
+	renderRegion: function(subcomponent,outletSelector) {
 		// destroy existing component
 		this.children[outletSelector] && this.children[outletSelector].destroy();
 		
 		// Create and save new component
-//		var subcomponentPrototype = Mast.mixins.provisionPrototype(subcomponent,Mast.components,Mast.Component);
-		this.children[outletSelector] = new Mast.components[subcomponent]({
+		var subcomponentPrototype = Mast.mixins.provisionPrototype(subcomponent,Mast.components,Mast.Component);
+		this.children[outletSelector] = new subcomponentPrototype({
 			outlet: outletSelector,
 			parent: this
 		})
@@ -230,15 +231,15 @@ Mast.Component =
 			
 	// Attach a new subcomponent to an outlet in this component
 	attach: function(outletSelector, subcomponent){
-		this.subcomponents[outletSelector] = subcomponent;
-		this.renderSubcomponent(subcomponent,outletSelector);
+		this.regions[outletSelector] = subcomponent;
+		this.renderRegion(subcomponent,outletSelector);
 	},
 	
-	// Detach all subcomponents from an outlet
+	// Detach all subcomponents from a region
 	detach: function(outletSelector){
 		if (this.children[outletSelector]) {
 			this.children.destroy();
-			delete this.subcomponents[outletSelector];
+			delete this.regions[outletSelector];
 		}
 	},
 			
@@ -383,8 +384,8 @@ Mast.Component =
 	// Determine the proper outlet selector and ensure that it is valid
 	_verifyOutlet: function (outlet,context) {
 		
-		// If a parent component exists, render into that by default
-		outlet = outlet || this.outlet || (this.parent && this.parent.$el);
+		// If a parent component exists, render into its $el by default
+		outlet = outlet || this.outlet;// || (this.parent && this.parent.$el);
 		
 		if (!outlet && !this.parent) {
 			throw new Error("No outlet selector specified to render into!");
@@ -393,7 +394,12 @@ Mast.Component =
 				
 		var $outlet;
 		if (_.isString(outlet)) {
-			$outlet = (context && context.closest_descendant(outlet)) || $(outlet);
+			if (context) {
+				$outlet = (context && context.closest_descendant(outlet));
+			}
+			else {
+				$outlet = $(outlet);
+			}
 		}
 		else {
 			$outlet = outlet;

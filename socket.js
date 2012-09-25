@@ -118,6 +118,16 @@ Mast.Socket =_.extend(
 	
 	findAll: function(collection,options){
 		var url = (collection.url) + "/findAll";
+		
+		// Support limit/offset/search/sort params in main .fetch({}) instead of just in {data:{}}
+		options.data = options.data || {};
+		_.defaults(options.data,{
+			where: options.where,
+			search: options.search,
+			limit: options.limit,
+			skip: options.skip,
+			order: options.order
+		})
 		this.get(url, options.data || {}, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
