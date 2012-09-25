@@ -109,8 +109,8 @@ Mast.Component =
 		// Watch for and announce events
 		this.on('afterRender',this.afterRender);
 		this.on('beforeRender',this.beforeRender);
-		this.on('beforeDestroy',this.beforeDestroy);
-		this.on('afterDestroy',this.afterDestroy);
+		this.on('beforeClose',this.beforeClose);
+		this.on('afterClose',this.afterClose);
 				
 		// Autorender is on by default
 		if (!dontRender && this.autoRender!==false) {
@@ -215,8 +215,8 @@ Mast.Component =
 	
 	// Render a particular region
 	renderRegion: function(subcomponent,outletSelector) {
-		// destroy existing component
-		this.children[outletSelector] && this.children[outletSelector].destroy();
+		// Close existing component
+		this.children[outletSelector] && this.children[outletSelector].close();
 		
 		// Create and save new component
 		var subcomponentPrototype = Mast.mixins.provisionPrototype(subcomponent,Mast.components,Mast.Component);
@@ -238,7 +238,7 @@ Mast.Component =
 	// Detach all subcomponents from a region
 	detach: function(outletSelector){
 		if (this.children[outletSelector]) {
-			this.children.destroy();
+			this.children.close();
 			delete this.regions[outletSelector];
 		}
 	},
@@ -250,11 +250,11 @@ Mast.Component =
 	},
 	
 	// Free the memory for this component and remove it from the DOM
-	destroy: function (silent) {
-		!silent && this.trigger('beforeDestroy');
+	uninitialize: function (silent) {
+		!silent && this.trigger('beforeClose');
 	
 		// Destroy all subcomponents
-		_.invoke(this.children,'destroy');
+		_.invoke(this.children,'close');
 		
 		// Unsubscribe to model change events
 		this.pattern.off();
@@ -265,7 +265,7 @@ Mast.Component =
 		
 		// TODO: Unsubscribe to comet updates
 				
-		!silent && this.trigger('afterDestroy');
+		!silent && this.trigger('afterClose');
 	},
 			
 	// Set pattern's template selector
@@ -351,12 +351,31 @@ Mast.Component =
 		});
 	},
 	
+	// Pass-thru to model.save()
 	save: function () {
 		this.pattern.model.save(null,{
 			silent:true
 		});
 	},
 	
+	// Pass-thru to model.create()
+	create: function(attributes) {
+		return this.model.create(attributes);
+	},
+	
+	// Pass-thru to model.destroy()
+	destroy: function() {
+		this.on('destroy',function(){
+			console.log("FIRED DESTROY!");
+		})
+		
+		this.model.on('destroy',function(){
+			console.log("MODEL FIRED DESTROY!");
+		})
+		return this.model.destroy();
+	},
+	
+	// Pass-thru to model.get()
 	get: function(attribute) {
 		return this.pattern.get(attribute);
 	},
@@ -369,11 +388,11 @@ Mast.Component =
 	// stub
 	},
 	
-	beforeDestroy: function(){
+	beforeClose: function(){
 	// stub
 	},
 	
-	afterDestroy: function(){
+	afterClose: function(){
 	// stub
 	},
 			

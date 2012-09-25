@@ -73,9 +73,9 @@ Mast.Tree = {
 		// Otherwise use the branchOutlet selector to find the branchOutlet element inside of this.$el
 		this.$branchOutlet = (this.branchOutlet) ? this._verifyOutlet(this.branchOutlet,this.$el) : this.$el;
 		
-		// Empty branch outlet and destroy any lingering branch components
+		// Empty branch outlet and close any lingering branch components
 		this.$branchOutlet.empty();
-		_.invoke(this._branchStack,'destroy');
+		_.invoke(this._branchStack,'close');
 		this._branchStack = [];
 		
 		// Append branches or empty HTML to the branchOutlet
@@ -134,7 +134,7 @@ Mast.Tree = {
 		var branch = this._branchStack[options.index];
 		if (!branch) debug.warn('Branch missing from memory manager!');
 		else {
-			branch.destroy();
+			branch.close();
 			this._branchStack.splice(options.index,1);
 		}
 		
@@ -145,11 +145,11 @@ Mast.Tree = {
 		!silent && this.trigger('afterRender');
 	},
 	
-	// Extend Component's destroy method to also free branches
-	destroy: function () {
-		_.invoke(this._branchStack,'destroy');
+	// Extend Component's close method to also free branches
+	close: function () {
+		_.invoke(this._branchStack,'close');
 		this._branchStack = [];
-		Mast.Component.prototype.destroy.call(this);
+		Mast.Component.prototype.close.call(this);
 	},
 	
 	// Lookup the element for the id'th branch
