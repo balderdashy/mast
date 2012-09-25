@@ -351,6 +351,13 @@ Mast.Component =
 		});
 	},
 	
+	// Pass-thru to model.save()
+	save: function () {
+		this.pattern.model.save(null,{
+			silent:true
+		});
+	},
+	
 	// Pass-thru to model.get()
 	get: function(attribute) {
 		return this.pattern.get(attribute);

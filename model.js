@@ -4,6 +4,26 @@ Mast.Model = Mast.Model.extend({
 		
 		// Trigger init event
 		_.result(this,'init');
+	},
+	
+	increment: function(key,amount,options) {
+		var self = this;
+		Mast.Component.prototype._normalizeArgs(key, amount, options, function(attrs,options) {
+			attrs = _.objMap(attrs,function(amt,key) {
+				return self.get(key)+amt;
+			});
+			self.set(attrs,options);
+		});
+	},
+	
+	decrement: function(key,amount,options) {
+		var self = this;
+		Mast.Component.prototype._normalizeArgs(key, amount, options, function(attrs,options) {
+			attrs = _.objMap(attrs,function(amt,key) {
+				return self.get(key)-amt;
+			});
+			self.set(attrs,options);
+		});
 	}
 })
 
