@@ -1,0 +1,23 @@
+{
+  "name": "mast",
+  "version": "0.0.0",
+  "description": "The productivity-enhancing front-end library for Sails. Mast was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers. Like Sails, Mast is a collection of the latest stable versions of really great libraries, in this case Backbone.js, jQuery, and Socket.io.",
+  "main": "lib/export",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/balderdashy/mast.git"
+  },
+  "keywords": [
+    "Sails",
+    "Backbone",
+    "Spine"
+  ],
+  "author": "Mike McNeil",
+  "license": "MIT"
+}
