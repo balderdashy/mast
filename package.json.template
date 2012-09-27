@@ -7,7 +7,7 @@
     { "name": "Gabe Hernandez", "email": "gabe@balderdash.co" }
   ],
   "version": "{{version}}",
-  "description": "Convention-over-coniguration framework for Backbone.js",
+  "description": "Convention-over-configuration framework for Backbone.js",
   "homepage": "http://sailsjs.com",
   "keywords": ["Mast", "Sails", "MVC", "Rails", "ORM", "Grails"],
   "main": "lib/export",
