@@ -131,7 +131,7 @@ See the Wiki.
 
 
 ## Who Built This?
-Sails and Mast are developed and supported by Balderdash.  We build wonderful web apps as a service, and after much frustration, we built Sails to use on our customers' projects.  Naturally, we open-sourced it.  Hopefully, it makes your life a little bit easier!
+The Sails framework, including Mast, Rigging, and other related packages, are jointly developed and supported by Mike McNeil and Balderdash Design Co.  Balderdashs build wonderful web apps as a service, and after much frustration, we built Sails to use on our customers' projects.  Naturally, we open-sourced it.  Hopefully, it makes your life a little bit easier!
 
 
 The MIT License (MIT)
