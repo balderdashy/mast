@@ -6,7 +6,7 @@
     { "name": "Mike McNeil", "email": "mike@balderdash.co" },
     { "name": "Gabe Hernandez", "email": "gabe@balderdash.co" }
   ],
-  "version": "12.10.0400",
+  "version": "12.10.0401",
   "description": "Convention-over-configuration framework for Backbone.js",
   "homepage": "http://sailsjs.com",
   "keywords": ["Mast", "Sails", "MVC", "Rails", "ORM", "Grails"],
