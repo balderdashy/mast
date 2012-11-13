@@ -1,0 +1,1 @@
+rigging dependencies/jquery.min.js dependencies/underscore.min.js dependencies/underscore.string.min.js dependencies/backbone.min.js dependencies/json2.min.js dependencies/logger.min.js dependencies/outside.min.js dependencies/pressFoo.min.js mast.js mixins.js model.js socket.js pattern.js component.js tree.js extend.js
