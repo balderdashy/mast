@@ -3,6 +3,8 @@ then
   echo "Please specify the version as an argument.\n"
   exit 0
 else
+  echo "Building mast distributable..."
+  sh compile.sh
   sed 's/{{version}}/'$1'/' package.json.template > package.json
   #todo: use second argument (optional) as commit message and annotated tag message
   git tag "$1"
