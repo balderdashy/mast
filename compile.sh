@@ -1,1 +1,5 @@
-./node_modules/rigging/bin/rigging.js dependencies/jquery.min.js dependencies/underscore.min.js dependencies/underscore.string.min.js dependencies/backbone.min.js dependencies/json2.min.js dependencies/logger.min.js dependencies/outside.min.js dependencies/pressFoo.min.js mast.js mixins.js model.js socket.js pattern.js component.js tree.js extend.js
+# Build mast distributable
+./node_modules/rigging/bin/rigging.js lib/dependencies/jquery.min.js lib/dependencies/underscore.min.js lib/dependencies/underscore.string.min.js lib/dependencies/backbone.min.js lib/dependencies/json2.min.js lib/dependencies/logger.min.js lib/dependencies/outside.min.js lib/dependencies/pressFoo.min.js lib/mast.js lib/mixins.js lib/model.js lib/socket.js lib/pattern.js lib/component.js lib/tree.js lib/extend.js
+
+# Copy it into the pwd
+cp .rigging_out/rigging.min.js mast.min.js
