@@ -16,7 +16,7 @@
     "example": "example"
   },
   "dependencies": { 
-    "rigging": "12.11.1411"
+    "rigging": "12.11.1414"
   },
   "repository": {
     "type": "git",
