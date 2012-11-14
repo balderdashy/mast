@@ -15,7 +15,9 @@
     "lib": "lib",
     "example": "example"
   },
-  "dependencies": { },
+  "dependencies": { 
+    "rigging": "12.11.1400"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/balderdashy/mast.git"
