@@ -6,7 +6,7 @@
     { "name": "Mike McNeil", "email": "mike@balderdash.co" },
     { "name": "Gabe Hernandez", "email": "gabe@balderdash.co" }
   ],
-  "version": "12.11.13",
+  "version": "12.11.1400",
   "description": "Convention-over-configuration framework for Backbone.js",
   "homepage": "http://sailsjs.com",
   "keywords": ["Mast", "Sails", "MVC", "Rails", "ORM", "Grails"],
@@ -15,7 +15,9 @@
     "lib": "lib",
     "example": "example"
   },
-  "dependencies": { },
+  "dependencies": { 
+    "rigging": "12.11.1414"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/balderdashy/mast.git"
