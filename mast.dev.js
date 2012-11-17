@@ -2830,22 +2830,22 @@ Mast = _.extend(Backbone, {
 				Mast.routes = options.router;
 			}
 
-			// Decorate and interpret routes
-			_.each(Mast.routes, function(action, query) {
-				// "routes" is a reserved word
-				if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
+			// // LEGACY: Decorate and interpret defined routes
+			// _.each(Mast.routes, function(action, query) {
+			// 	// "routes" is a reserved word
+			// 	if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
 
-				// Save index route for the end
-				if(query == "index") {
-					indexRoute = action;
-				}
-				routerConfig.routes[query] = query;
-				routerConfig[query] = action;
-			});
+			// 	// Save index route for the end
+			// 	if(query == "index") {
+			// 		indexRoute = action;
+			// 	}
+			// 	routerConfig.routes[query] = query;
+			// 	routerConfig[query] = action;
+			// });
 
 			// Define default (index) route
-			routerConfig.routes[""] = "index";
-			routerConfig.index = indexRoute;
+			// routerConfig.routes[""] = "index";
+			// routerConfig.index = indexRoute;
 
 			// Prepare template library
 			// HTML templates can be manually assigned here
@@ -2860,20 +2860,47 @@ Mast = _.extend(Backbone, {
 				Mast.Socket.initialize();
 			}
 
+			// Create global event dispatcher (before router is instantiated!)
+			Mast.Dispatcher = _.clone(Backbone.Events);
+
 			// Before routing, trigger beforeRouteFn callback (if specified)
 			options.beforeRouteFn && options.beforeRouteFn();
 
-			// Extend and instantiate main router
-			var AppRouter = Mast.Router.extend(routerConfig);
-
 			var self = this;
-			_.defer(function() {
-				Mast.appRouter = new AppRouter();
+			// _.defer(function() {
+				
+				Mast.Router = Backbone.Router.extend({});
+				
+
+				// Instantiate router and trigger routerInitialized event on components
+				var router = new Mast.Router();
+
+				router.route("somecrazyneverusedthing","somenameofsomecrazyneverusedthing",function(){});
+				Backbone.history.route(/.+/,function(fragment) {
+					console.log("Wildcard event emitted: ",fragment);
+					console.log(this.callbacks);
+					Mast.Dispatcher.trigger("route:"+fragment);
+				});
+
+				// LEGACY: Decorate and interpret defined routes
+				_.each(Mast.routes, function(action, query) {
+					// "routes" is a reserved word
+					if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
+
+					// Index and "" are the same thing
+					if(query === "index" || query ==="") {
+						router.route("","index",action);
+					}
+
+					// Set up route
+					router.route(query,query,action);
+				});
+
 
 				// Mast makes the assumption that you want to trigger
 				// the route handler.  This can be overridden
 				Mast.navigate = function(query, options) {
-					return Mast.appRouter.navigate(query, _.extend({
+					return router.navigate(query, _.extend({
 						trigger: true
 					}, options));
 				};
@@ -2882,16 +2909,16 @@ Mast = _.extend(Backbone, {
 				// right from the get-go
 				// TODO: parse rest of DOM to find and absorb implicit templates
 				// when document is ready
-				$(function() {
+				// $(function() {
 
-					// Launch history manager 
-					Mast.history.start();
+				// Launch history manager 
+				Mast.history.start();
 
-					// When Mast and $.document are ready, 
-					// trigger afterLoad callback (if specified)
-					options.afterLoadFn && _.defer(options.afterLoadFn);
-				});
-			});
+				// When Mast and $.document are ready, 
+				// trigger afterLoad callback (if specified)
+				options.afterLoadFn && _.defer(options.afterLoadFn);
+				// });
+			// });
 		});
 	}
 }, Backbone.Events);
@@ -3672,7 +3699,7 @@ Mast.Component = {
 
 				// Route to proper method on this component when route is triggered
 				var action = this.subscriptions[route];
-				Mast.appRouter.on("route:"+route.substr(1), _.isFunction(action) ? action : this[action]);
+				Mast.Dispatcher.on("route:"+route.substr(1), _.isFunction(action) ? action : this[action]);
 			},this);
 
 			
@@ -4230,8 +4257,8 @@ var registerFn = function(entityType) {
 				_class:entityName
 			},definition)
 		});
-	}
-}
+	};
+};
 
 Mast.registerComponent	= registerFn('component');
 Mast.registerTree		= registerFn('tree');
@@ -4258,6 +4285,6 @@ Mast.register = function (entityName,definition) {
 			_class:entityName
 		},definition)
 	});
-}
+};
 
 
