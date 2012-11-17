@@ -2818,34 +2818,6 @@ Mast = _.extend(Backbone, {
 			// Register Mast.entities and enable inheritance
 			Mast.mixins.registerEntities(); 
 
-			// Convert options.routes into a format Backbone's router will accept
-			// (can't have key:function(){} style routes, must use a string function name)
-			var routerConfig = {
-				routes: {}
-			};
-			var indexRoute = null;
-
-			// If external router is specified in options, use it
-			if(options.router) {
-				Mast.routes = options.router;
-			}
-
-			// // LEGACY: Decorate and interpret defined routes
-			// _.each(Mast.routes, function(action, query) {
-			// 	// "routes" is a reserved word
-			// 	if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
-
-			// 	// Save index route for the end
-			// 	if(query == "index") {
-			// 		indexRoute = action;
-			// 	}
-			// 	routerConfig.routes[query] = query;
-			// 	routerConfig[query] = action;
-			// });
-
-			// Define default (index) route
-			// routerConfig.routes[""] = "index";
-			// routerConfig.index = indexRoute;
 
 			// Prepare template library
 			// HTML templates can be manually assigned here
@@ -2866,23 +2838,27 @@ Mast = _.extend(Backbone, {
 			// Before routing, trigger beforeRouteFn callback (if specified)
 			options.beforeRouteFn && options.beforeRouteFn();
 
-			var self = this;
+			// var self = this;
 			// _.defer(function() {
-				
+
+				// Clone router
 				Mast.Router = Backbone.Router.extend({});
 				
-
 				// Instantiate router and trigger routerInitialized event on components
 				var router = new Mast.Router();
 
-				router.route("somecrazyneverusedthing","somenameofsomecrazyneverusedthing",function(){});
+				// "Warm up" the router so that it will create Backbone.history
+				router.route("somecrazyneverusedthing","somenameofsomecrazyneverusedthing",function(){
+					throw new Error ("Can't listen on a route using reserved word: somenameofsomecrazyneverusedthing!");
+				});
+				
+				// Add wildcard route
 				Backbone.history.route(/.+/,function(fragment) {
-					console.log("Wildcard event emitted: ",fragment);
-					console.log(this.callbacks);
-					Mast.Dispatcher.trigger("route:"+fragment);
+					Mast.Dispatcher.trigger("route:"+"#"+fragment);
 				});
 
 				// LEGACY: Decorate and interpret defined routes
+				// (Routes are now handled as subscriptions in components)
 				_.each(Mast.routes, function(action, query) {
 					// "routes" is a reserved word
 					if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
@@ -2895,7 +2871,6 @@ Mast = _.extend(Backbone, {
 					// Set up route
 					router.route(query,query,action);
 				});
-
 
 				// Mast makes the assumption that you want to trigger
 				// the route handler.  This can be overridden
@@ -3065,7 +3040,7 @@ Mast.mixins = {
 			if (identity.cid || identity._byCid) {
 				throw new Error("A class, string class name, or class definition should be specified, not an instance!");
 			}
-			var parentPrototype = identity.extendsFrom || identityPrototype;
+			var parentPrototype = (identity.extendsFrom && Mast.mixins.provisionPrototype(identity.extendsFrom,identitySet,identityPrototype)) || identityPrototype;
 			if (! parentPrototype.extend) {
 				throw new Error ("Invalid identity provided: " + identity);
 			}
@@ -3113,6 +3088,26 @@ Mast.mixins = {
 			return false;
 		}
 		return $outlet;
+	},
+
+	// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
+	// and match against an existing collection of patterns
+	matchRoutePattern: function (key,pattern) {
+		var extractParams = Backbone.Router.prototype._extractParameters,
+			calculateRegex = Backbone.Router.prototype._routeToRegExp;
+
+		// Trim traliing and leading slashes
+		pattern = _.str.trim(pattern,'/');
+		var regex=calculateRegex(pattern);
+
+		// If there is no match, return false
+		if (!key.match(regex)) {
+			return false;
+		}
+		// Return a list of the extracted parameters, or an empty list if none were sent
+		else {
+			return extractParams(regex,key);
+		}
 	},
 	
 	// Given a jQuery object, return the html, **INCLUDING** the element itself
@@ -3308,13 +3303,14 @@ Mast.Socket =_.extend(
 	},
 	
 	// Route an incoming comet request to the appropriate context and action
+	// TODO: use mixin here
 	route: function (serverUri,serverData) {
 		// Use Backbone's Router logic to parse parameters (/variable/parsing/:within/:path)
 		var extractParams = Backbone.Router.prototype._extractParameters,
 			calculateRegex = Backbone.Router.prototype._routeToRegExp;
 
 		// Match the request's URI against each subcribed route
-		_.each(Mast.Socket.routes,function(instances,routeUri) {				
+		_.each(Mast.Socket.routes,function(instances,routeUri) {
 			
 			// Trim traliing and leading slashes
 			routeUri = _.str.trim(routeUri,'/');
@@ -3685,29 +3681,54 @@ Mast.Component = {
 
 		// Listen to subscriptions
 		if(this.subscriptions) {
-		
-			// TODO: bind actions to backbone events
+
+			// Get subset of events based on symbol
+			var self = this;
+			var subset = function (symbol) { 
+				return _.filter(_.keys(self.subscriptions),function (key) {
+					return key[0] === symbol;
+				}); 
+			};
+
 			// TODO: bind actions to DOM events
-
-			// Bind actions to route events
-			var routeSubscriptions = _.filter(_.keys(this.subscriptions), function (key) { 
-				return key[0] === "#";
-			});
-			_.each(routeSubscriptions, function (route) {
-				// Understand index synonym
-				route = (route === "#") ? "#index" : route;
-
-				// Route to proper method on this component when route is triggered
-				var action = this.subscriptions[route];
-				Mast.Dispatcher.on("route:"+route.substr(1), _.isFunction(action) ? action : this[action]);
-			},this);
+			// subset("*")
 
 			
+			// When dispatcher triggers a route event
+			Mast.Dispatcher.on("all", function(pattern){
 
-			// Bind actions to comet events
-			_.each(this.subscriptions, function(action, route) {
+				// TODO: Capture event parameters
+				// var params = _.toArray(arguments);
+				// params.shift();
+				pattern = pattern.match(/^route:(.*)/);
+				if (pattern && pattern.length === 2) {
+					pattern = pattern[1];
+
+					// Look for matching route subscription
+					_.each(subset("#"), function (route) {
+
+						// Normalize index synonym
+						route = (route === "#" || route === "#index") ? "#" : route;
+
+						// If pattern matches, disambiguate and trigger action
+						var params = Mast.mixins.matchRoutePattern(pattern,route);
+						if (params) {
+							var action = self.subscriptions[route];
+							action =  _.isFunction(action) ? action : self[action];
+							action = _.bind(action,self);
+							action.apply(self,params);
+						}
+					});					
+				}
+			},this);
+			
+			// Bind comet events
+			_.each(subset("~"), function(action, route) {
 				Mast.Socket.subscribe(route, _.isFunction(action) ? action : this[action], this);
 			}, this);
+
+			// TODO: bind actions to backbone events
+			// the rest of 'em
 		}
 	},
 
@@ -3925,6 +3946,9 @@ Mast.Component = {
 		// Unsubscribe to model change events
 		this.pattern.off();
 		this.off();
+
+		// Unsubscribe all events on dispatcher with this context
+		Mast.Dispatcher.off(null,null,this);
 
 		// Remove from DOM
 		this.$el.remove();
