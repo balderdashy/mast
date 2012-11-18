@@ -6122,6 +6122,10 @@ Mast = _.extend(Backbone, {
 					}, options));
 				};
 
+				// Make Mast.on() and Mast.trigger() defer to the dispatcher
+				Mast.on = Mast.Dispatcher.on;
+				Mast.trigger = Mast.Dispatcher.trigger;
+
 				// TODO: Go ahead and absorb all of the templates in the library 
 				// right from the get-go
 				// TODO: parse rest of DOM to find and absorb implicit templates
@@ -6185,7 +6189,7 @@ Mast.mixins = {
 			else if (matches = command.match(/^%([^'"]+)\.?$/)) {
 				ev = _.str.rtrim(matches[1],".");
 				method = function (e) {
-					Mast.Dispatcher.trigger(ev);
+					Mast.trigger(ev);
 					stopPropagation && e.stopPropagation();
 				};
 			}
