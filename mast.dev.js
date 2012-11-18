@@ -6186,7 +6186,6 @@ Mast.mixins = {
 				ev = _.str.rtrim(matches[1],".");
 				method = function (e) {
 					Mast.Dispatcher.trigger(ev);
-					console.log("TRIGGERED "+ev);
 					stopPropagation && e.stopPropagation();
 				};
 			}
