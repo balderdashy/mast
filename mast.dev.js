@@ -6156,35 +6156,59 @@ Mast.mixins = {
 			return command;
 		}
 		else if (_.isString(command)) {
-			var matches = null, attribute, value,ev;
+			var matches = null, attribute, value,ev,method;
+
+			// If expression ends with a ., do stopPropagation
+			var stopPropagation = command.match(/^([^'"]+)\.$/);
 
 			// Toggle attribute (i.e. @enabled!)
 			if (matches = command.match(/@([$_a-zA-Z]+)\s*!/)) {
 				attribute = matches[1];
-				command = function () {
+				method = function (e) {
 					this.set(attribute,!this.get(attribute));
+					stopPropagation && e.stopPropagation();
 				};
 			}
 			// Set attribute (i.e. @name = "Mike")
 			else if (matches = command.match(/@([$_a-zA-Z]+)\s*=\s*["']?([^'"]+)["']?/)) {
 				attribute = matches[1], value = matches[2];
-				command = function () {
+				method = function () {
 					// If value can be parsed as a number, do so
 					value = _.isFinite(+value) ? +value : value;
 					// Set attribute to value
 					this.set(attribute,value);
+					stopPropagation && e.stopPropagation();
 				};
 			}
 			// Trigger event (i.e. /someEvent)
 			else if (matches = command.match(/%([^'"]+)/)) {
 				ev = matches[1];
-				command = function () {
+				method = function () {
 					this.trigger(ev);
+					stopPropagation && e.stopPropagation();
+				};
+			}
+			// If ., do a simple stopPropagation
+			else if (matches = command.match(/^\.$/)) {
+				method = function (e) {
+					e.stopPropagation();
+				};
+			}
+			// If this is just a simple string
+			else if (matches = command.match(/^([^'"]+)$/)) {
+				method = function (e) {
+					var fnName = matches[1];
+					if (stopPropagation) {
+						e.stopPropagation();
+						fnName = fnName.substr(0,fnName.length-1);
+					}
+					// Run fn
+					this[fnName](e);
 				};
 			}
 
-			// backbone will do the work of binding functions and converting simple strings later
-			return command;
+			// backbone will do the work of binding functions afterwards
+			return method || command;
 		}
 	},
 
