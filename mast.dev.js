@@ -3233,8 +3233,6 @@ Mast.Collection = Mast.Collection.extend({
 // for programatic communication with the Sails backend
 Mast.Socket =_.extend(
 {	
-	// Local reference to Socket.io object
-	io: window.io,	
 	
 	// The base url of the application
 	baseurl: window.location.origin,
@@ -3272,6 +3270,9 @@ Mast.Socket =_.extend(
 	// Connect to socket
 	connect: function(baseurl,cb) {
 		var self = this;
+
+		// Local reference to Socket.io object
+		this.io = this.io || window.io;
 		if (!this.io) {
 			throw new Error(
 			"Can't connect to socket because the Socket.io "+
@@ -3368,7 +3369,7 @@ Mast.Socket =_.extend(
 			limit: options.limit,
 			skip: options.skip,
 			order: options.order
-		})
+		});
 		this.get(url, options.data || {}, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
