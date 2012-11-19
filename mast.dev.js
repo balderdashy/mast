@@ -6164,7 +6164,7 @@ Mast.mixins = {
 
 			// If expression ends with a ., do stopPropagation
 			// (i.e. '%someEvent.'  or  '@someAttr="someVal".')
-			var stopPropagation = command.match(/^([^'"]+)\.$/);
+			var stopPropagation = command.match(/^(.+)\.$/);
 
 			// Toggle attribute (i.e. @enabled!)
 			if (matches = command.match(/^@([$_a-zA-Z]+)\s*!\.?$/)) {
@@ -6583,6 +6583,8 @@ Mast.Socket =_.extend(
 
 		// Match the request's URI against each subcribed route
 		_.each(Mast.Socket.routes,function(instances,routeUri) {
+			// Peel off comet symbol (~)
+			routeUri = _.str.ltrim(routeUri,'~');
 			
 			// Trim traliing and leading slashes
 			routeUri = _.str.trim(routeUri,'/');
@@ -7384,13 +7386,13 @@ Mast.Tree = {
 		// Default subscriptions (for scaffolds)
 		var defaultSubscriptions = {},entity = _.str.trim(this.collection.url,'/');
 		if (entity) {
-			defaultSubscriptions[entity+'/create'] = function (attributes) {
+			defaultSubscriptions["~"+entity+'/create'] = function (attributes) {
 				this.collection.add(attributes);
 			};
-			defaultSubscriptions[entity+'/:id/update'] = function (id,attributes) {
+			defaultSubscriptions["~"+entity+'/:id/update'] = function (id,attributes) {
 				this.collection.get(id).set(attributes);
 			};
-			defaultSubscriptions[entity+'/:id/destroy'] = function (id) {
+			defaultSubscriptions["~"+entity+'/:id/destroy'] = function (id) {
 				this.collection.remove(id);
 			};
 			this.subscriptions = _.defaults(this.subscriptions || {},defaultSubscriptions);
