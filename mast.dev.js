@@ -6997,7 +6997,11 @@ Mast.Component = {
 			},this);
 			
 			// Bind comet events
-			_.each(subset("~"), function(action, route) {
+			_.each(subset("~"), function(route) {
+				var action = self.subscriptions[route];
+				action =  _.isFunction(action) ? action : self[action];
+				action = _.bind(action,self);
+				console.log("ROUTING comet",action,route);
 				Mast.Socket.subscribe(route, _.isFunction(action) ? action : this[action], this);
 			}, this);
 
