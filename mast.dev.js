@@ -6208,7 +6208,7 @@ Mast.mixins = {
 						fnName = fnName.substr(0,fnName.length-1);
 					}
 					// Run fn
-					this[fnName](e);
+					this[fnName].apply(this,arguments);
 				};
 			}
 
@@ -6977,6 +6977,7 @@ Mast.Component = {
 				pattern = pattern.match(/^route:(.*)/);
 				if (pattern && pattern.length === 2) {
 					pattern = pattern[1];
+					// console.log("A component ("+this._class+") received a pattern:",pattern);
 
 					// Look for matching route subscription
 					_.each(subset("#"), function (route) {
@@ -6986,8 +6987,10 @@ Mast.Component = {
 
 						// If pattern matches, disambiguate and trigger action
 						var params = Mast.mixins.matchRoutePattern(pattern,route);
+						// console.log("trying to match "+pattern+ " with the route, "+route,"... I got:",params);
 						if (params) {
 							var action = self.subscriptions[route];
+							// console.log("APPLYING ",action);
 							action =  _.isFunction(action) ? action : self[action];
 							action = _.bind(action,self);
 							action.apply(self,params);
@@ -7001,7 +7004,6 @@ Mast.Component = {
 				var action = self.subscriptions[route];
 				action =  _.isFunction(action) ? action : self[action];
 				action = _.bind(action,self);
-				console.log("ROUTING comet",action,route);
 				Mast.Socket.subscribe(route, _.isFunction(action) ? action : this[action], this);
 			}, this);
 
