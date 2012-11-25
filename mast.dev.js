@@ -5771,8 +5771,8 @@ debug = (function(){
 (function(){
 
 	// Map a few pressFoo events automatically
-	pressFoo(27,'pressEscape');
-	pressFoo(13,'pressEnter');
+	pressFoo(27,'pressEscape', false, 'keydown');
+	pressFoo(13,'pressEnter',false, 'keydown');
 	
 	// Map global pressFoo events
 	pressFoo(27,'gPressEscape',true,"keydown");
@@ -5794,8 +5794,8 @@ debug = (function(){
 					e.preventDefault();
 					origTarget.triggerHandler( handlerName,e );
 				}
-			}
-		}
+			};
+		};
 		
 		// Add our new event to jQuery
 		// (handlerName is the name of the new event)
@@ -5842,7 +5842,7 @@ debug = (function(){
 				// native event binding on this element.
 				return;
 			}
-		}
+		};
 	}
 
 })();
