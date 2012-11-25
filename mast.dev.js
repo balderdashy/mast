@@ -6095,8 +6095,13 @@ Mast = _.extend(Backbone, {
 				});
 				
 				// Add wildcard route
-				Backbone.history.route(/.+/,function(fragment) {
-					Mast.Dispatcher.trigger("route:"+"#"+fragment);
+				Backbone.history.route(/.*/,function(fragment) {
+
+					// Trigger specific route event
+					Mast.Dispatcher.trigger("route:#"+fragment);
+
+					// Trigger cross-browser global hashchange event
+					Mast.Dispatcher.trigger("event:$hashchange");
 				});
 
 				// LEGACY: Decorate and interpret defined routes
@@ -6964,17 +6969,31 @@ Mast.Component = {
 				}); 
 			};
 
-			// TODO: bind actions to DOM events
-			// subset("*")
-
 			
-			// When dispatcher triggers a route event
-			Mast.Dispatcher.on("all", function(pattern){
+			Mast.Dispatcher.on("all", function(dispatchedPattern) {
 
-				// TODO: Capture event parameters
-				// var params = _.toArray(arguments);
-				// params.shift();
-				pattern = pattern.match(/^route:(.*)/);
+				// Grab dispatched arguments
+				var dispatchedArguments = _.toArray(arguments);
+				dispatchedArguments.shift();
+
+				// Bind actions to DOM events
+				var pattern = dispatchedPattern.match(/^event:(.*)/);
+				if (pattern && pattern.length == 2) {
+
+					// Look for matching event subscription
+					_.each(subset("$"), function (event) {
+						var action = self.subscriptions[event];
+						action =  _.isFunction(action) ? action : self[action];
+						action = _.bind(action,self);
+
+						// Pass down event object(s) with dispatched arguments
+						action.apply(self,dispatchedArguments);
+					});
+				}
+
+				
+				// When dispatcher triggers a route event
+				pattern = dispatchedPattern.match(/^route:(.*)/);
 				if (pattern && pattern.length === 2) {
 					pattern = pattern[1];
 					// console.log("A component ("+this._class+") received a pattern:",pattern);
@@ -6987,12 +7006,17 @@ Mast.Component = {
 
 						// If pattern matches, disambiguate and trigger action
 						var params = Mast.mixins.matchRoutePattern(pattern,route);
-						// console.log("trying to match "+pattern+ " with the route, "+route,"... I got:",params);
 						if (params) {
 							var action = self.subscriptions[route];
-							// console.log("APPLYING ",action);
 							action =  _.isFunction(action) ? action : self[action];
 							action = _.bind(action,self);
+
+							// Take dispatched arguments passed to Mast.navigate() and tack them on the end of argument list
+							if (dispatchedArguments) {
+								params.concat(dispatchedArguments);
+							}
+
+							// Run action with combined params
 							action.apply(self,params);
 						}
 					});					
