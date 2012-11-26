@@ -6844,7 +6844,7 @@ Mast.Component = {
 
 				// Trigger action with dispatched arguments
 				var triggerName = _.str.ltrim(trigger,'%');
-				self.on(triggerName,action);
+				Mast.on(triggerName,action);
 			});
 
 			
