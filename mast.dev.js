@@ -6680,10 +6680,10 @@ $(function() {
 	$(window).bind('click', globalDispatchBinding('$click'));
 
 	// $pressEnter
-	$(document).bind('pressEnter', globalDispatchBinding('$pressEnter'));
+	$(document).bind('gPressEnter', globalDispatchBinding('$pressEnter'));
 
 	// $pressEsc
-	$(document).bind('pressEsc', globalDispatchBinding('$pressEsc'));
+	$(document).bind('gPressEsc', globalDispatchBinding('$pressEsc'));
 
 
 
