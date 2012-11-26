@@ -5793,8 +5793,8 @@ debug = (function(){
 			return function(e) {
 				e.stopPropagation();
 				var pressedkeycode = e.keyCode || e.which;
-				if(pressedkeycode == keyCode) {
-					e.preventDefault();
+				if(pressedkeycode === keyCode) {
+					// e.preventDefault();
 					origTarget.triggerHandler( handlerName,e );
 				}
 			};
@@ -6403,12 +6403,18 @@ Mast.Socket =_.extend(
 				);
 		}
 		this.baseurl = baseurl || this.baseurl;
+		
+		debug.debug("Connecting socket to "+this.baseurl);
 		this._socket = this.io.connect(this.baseurl);
-		Mast.Socket._socket.on('sessionUpdated',function(data) {				// Listen for latest session data from server and update local store
+
+		// Listen for latest session data from server and update local store
+		Mast.Socket._socket.on('sessionUpdated',function(data) {
 			Mast.Session = data;
 			Mast.Socket.trigger('sessionUpdated');
 		});
-		Mast.Socket._socket.on('message',function(cometMessage) {				// Route server-sent comet events
+
+		// Route server-sent comet events
+		Mast.Socket._socket.on('message',function(cometMessage) {
 			if (cometMessage.uri) {
 				Mast.Socket.route(cometMessage.uri,_.clone(cometMessage.data));
 			}
