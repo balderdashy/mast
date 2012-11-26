@@ -6684,7 +6684,6 @@ $(function() {
 
 	// $pressEsc
 	$(document).bind('pressEsc', globalDispatchBinding('$pressEsc'));
-	$(document).bind('pressEscape', globalDispatchBinding('$pressEsc'));
 
 
 
