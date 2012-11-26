@@ -5773,10 +5773,12 @@ debug = (function(){
 
 	// Map a few pressFoo events automatically
 	pressFoo(27,'pressEscape', false, 'keydown');
+	pressFoo(27,'pressEsc', false, 'keydown');
 	pressFoo(13,'pressEnter',false, 'keydown');
 	
 	// Map global pressFoo events
 	pressFoo(27,'gPressEscape',true,"keydown");
+	pressFoo(27,'gPressEsc',true,"keydown");
 	pressFoo(13,'gPressEnter',true,'keydown');
 	
 	
@@ -6678,10 +6680,11 @@ $(function() {
 	$(window).bind('click', globalDispatchBinding('$click'));
 
 	// $pressEnter
-	$(window).bind('pressEnter', globalDispatchBinding('$pressEnter'));
+	$(document).bind('pressEnter', globalDispatchBinding('$pressEnter'));
 
 	// $pressEsc
-	$(window).bind('pressEsc', globalDispatchBinding('$pressEsc'));
+	$(document).bind('pressEsc', globalDispatchBinding('$pressEsc'));
+	$(document).bind('pressEscape', globalDispatchBinding('$pressEsc'));
 
 
 
