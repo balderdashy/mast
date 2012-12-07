@@ -7043,14 +7043,6 @@ Mast.Component = {
 				action =  _.isFunction(action) ? action : self[action];
 				action = _.bind(action,self);
 
-				// ACTUALLY this is a deception and can lead to bad practices
-				// since you also need to be able to trigger routes directly
-				// /////////////////////////////////
-				// Take dispatched arguments passed to Mast.navigate() and tack them on the end of argument list
-				// if (dispatchedArguments) {
-				// 	params.concat(dispatchedArguments);
-				// }
-
 				// Run action with combined params
 				action.apply(self,params);
 			}
@@ -7500,8 +7492,8 @@ Mast.Tree = {
 	},
 	
 	// Do a standard component naive render, but also rerender branches
-	naiveRender: function (silent,changes) {
-		Mast.Component.prototype.naiveRender.call(this,silent,changes);
+	doNaiveRender: function (silent,changes) {
+		Mast.Component.prototype.doNaiveRender.call(this,silent,changes);
 		this.renderBranches(silent,changes);
 	},
 	
