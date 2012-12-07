@@ -7628,7 +7628,7 @@ Mast.Tree = {
 		return this.collection.fetch({
 			success: function () {
 				self.isLoading = false;
-				this.renderBranches();
+				self.renderBranches();
 			},
 			error: function () {
 				self.isLoading = false;
