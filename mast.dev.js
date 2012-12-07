@@ -6089,7 +6089,7 @@ Mast.mixins = {
 
 					// Map shorthand
 					newEntity.prototype.events = _.objMap(newEntity.prototype.events,Mast.mixins.interpretShorthand);
-					newEntity.prototype.bindings = _.objMap(newEntity.prototype.bindings,Mast.mixins.interpretShorthand);
+					// newEntity.prototype.bindings = _.objMap(newEntity.prototype.bindings,Mast.mixins.interpretShorthand);
 					newEntity.prototype.subscriptions = _.objMap(newEntity.prototype.subscriptions,Mast.mixins.interpretShorthand);
 
 					Mast._registerQueue.splice(i, 1);
@@ -7124,7 +7124,11 @@ Mast.Component = {
 	render: function(silent, changes) {
 		!silent && this.trigger('beforeRender', changes);
 		
-		if (this.naiveRender) {
+		// if (this.appendedOnce ? this.naiveRender : true) {
+
+		// If naiveRender is true, always use naiverender if bindings don't cover all our bases
+		// otherwise, just do it the first time
+		if (!this.appendedOnce || (this.appendedOnce && this.naiveRender)) {
 			// Determine if all changed attributes are bound
 			var allBound = _.all(changes, function(attrVal, attrName) {
 				return !_.isUndefined(this.bindings[attrName]);
@@ -7153,11 +7157,22 @@ Mast.Component = {
 		var bindingsToPerform = _.keys(changes || this.bindings);
 		_.each(bindingsToPerform, function(attrName) {
 			var handler = this.bindings[attrName];
-			handler = _.isString(handler) ? this[handler] : handler;
 			if(handler) {
-				if(!_.isFunction(handler)) throw new Error("Bindings contain invalid or non-existent function.");
-				handler = _.bind(handler, this);
-				handler(this.get(attrName));
+				// Run binding if a function
+				if(_.isFunction(handler)) {
+					handler = _.bind(handler, this);
+					handler(this.get(attrName));
+				}
+				// For string selector bindings, replace the value or text
+				// (depending on whether this is a form input element or not)
+				else if (_.isString(handler)) {
+					var $el = this.$el.closest_descendant(handler);
+					if (!$el || !$el.length) throw new Error('No element can be found for binding selector: '+handler);
+					var nodeName = $el.get(0).nodeName.toLowerCase();
+					var formy = nodeName === 'input' || nodeName === 'select' || nodeName === 'option' || nodeName === 'button' || nodeName === 'optgroup' || nodeName === 'textarea';
+					formy ? $el.val(this.get(attrName)) : $el.text(this.get(attrName));
+				}
+				else throw new Error("Bindings contain invalid or non-existent function.");
 			}
 		}, this);
 	},
@@ -7439,8 +7454,10 @@ Mast.Tree = {
 	
 	// Keeps track of hot branch components for memory management
 	_branchStack: [],
+
+	isLoading: false,
 	
-	initialize: function (attributes,options){
+	initialize: function (attributes,options) {
 				
 		// Determine whether specified branch component is a className, class, or instance
 		this.branchComponent = (this.branchComponent && 
@@ -7512,8 +7529,11 @@ Mast.Tree = {
 		_.invoke(this._branchStack,'close');
 		this._branchStack = [];
 		
-		// Append branches or empty HTML to the branchOutlet
-		if (this.collection && !this.collection.length) {
+		// Append branches, empty HTML, or loading HTML to the branchOutlet
+		if (this.collection && this.isLoading && (this.loadingHTML || this.loadingTemplate)) {
+			this.$branchOutlet.append(this._generateLoadingHTML());
+		}
+		else if (this.collection && !this.collection.length) {
 			this.$branchOutlet.append(this._generateEmptyHTML());
 		}
 		else {
@@ -7522,6 +7542,7 @@ Mast.Tree = {
 				self.appendBranch(model,{},true);
 			});
 		}
+
 		!silent && this.trigger('afterRender');
 	},
 	
@@ -7597,9 +7618,22 @@ Mast.Tree = {
 	},
 
 	// fetch items in this collection
+	// keep track of isLoading state
 	fetchCollection: function () {
-		return this.collection.fetch();
+		var self = this;
+		self.isLoading = true;
 
+		// Render loading state if relevant
+		this.renderBranches();
+		return this.collection.fetch({
+			success: function () {
+				self.isLoading = false;
+				this.renderBranches();
+			},
+			error: function () {
+				self.isLoading = false;
+			}
+		});
 	},
 			
 	// Generate empty tree html
@@ -7612,6 +7646,19 @@ Mast.Tree = {
 		}
 		else {
 			return this.emptyHTML;
+		}
+	},
+
+	// Generate loading html
+	_generateLoadingHTML: function () {
+		if (this.loadingTemplate) {
+			var pattern = new Mast.Pattern({
+				template: this.loadingTemplate
+			});
+			return $(pattern.generate());
+		}
+		else {
+			return this.loadingHTML;
 		}
 	}
 }
