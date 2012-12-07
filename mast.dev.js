@@ -6848,6 +6848,9 @@ Mast.Component = {
 	// Automatic rendering is enabled by default
 	autoRender: true,
 
+	// If no binding exists for a given attribute, rip the entire template out of the DOM and put it back in
+	naiveRender: true,
+
 	// Set to true the first time this element is appended to the DOM
 	// used for figuring out when to trigger afterCreate
 	appendedOnce: false,
@@ -7128,17 +7131,22 @@ Mast.Component = {
 	// Render the pattern and subcomponents
 	render: function(silent, changes) {
 		!silent && this.trigger('beforeRender', changes);
-		// console.log("RENDA",changes);
-		// Determine if all changed attributes are bound
-		var allBound = _.all(changes, function(attrVal, attrName) {
-			return !_.isUndefined(this.bindings[attrName]);
-		}, this);
+		
+		if (this.naiveRender) {
+			// Determine if all changed attributes are bound
+			var allBound = _.all(changes, function(attrVal, attrName) {
+				return !_.isUndefined(this.bindings[attrName]);
+			}, this);
 
-		// if not all attribute changes are bound, or there are no explicit changes, naively rerender
-		if(!allBound || !changes) {
-			this.naiveRender(true, changes);
+			// if not all attribute changes are bound, or there are no explicit changes, naively rerender
+			if(!allBound || !changes) {
+				this.doNaiveRender(true, changes);
+			}
+			// Otherwise, perform the specific bindings for this changeset
+			else {
+				this.runBindings(changes);
+			}
 		}
-		// Otherwise, perform the specific bindings for this changeset
 		else {
 			this.runBindings(changes);
 		}
@@ -7163,7 +7171,7 @@ Mast.Component = {
 	},
 
 	// Rip existing element out of DOM, replace with new element, then render subcomponents
-	naiveRender: function(silent) {
+	doNaiveRender: function(silent) {
 		// If template is falsy, don't try to render it
 		if(!this.template) {} else {
 			var $element = this.generate();
@@ -7380,6 +7388,15 @@ Mast.Component = {
 		});
 	},
 
+	// 
+	fetchModel: function () {
+		this.model.fetch();
+	},
+
+	fetch: function () {
+		return this.fetchModel();
+	},
+
 	// Pass-thru to model.get()
 	get: function(attribute) {
 		return this.pattern.get(attribute);
@@ -7579,6 +7596,18 @@ Mast.Tree = {
 	// Lookup $ set of all Branches
 	getBranchesEl: function () {
 		return this.$branchOutlet.children();
+	},
+
+	// Fetch collection and model
+	fetch: function () {
+		this.fetchCollection();
+		this.fetchModel();
+	},
+
+	// fetch items in this collection
+	fetchCollection: function () {
+		return this.collection.fetch();
+
 	},
 			
 	// Generate empty tree html
