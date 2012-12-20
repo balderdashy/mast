@@ -5879,7 +5879,7 @@ Mast = _.extend(Backbone, {
 	raise: function(options, afterLoadFn, beforeRouteFn) {
 
 		// If function is specified as first argument, use it as 
-		if (_.isFunction(options)) {
+		if(_.isFunction(options)) {
 			afterLoadFn = options;
 			options = {
 				afterLoadFn: options
@@ -5887,7 +5887,7 @@ Mast = _.extend(Backbone, {
 		}
 
 		// Set up template settings
-		_.templateSettings = {
+		_.templateSettings = options.templateSettings || {
 			//			variable: 'data',
 			interpolate: /\{\{(.+?)\}\}/g,
 			escape: /\{\{-(.+?)\}\}/g,
@@ -5902,12 +5902,12 @@ Mast = _.extend(Backbone, {
 			});
 
 			// Absorb key Mast property overrides from options
-			if (options.removeTemplateIds !== undefined) {
+			if(options.removeTemplateIds !== undefined) {
 				Mast.removeTemplateIds = options.removeTemplateIds;
 			}
 
 			// Register Mast.entities and enable inheritance
-			Mast.mixins.registerEntities(); 
+			Mast.mixins.registerEntities();
 
 
 			// Prepare template library
@@ -5918,7 +5918,7 @@ Mast = _.extend(Backbone, {
 
 			// Initialize Socket
 			// Override default base URL if one was specified
-			if (Mast.Socket && options.socket) {
+			if(Mast.Socket && options.socket) {
 				Mast.Socket.baseurl = (options && options.baseurl) || Mast.Socket.baseurl;
 				Mast.Socket.initialize();
 			}
@@ -5926,69 +5926,62 @@ Mast = _.extend(Backbone, {
 			// Before routing, trigger beforeRouteFn callback (if specified)
 			options.beforeRouteFn && options.beforeRouteFn();
 
-			// var self = this;
-			// _.defer(function() {
+			// Clone router
+			Mast.Router = Backbone.Router.extend({});
 
-				// Clone router
-				Mast.Router = Backbone.Router.extend({});
-				
-				// Instantiate router and trigger routerInitialized event on components
-				var router = new Mast.Router();
+			// Instantiate router and trigger routerInitialized event on components
+			var router = new Mast.Router();
 
-				// "Warm up" the router so that it will create Backbone.history
-				router.route("somecrazyneverusedthing","somenameofsomecrazyneverusedthing",function(){
-					throw new Error ("Can't listen on a route using reserved word: somenameofsomecrazyneverusedthing!");
-				});
-				
-				// Add wildcard route
-				Backbone.history.route(/.*/,function(fragment) {
+			// "Warm up" the router so that it will create Backbone.history
+			router.route("somecrazyneverusedthing", "somenameofsomecrazyneverusedthing", function() {
+				throw new Error("Can't listen on a route using reserved word: somenameofsomecrazyneverusedthing!");
+			});
 
-					// Trigger specific route event
-					Mast.trigger("route:#"+fragment);
+			// Add wildcard route
+			Backbone.history.route(/.*/, function(fragment) {
 
-					// Trigger cross-browser global hashchange event
-					Mast.trigger("event:$hashchange");
-				});
+				// Trigger specific route event
+				Mast.trigger("route:#" + fragment);
 
-				// LEGACY: Decorate and interpret defined routes
-				// (Routes are now handled as subscriptions in components)
-				_.each(Mast.routes, function(action, query) {
-					// "routes" is a reserved word
-					if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
+				// Trigger cross-browser global hashchange event
+				Mast.trigger("event:$hashchange");
+			});
 
-					// Index and "" are the same thing
-					if(query === "index" || query ==="") {
-						router.route("","index",action);
-					}
+			// LEGACY: Decorate and interpret defined routes
+			// (Routes are now handled as subscriptions in components)
+			_.each(Mast.routes, function(action, query) {
+				// "routes" is a reserved word
+				if(query == "routes") throw new Error("Can't define a route using reserved word: '" + query + "'!");
 
-					// Set up route
-					router.route(query,query,action);
-				});
+				// Index and "" are the same thing
+				if(query === "index" || query === "") {
+					router.route("", "index", action);
+				}
 
-				// Mast makes the assumption that you want to trigger
-				// the route handler.  This can be overridden
-				Mast.navigate = function(query, options) {
-					return router.navigate(query, _.extend({
-						trigger: true
-					}, options));
-				};
+				// Set up route
+				router.route(query, query, action);
+			});
 
-				
-				// TODO: Go ahead and absorb all of the templates in the library 
-				// right from the get-go
-				// TODO: parse rest of DOM to find and absorb implicit templates
-				// when document is ready
-				// $(function() {
+			// Mast makes the assumption that you want to trigger
+			// the route handler.  This can be overridden
+			Mast.navigate = function(query, options) {
+				return router.navigate(query, _.extend({
+					trigger: true
+				}, options));
+			};
 
-				// Launch history manager 
-				Mast.history.start();
 
-				// When Mast and $.document are ready, 
-				// trigger afterLoad callback (if specified)
-				options.afterLoadFn && _.defer(options.afterLoadFn);
-				options.afterRouteFn && _.defer(options.afterRouteFn);
-				// });
-			// });
+			// TODO: Go ahead and absorb all of the templates in the library 
+			// right from the get-go
+			// TODO: parse rest of DOM to find and absorb implicit templates
+			
+			// Launch history manager 
+			Mast.history.start();
+
+			// When Mast and $.document are ready, 
+			// trigger afterLoad callback (if specified)
+			options.afterLoadFn && _.defer(options.afterLoadFn);
+			options.afterRouteFn && _.defer(options.afterRouteFn);
 		});
 	}
 }, Backbone.Events);
@@ -6366,6 +6359,7 @@ Mast.Socket =_.extend(
 	// Override backbone.sync when Socket object is instantiated
 	initialize: function(cb) {
 		_.bindAll(this);
+
 		this.autoconnect && this.connect(cb);
 		Backbone.sync = function(method, model, options) {						// Override Backbone.sync	
 			switch (method) {													// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
@@ -6523,22 +6517,36 @@ Mast.Socket =_.extend(
 	},
 	
 	// Request wrappers for each of the CRUD HTTP verbs
-	get: function (url,data,options) { this.request(url,data,options,'get') },
-	post: function (url,data,options) { this.request(url,data,options,'post') },
-	put: function (url,data,options) { this.request(url,data,options,'put') },
-	'delete': function (url,data,options) { this.request(url,data,options,'delete') },
+	get: function (url,data,options) { this.request(url,data,options,'get'); },
+	post: function (url,data,options) { this.request(url,data,options,'post'); },
+	put: function (url,data,options) { this.request(url,data,options,'put'); },
+	'delete': function (url,data,options) { this.request(url,data,options,'delete'); },
 	
 	// Simulate an HTTP request to the backend
 	request: function (url,data,options, method) {
-		url = url.replace(/\/*$/,'');											// Remove trailing slash
+		// Remove trailing slash
+		url = url.replace(/\/*$/,'');
+
+		// If options is a function, treat it as a callback
+		// Otherwise the "success" property will be treated as the callback
+		var cb;
+		if (_.isFunction(options)) cb = options;
+		else cb = options.success;
+
+		// If not connected, fall back to $.ajax
+		if (!this.connected) {
+			return $.ajax(url,_.extend(options,{
+				data: data,
+				type: method
+			}));
+		}
+
 		this._send('message',{
 			url: url,
 			data: data,
 			method: method || 'get'
 		},function (parsedResult) {
-			options && ((_.isFunction(options) ? 
-				options :														// If options is a function, treat it as a callback
-				options.success) (parsedResult));								// Otherwise the "success" property will be treated as the callback
+			cb(parsedResult);
 		});
 	},
 	
