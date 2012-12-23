@@ -6524,8 +6524,11 @@ Mast.Socket =_.extend(
 	
 	// Simulate an HTTP request to the backend
 	request: function (url,data,options, method) {
-		// Remove trailing slash
-		url = url.replace(/\/*$/,'');
+		// Remove trailing slashes and spaces
+		url = url.replace(/\/*\s*$/,'');
+
+		// If url is empty, use /
+		if (url === '') url = '/';
 
 		// If options is a function, treat it as a callback
 		// Otherwise the "success" property will be treated as the callback
