@@ -5887,7 +5887,7 @@ Mast = _.extend(Backbone, {
 		}
 
 		// Set up template settings
-		_.templateSettings = options.templateSettings || {
+		_.templateSettings = (options && options.templateSettings) || {
 			//			variable: 'data',
 			interpolate: /\{\{(.+?)\}\}/g,
 			escape: /\{\{-(.+?)\}\}/g,
@@ -6361,8 +6361,11 @@ Mast.Socket =_.extend(
 		_.bindAll(this);
 
 		this.autoconnect && this.connect(cb);
-		Backbone.sync = function(method, model, options) {						// Override Backbone.sync	
-			switch (method) {													// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
+
+		// Override Backbone.sync for Socket
+		// (reference: http://documentcloud.github.com/backbone/docs/backbone-localstorage.html)
+		Backbone.sync = function(method, model, options) {
+			switch (method) {
 				case "read":
 					model.id ? 
 						Mast.Socket.find(model,options) : 
@@ -6389,8 +6392,7 @@ Mast.Socket =_.extend(
 		this.io = this.io || window.io;
 		if (!this.io) {
 			throw new Error(
-			"Can't connect to socket because the Socket.io "+
-			"client library (io) cannot be found!"
+			"Can't connect to socket because the Socket.io client library (io) cannot be found!"
 			);
 		}
 		if (this.connected) {
@@ -7062,7 +7064,7 @@ Mast.Component = {
 
 	// Get subset of events based on symbol
 	getSubscriptionSubset: function (symbol) { 
-		return _.filter(_.keys(this.subscriptions),function (key) {
+		return _.filter(_.keys(this.subscriptions || {}),function (key) {
 			return key[0] === symbol;
 		}); 
 	},
