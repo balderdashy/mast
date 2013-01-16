@@ -1,10 +1,16 @@
-# Mast: Sails 
+![image_squidhome@2x.png](http://i.imgur.com/7rMxw.png) 
+
+# Mast
 
 ### What is Mast?
-The productivity-enhancing front-end library for Sails.  Mast was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers.  Like Sails, Mast is a collection of the latest stable versions of really great libraries, in this case Backbone.js, jQuery, and Socket.io.
+
+Productivity-enhancing front-end library based on Backbone.js.  Mast takes standard conventions you use in every Backbone project and formalizes them.  
+
+There are 1,000 ways to build a jQuery script.  There are 100 ways to build a Backbone app.  Mast takes it to the next level, providing standard conventions for DOM development.  It was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers.  Like Sails, Mast is a collection of the latest stable versions of really great libraries, in this case Backbone.js, jQuery, and Socket.io.
+
 
 ### Why Bother?
-With Mast, building the front-end for your app is *faster*, *'funner'* and requires *fewer* lines of code.
+With Mast, building the front-end for your app is *faster*, *"funner"* and requires *fewer* lines of code.
 
 
 
