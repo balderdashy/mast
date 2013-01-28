@@ -6531,6 +6531,14 @@ Mast.Socket =_.extend(
 	// CRUD methods for Backbone usage
 	create: function(model,options){
 		var url = (model.url() || model.collection.url) + "/create";
+
+		var data = model.toJSON();
+
+		// Always pass a filter attribute in case this user is using the Sails API scaffold
+		_.extend(data, {
+			sails_filter: true
+		});
+
 		this.post(url,model.toJSON(),function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
@@ -6543,8 +6551,18 @@ Mast.Socket =_.extend(
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
 		url = url.replace(/(\/[^\/]+)$/,'/find');
 
+		// include an id attribute unless one is already set
+		_.extend({
+			id:id
+		},options.data);
+
+		// Always pass a filter attribute in case this user is using the Sails API scaffold
+		_.extend(options.data, {
+			sails_filter: true
+		});
+
 		// Add id to params
-		this.get(url, _.extend({id:id},options.data), function (parsedResult) {	
+		this.get(url, options.data, function (parsedResult) {	
 			options && options.success && options.success(parsedResult);
 		});
 	},
@@ -6561,6 +6579,12 @@ Mast.Socket =_.extend(
 			skip: options.skip,
 			order: options.order
 		});
+
+		// Always pass a filter attribute in case this user is using the Sails API scaffold
+		_.extend(options.data, {
+			sails_filter: true
+		});
+
 		this.get(url, options.data || {}, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
@@ -6574,6 +6598,12 @@ Mast.Socket =_.extend(
 
 		// Add id to data params
 		var data = _.extend({id:id},model.toJSON());
+
+		// Always pass a filter attribute in case this user is using the Sails API scaffold
+		_.extend(data, {
+			sails_filter: true
+		});
+
 		this.put(url, data, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
