@@ -6546,6 +6546,9 @@ Mast.Socket =_.extend(
 	
 	find: function(model,options){
 
+		options = options || {};
+		options.data = options.data || {};
+
 		// Remove trailing slash and add /find to url
 		url = model.url().replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
@@ -6568,10 +6571,12 @@ Mast.Socket =_.extend(
 	},
 	
 	findAll: function(collection,options){
+		options = options || {};
+		options.data = options.data || {};
+
 		var url = (collection.url) + "/findAll";
 		
 		// Support limit/offset/search/sort params in main .fetch({}) instead of just in {data:{}}
-		options.data = options.data || {};
 		_.defaults(options.data,{
 			where: options.where,
 			search: options.search,
