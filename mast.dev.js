@@ -6552,10 +6552,9 @@ Mast.Socket =_.extend(
 		// Remove trailing slash and add /find to url
 		url = model.url().replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
-		url = url.replace(/(\/[^\/]+)$/,'/find');
 
 		// include an id attribute unless one is already set
-		_.extend({
+		options.data = _.extend({
 			id:id
 		},options.data);
 
@@ -6574,7 +6573,7 @@ Mast.Socket =_.extend(
 		options = options || {};
 		options.data = options.data || {};
 
-		var url = (collection.url) + "/findAll";
+		var url = (collection.url);
 		
 		// Support limit/offset/search/sort params in main .fetch({}) instead of just in {data:{}}
 		_.defaults(options.data,{
@@ -6590,7 +6589,7 @@ Mast.Socket =_.extend(
 			sails_filter: true
 		});
 
-		this.get(url, options.data || {}, function (parsedResult) {
+		this.get(url, options.data, function (parsedResult) {
 			options && options.success && options.success(parsedResult);
 		});
 	},
@@ -6599,7 +6598,6 @@ Mast.Socket =_.extend(
 		// Remove trailing slash and add /update to url
 		var url = model.url().replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
-		url = url.replace(/(\/[^\/]+)$/,'/update');
 
 		// Add id to data params
 		var data = _.extend({id:id},model.toJSON());
@@ -6618,7 +6616,6 @@ Mast.Socket =_.extend(
 		// Remove trailing slash and add /destroy to url
 		var url = model.url().replace(/\/*$/,'');
 		var id = +(url.match(/(\/[^\/]+)$/)[0].replace(/[^0-9]/,''));
-		url = url.replace(/(\/[^\/]+)$/,'/destroy');
 
 		// Add id to data params
 		this['delete'](url,{id:id},function (parsedResult) {
@@ -6650,9 +6647,13 @@ Mast.Socket =_.extend(
 		if (!this.connected) {
 			return $.ajax(url,_.extend(options,{
 				data: data,
-				type: method
+				type: method || 'get'
 			}));
 		}
+
+		console.log('url',url);
+		console.log('data',data);
+		console.log('method',method);
 
 		this._send('message',{
 			url: url,
