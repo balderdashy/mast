@@ -6061,7 +6061,12 @@ Mast.mixins = {
 			return command;
 		}
 		else if (_.isString(command)) {
-			var matches = null, attribute, value,ev,method;
+			var matches = null;
+			var attribute;
+			var value;
+			var ev;
+			var method;
+			var route;
 
 			// If expression ends with a ., do stopPropagation
 			// (i.e. '%someEvent.'  or  '@someAttr="someVal".')
@@ -6091,6 +6096,14 @@ Mast.mixins = {
 				ev = _.str.rtrim(matches[1],".");
 				method = function (e) {
 					Mast.trigger(ev);
+					stopPropagation && e.stopPropagation();
+				};
+			}
+			// Navigate to a client-side hash url (i.e. '%some/route')
+			else if (matches = command.match(/^#([^'"]+)\.?$/)) {
+				route = _.str.rtrim(matches[1],".");
+				method = function (e) {
+					Mast.navigate(route);
 					stopPropagation && e.stopPropagation();
 				};
 			}
