@@ -7085,7 +7085,7 @@ Mast.Component = {
 		// }
 		// Extend model with properties specified
 		_.each(modelAttributes, function(val, key) {
-			this.pattern.set(key, val);
+			this.pattern.set(key, val, {silent:true});
 		}, this);
 
 		// Watch for changes to pattern
