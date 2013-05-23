@@ -21,6 +21,37 @@ Dependencies are infered, and subviews are rendered accordingly (i.e. if a regio
 
 ## Remote data store communication
 
+Backbone models and collections are used for communication with asynchronous endpoints, as well as eventing from those endpoints. RPC-style server communication is a highly desirable feature IMO, but something we can worry about later.
+
+
+
+#### Current backbone collection and model methods
+
+```javascript
+Users.fetch();
+Users.create();
+Users.destroy();
+user.save();
+```
+
+#### Listen for server update
+
+```javascript
+Users.on('sync', function() {});
+
+// or..
+{
+	'~Users.sync': function () {}
+}
+```
+
+#### Someday (RPC)
+
+```javascript
+Email.send(); // talks to email endpoint that you define in your model
+
+```
+
 
 ## Context
 
