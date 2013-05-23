@@ -10,9 +10,9 @@ Templates are loaded as script tags and held in memory.  They may contain sub-re
 
 ## Regions
 
-Regions must be unique, and by convention, the `<region id="foo"></region>` tag is used (with the notable exception of `<body></body>` as the top-level element for single-page apps being attached built from scratch)
+Regions must be unique within their siblings, and by convention, the `<region name="foo"></region>` tag is used (with the notable exception of `<body></body>` as the top-level element for single-page apps being attached built from scratch)
 
-Regions are automatically linked with components by name (i.e. the region with id="foo" corresponds to the component named "foo")
+We attempt to automatically link regions with components by name (i.e. the region with name="foo" corresponds to the component named "foo").  If a region "foo" is located in the template for a region "bar", it can still be uniquely identified.  If a unique identity cannot be determined, an error is thrown and rendering fails.
 
 Dependencies are infered, and subviews are rendered accordingly (i.e. if a region lies within a template, when the template is rendered, the region is magically attached, and unless this behavior is overridden in the parent component's logic, the component and/or template with the same "id" as the region is loaded and rendered)
 
@@ -82,17 +82,40 @@ Consider this template:
 
 This is a simplistic way of doing a default rendering of the data, but more likely than not, it's possible you'll want to override certain pieces of behavior in the rendering here.  This lets you do stuff like fade in individual elements, etc.  Additionally, each item (or "branch") of your list needs to have the capabilities of a component.  Here's how you do it:
 
+In this example, a new region called "courses" is defined:
 ```html
 <h1><%=category.type%>:<%=topic.</h1>
 <a href="#topic/<%=topic.id%>">Click here to see more details</a>
 <h2>Courses</h2>
 <ul>
-	<each data="courses" as="course">
-		<li>
-			<strong>course.id</strong>
-		</li>
-	</each>
+	<region name="courseList" each="courses" as="course" ></region>
 </ul>
 ```
 
-The special `<each></each>` element exists to allow you to identify its contents as a dynamic template.  `<each></each>` is removed from your template before it is rendered (especially important in this case, since `<ul>` elements are only allowed to contain `<li>` elements as per the W3C specification.)
+When a region specifies an `each` attribute, it indicates that it will render its template multiple times-- exactly once for each course in the `courses` context datum.  It also provides access to a `course` attribute in the `courseList` that refers to the current course.
+
+
+## Implicit templates
+
+You can also identify a region's contents as an implicit template.  Take a look at our running example:
+
+```html
+<h1><%=category.type%>:<%=topic.</h1>
+<region>
+	<h2>Topic Details for <%=topic.name%>:</h2>
+</region>
+<h2>Courses</h2>
+<ul>
+	<region each="courses" as="course" >
+		<li>
+			<strong>course.id</strong>
+		</li>
+	</region>
+</ul>
+```
+
+In this case, we actually omitted the `name` attribute in our regions and opted instead to include a template inline.  If a region contains any non-whitespace text, it is assumed that this is to be the HTML which will be rendered as the template.  We can still include a name if we want to be able to attach a component to this region, but we don't HAVE to, since the template can be rendered automatically.  This is a good move during prototyping, before pulling all the templates out.
+
+> Note that `<region></region>` tags are **NOT** removed from your template before it is rendered (especially important in the above example, since `<ul>` elements are only allowed to contain `<li>` elements as per the W3C specification.)  You'll have to bear this in mind when creating your HTML.
+
+> In the future, regions could be automatically inferred by the logic being attached to selectors.  For now, lets punt on that.
