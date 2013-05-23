@@ -53,10 +53,42 @@ Backbone models and collections are used for communication with asynchronous end
 #### Current backbone collection and model methods
 
 ```javascript
-Users.fetch();
-Users.create();
-Users.destroy();
+// Context will automatically be populated with a 'MostActiveUsers' key
+// which now corresponds to a list of data
+var MostActiveUsers = Mast.Collection.extend({
+	name: 'MostActiveUsers',
+	url: '/user',
+	
+	// Custom overrides can be applied
+	fetch: function (options, cb) {
+		httpGet(this.url, options, cb);
+	}
+});
+
+var ThisUser = Mast.Model.extend({
+	name: 'ThisUser',
+	
+	// Overrides can also be specified as routes
+	fetch: 'get /user/me',
+	create: null,
+	save: 'put /user/me',
+	destroy: null
+});
+
+// Control methods can be called from anywhere in the app to trigger endpoint operations
+Mast.ctx.MostActiveUsers.fetch();
+Mast.ctx.MostActiveUsers.create();
+Mast.ctx.MostActiveUsers.destroy();
+// var user = ...
 user.save();
+
+// Latest value of Users collection is available in templates
+```ejs
+	<region each="MostActiveUsers" as="user">
+	<li><%=user.name%></li>
+	</region>
+```
+
 ```
 
 #### Listen for server update
