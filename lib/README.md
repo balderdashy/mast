@@ -36,7 +36,7 @@ Templates can reference the app context, which is automatically injected.  So if
 {
 	category: {
 		id: 5,
-		type: 'lens'
+		type: 'Science'
 	},
 
 	topic: {
