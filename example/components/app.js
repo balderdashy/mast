@@ -1,6 +1,4 @@
-define([
-	'../../lib/index'
-], function () {
+define([], function () {
 	Mast.Component.extend({
 		name: 'app'
 	});
