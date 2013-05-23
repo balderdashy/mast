@@ -10,7 +10,7 @@ Templates are loaded as script tags and held in memory.  They may contain sub-re
 
 ## Regions
 
-Regions must be unique, and by convention, the <region id="foo"></region> tag is used (with the notable exception of <body></body> as the top-level element for single-page apps being attached built from scratch)
+Regions must be unique, and by convention, the `<region id="foo"></region>` tag is used (with the notable exception of `<body></body>` as the top-level element for single-page apps being attached built from scratch)
 
 Regions are automatically linked with components by name (i.e. the region with id="foo" corresponds to the component named "foo")
 
@@ -95,4 +95,4 @@ This is a simplistic way of doing a default rendering of the data, but more like
 </ul>
 ```
 
-The special <each></each> element exists to allow you to identify its contents as a dynamic template.  <each></each> is removed from your template before it is rendered (especially important in this case, since <ul> elements are only allowed to contain <li> elements as per the W3C specification.)
+The special `<each></each>` element exists to allow you to identify its contents as a dynamic template.  `<each></each>` is removed from your template before it is rendered (especially important in this case, since `<ul>` elements are only allowed to contain `<li>` elements as per the W3C specification.)
