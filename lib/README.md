@@ -55,7 +55,7 @@ Templates can reference the app context, which is automatically injected.  So if
 
 The template can access this data like so:
 
-```ejs
+```html
 <h1><%=category.type%>:<%=topic.</h1>
 <a href="#topic/<%=topic.id%>">Click here to see more details</a>
 
@@ -67,7 +67,7 @@ The template can access this data like so:
 
 Consider this template:
 
-```ejs
+```html
 <h1><%=category.type%>:<%=topic.</h1>
 <a href="#topic/<%=topic.id%>">Click here to see more details</a>
 <h2>Courses</h2>
@@ -82,7 +82,7 @@ Consider this template:
 
 This is a simplistic way of doing a default rendering of the data, but more likely than not, it's possible you'll want to override certain pieces of behavior in the rendering here.  This lets you do stuff like fade in individual elements, etc.  Additionally, each item (or "branch") of your list needs to have the capabilities of a component.  Here's how you do it:
 
-```ejs
+```html
 <h1><%=category.type%>:<%=topic.</h1>
 <a href="#topic/<%=topic.id%>">Click here to see more details</a>
 <h2>Courses</h2>
