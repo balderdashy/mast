@@ -1,8 +1,35 @@
-# Views & Layouts
+# Architecture and Design
 
 ## Components
 
 Components are attached to a particular region element, which is identified by a unique selector.  Components always have a template, but sometimes you can have a template without a component, in which case a simple anonymous component is automatically generated to render it.
+
+```javascript
+define([], function () {
+	return Mast.Component.extend({
+		// Identity automatically links this component
+		// to the template with name="UsersPane"
+		name: 'UsersPane',
+
+		// DOM event subscriptions
+		scroll: function updateYPositionTicker (e) {},
+		'mouseover a, button': function (e) {},
+		'click a, button': function submit (e) {},
+		'touchhold a, button': 'mouseover a, button',
+
+		// Global event subscriptions
+		'%dialog:open': function disableInteraction () {},
+		'%dialog:close': function enableInteraction () {},
+
+		// Server-sent event subscriptions
+		'~Users:create': function createUser (user) {},
+
+		// Route subscriptions
+		'#users/:id': function scrollToUser (id) {}
+	});	
+});
+
+```
 
 ## Templates
 
@@ -16,8 +43,6 @@ We attempt to automatically link regions with components by name (i.e. the regio
 
 Dependencies are infered, and subviews are rendered accordingly (i.e. if a region lies within a template, when the template is rendered, the region is magically attached, and unless this behavior is overridden in the parent component's logic, the component and/or template with the same "id" as the region is loaded and rendered)
 
-
-# Data
 
 ## Remote data store communication
 
@@ -41,7 +66,7 @@ Users.on('sync', function() {});
 
 // or..
 {
-	'~Users.sync': function () {}
+	'~Users:sync': function () {}
 }
 ```
 
