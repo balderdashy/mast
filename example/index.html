@@ -11,25 +11,20 @@
 
         <body>
 
-	        <region name="app">
-				<h1>TODO Example</h1>
-				<input type="text" placeholder="What do you have to do?" />
+	        <region name="App"></region>
 
-				<ul>
-					<region name="list" each="todos" as="todo">
-						<li>Thing</li>
-					</region>
-				</ul>
-
-			</region>
-
-			<script type="text/javascript" src="../lib/deps/$.js"></script>
-			<script type="text/javascript" src="../lib/deps/_.js"></script>
-			<script type="text/javascript" src="../lib/deps/async.js"></script>
-			<script type="text/javascript" src="../lib/mast.js"></script>
-			<script type="text/javascript" src="../lib/ready.js"></script>
-			<script type="text/javascript" src="../lib/raise.js"></script>
-			
-			<script type="text/javascript" data-main="main" src="deps/require.js"></script>
         </body>
 </html>
+
+
+
+<!-- Core -->
+<script type="text/javascript" src="../lib/deps/$.js"></script>
+<script type="text/javascript" src="../lib/deps/_.js"></script>
+<script type="text/javascript" src="../lib/deps/async.js"></script>
+<script type="text/javascript" src="../lib/mast.js"></script>
+<script type="text/javascript" src="../lib/ready.js"></script>
+<script type="text/javascript" src="../lib/raise.js"></script>
+
+<!-- App code -->
+<script type="text/javascript" data-main="main" src="deps/require.js"></script>
