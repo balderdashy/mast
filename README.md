@@ -7,12 +7,17 @@
 
 + Modularity
   + Partition off distinct logical components as possible in the core, and in how they're used at the app level:
-    + server communication
-    + DOM manipulation
-    + region management
-    + DOM eventing
-    + global event delegatio
-    + client-side #routing
+    + DOM eventing (Backbone.View + jQuery)
+    + DOM manipulation (jQuery)
+    + region management (Backbone.LayoutManager)
+    + global event delegation (Backbone.Event)
+    + client-side #routing (Backbone.Router)
+    + data management
+      + server communication (Backbone)
+      + local device storage (???)
+      + global app state (???)
+      + DOM (jQuery)
+  + At the same time, don't let this modularity inhibit a simpler way of doing things from the end user perspective.
 
 + Minimize code
   + Allow use of shorthand notation where it makes sense
@@ -32,6 +37,7 @@
 
 + Server
   + Flexible communication with a server-side API is a requirement.  It probably makes the most sense to do this in the context of either RESTful operations on models or RPC-style calls on them.  But in either case, a static collection represents a remote endpoint for performing operations and receiving server-sent events.  These are probably Backbone models and collections, but not necessarily.
+
 
 
 
