@@ -4,8 +4,10 @@ require([
 	'text!templates/Nav.html'
 	], function (App, NavTemplate) {
 
+		console.log(NavTemplate);
+
 		// Fire up app
 		Mast.raise(function () {
-			alert('Mast was raised.');
+			Mast.debug('App is ready.');
 		});
 });
