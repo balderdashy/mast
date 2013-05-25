@@ -1,7 +1,5 @@
 define([], function () {
-	Mast.Component.extend({
-		name: 'App',
-
+	return Mast.Component.extend({
 		'#': ' > TodoList',
 		'#settings': ' > Settings'
 	});
