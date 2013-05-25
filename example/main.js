@@ -4,17 +4,19 @@ require([
 	'text!templates/Nav.html'
 	], function (Nav, NavTemplate) {
 
-		// Build template and component sets
-		Mast.templates = {
-			Nav: NavTemplate
-		};
-
-		Mast.components = {
-			Nav: Nav
-		};
-
 		// Fire up app
-		Mast.raise(function () {
-			Mast.debug('App is ready.');
+		Mast.raise({
+
+			// Build template and component sets
+			templates: {
+				Nav: NavTemplate
+			},
+
+			components: {
+				Nav: Nav
+			}
+
+		}, function appReady () {
+			Mast.log('App is ready.');
 		});
 });

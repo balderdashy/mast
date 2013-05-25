@@ -1,11 +1,12 @@
 define([], function () {
 	return {
 
-		// Optional
-		id: 'Nav',
-
 		'#': ' > TodoList',
-		'#settings': ' > Settings'
+		'#settings': ' > Settings',
+
+		afterCreate: function () {
+			
+		}
 
 	};
 });
