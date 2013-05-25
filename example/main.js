@@ -1,7 +1,8 @@
 // You can set this up however you like, we're just using require here to try it out.
 require([
 	'components/Nav',
-	'text!templates/Nav.html'
+	'text!components/Nav.html',
+	'text!components/Nav.css'
 	], function (Nav, NavTemplate) {
 
 		// Fire up app
