@@ -1,6 +1,11 @@
 define([], function () {
-	return Mast.Component.extend({
+	return {
+
+		// Optional
+		id: 'Nav',
+
 		'#': ' > TodoList',
 		'#settings': ' > Settings'
-	});
+
+	};
 });
