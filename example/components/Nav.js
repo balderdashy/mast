@@ -4,8 +4,8 @@ define([], function () {
 		'#': ' > TodoList',
 		'#settings': ' > Settings',
 
-		afterCreate: function () {
-			
+		afterRender: function () {
+			Mast.log('afterCreate');
 		}
 
 	};
