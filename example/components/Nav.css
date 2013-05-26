@@ -1,14 +1,42 @@
-.nav {
-	background: blue;
-	width: 100%;
-	height: 200px;
+* {
+	font-family: Arial, helvetica, sans-serif;
+}
+
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+h1 {
+	float: left;
+}
+
+.nav > a {
+	cursor: pointer;
+	background: #ddd;
+	padding: 15px;
+	margin: 5px;
+	border: 1px solid #aaa;
+	float: right;
+}
+.nav > a:hover {
+	background: #ccc;
+	border: 1px solid #888;
 }
 
 .nav ul {
+	clear: both;
+	width: 100%;
+
 	margin: 0;
 	padding: 0;
 
 }
+
 .nav li {
 	background: lightblue;
 	list-style-type: none;
