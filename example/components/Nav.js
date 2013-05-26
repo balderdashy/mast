@@ -4,10 +4,16 @@ define([], function () {
 		'#': ' > TodoList',
 		'#settings': ' > Settings',
 
+		events: {
+			click: 'switchContent'
+		},
+
+		switchContent: function () {
+			this.navOperations.attach();
+		},
+
 		afterRender: function () {
 			Mast.log('afterCreate');
-
-			console.log('-> regino thing -> ',this.navOperations);
 		},
 
 		beforeRender: function (cb) {
