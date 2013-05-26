@@ -17,7 +17,7 @@ define(['Data'], function (Data) {
 			}
 		},
 
-		collection: new Data.Rainbows(),
+		collection: Data.Rainbows,
 
 		// Standard collection bindings
 		afterAdd: function (model, collection, options) {

@@ -1,6 +1,5 @@
 define([], function () {
 	return {
-
-		Rainbows: Mast.Collection
+		Rainbows: new Mast.Collection()
 	};
 });
