@@ -6,11 +6,12 @@ define([], function () {
 
 		afterRender: function () {
 			Mast.log('afterCreate');
+
+			console.log('-> regino thing -> ',this.navOperations);
 		},
 
 		beforeRender: function (cb) {
-			console.log(this.$outlet);
-			this.$outlet.append('test');
+			this.$outlet.append('Loading...');
 			this.timer = setTimeout(function () {
 				console.log('beforeRender finished!');
 				cb();
