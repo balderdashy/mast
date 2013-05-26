@@ -16,16 +16,22 @@ h1 {
 }
 
 .nav > a {
+	transition: all 250ms;
+	-webkit-transition: all 250ms;
+	-moz-transition: all 250ms;
+
 	cursor: pointer;
-	background: #ddd;
+	background: #eee;
 	padding: 15px;
 	margin: 5px;
 	border: 1px solid #aaa;
 	float: right;
+	border-radius: 15px;
 }
 .nav > a:hover {
-	background: #ccc;
-	border: 1px solid #888;
+	/*opacity: 0.8;*/
+	background: #aca;
+	box-shadow: 0 0 5px 3px rgba(0,50,0,0.3);
 }
 
 .nav ul {
@@ -38,8 +44,13 @@ h1 {
 }
 
 .nav li {
-	background: lightblue;
+	cursor:pointer;
 	list-style-type: none;
 	margin: 0;
 	padding: 15px 3%;
+	display:block;
+
+	transition: background-color 350ms;
+	-webkit-transition: background-color 350ms;
+	-moz-transition: background-color 350ms;
 }

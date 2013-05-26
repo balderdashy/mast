@@ -3,12 +3,13 @@ define([], function () {
 		
 		events: {
 			'click .add-thing': function addThing () { 
-				Mast.Data.Operation.set('color', randomPastelColor());
-				this.collection.add({});
+				this.collection.add({
+					color: Mast.randomPastelColor()
+				});
 			},
 
 			'click .remove-thing': function removeFirstThing () {
-				this.navOperations.remove(0);
+				this.collection.shift();
 			},
 
 			'click .wipe-things': function removeAllThings () {
@@ -16,37 +17,36 @@ define([], function () {
 			}
 		},
 
-		collection: new Mast.Collection({
-			model: Backbone.Model
-		}),
+		collection: new Mast.Collection(),
 
 		// Standard collection bindings
-		afterAdd: function () {
-			this.navOperations.append('Operation');
+		afterAdd: function (model, collection, options) {
+			this.navOperations.append('Operation', {
+				model: model
+			});
+
+			// Clear empty state
+			if (this.collection.length > 0) {
+				this.$('.emptyhtml').fadeOut();
+			}
 		},
-		afterRemove: function () {
-			this.collection.shift();
+		afterRemove: function (model, collection, options) {
+			this.navOperations.remove(0);
+
+			// Empty state
+			if (this.collection.length < 1) {
+				this.$('.emptyhtml').fadeIn();
+			}
 		},
-		afterReset: function () {
+		afterReset: function (collection, options) {
 			this.navOperations.empty();
+
+			// Empty state
+			if (this.collection.length < 1) {
+				this.$('.emptyhtml').fadeIn();
+			}
 		}
 
 	};
-
-
-	function randomPastelColor () {
-		var color = '#';
-		for (var i=0;i<6;i++) {
-			switch (Math.floor(Math.random() * 6)) {
-				case 0: color += 'a'; break;
-				case 1: color += 'b'; break;
-				case 2: color += 'c'; break;
-				case 3: color += 'd'; break;
-				case 4: color += 'e'; break;
-				case 5: color += 'f'; break;
-			}
-		}
-		return color;
-	}
 });
 
