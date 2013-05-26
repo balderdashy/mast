@@ -8,32 +8,37 @@
         <!-- Viewport mobile tag for sensible mobile support -->
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
         />
+	    <link rel="stylesheet" type="text/css" href="components/Nav.css" />
+
+		<!-- Core dependencies -->
+		<script type="text/javascript" src="../lib/deps/$.js"></script>
+		<script type="text/javascript" src="../lib/deps/_.js"></script>
+		<script type="text/javascript" src="../lib/deps/Backbone.js"></script>
+		<script type="text/javascript" src="../lib/deps/async.js"></script>
+
+		<!-- Core -->
+		<script type="text/javascript" src="../lib/mast.js"></script>
+		<script type="text/javascript" src="../lib/Component.js"></script>
+		<script type="text/javascript" src="../lib/Region.js"></script>
+		<script type="text/javascript" src="../lib/Data.js"></script>
+		<script type="text/javascript" src="../lib/Router.js"></script>
+		<script type="text/javascript" src="../lib/Delegator.js"></script>
+		<script type="text/javascript" src="../lib/Comet.js"></script>
+		<script type="text/javascript" src="../lib/ready.js"></script>
+		<script type="text/javascript" src="../lib/raise.js"></script>
+
+		<!-- App code -->
+		<script type="text/javascript" data-main="main" src="deps/require.js"></script>
     </head>
     
     <body>
-        <region id="App" default="Nav"></region>
+    	<h1>Hello world</h1>
+      <region id="App" default="Nav"></region>
 
-        <link rel="stylesheet" type="text/css" href="components/Nav.css" />
 
-				<!-- Core dependencies -->
-				<script type="text/javascript" src="../lib/deps/$.js"></script>
-				<script type="text/javascript" src="../lib/deps/_.js"></script>
-				<script type="text/javascript" src="../lib/deps/Backbone.js"></script>
-				<script type="text/javascript" src="../lib/deps/async.js"></script>
-
-				<!-- Core -->
-				<script type="text/javascript" src="../lib/mast.js"></script>
-				<script type="text/javascript" src="../lib/Component.js"></script>
-				<script type="text/javascript" src="../lib/Region.js"></script>
-				<script type="text/javascript" src="../lib/Data.js"></script>
-				<script type="text/javascript" src="../lib/Router.js"></script>
-				<script type="text/javascript" src="../lib/Delegator.js"></script>
-				<script type="text/javascript" src="../lib/Comet.js"></script>
-				<script type="text/javascript" src="../lib/ready.js"></script>
-				<script type="text/javascript" src="../lib/raise.js"></script>
-
-				<!-- App code -->
-				<script type="text/javascript" data-main="main" src="deps/require.js"></script>
+      <h2> more things</h2>
+      <region id="foo" default="Footer"></region>
     </body>
+
 
 </html>

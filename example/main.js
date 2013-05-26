@@ -3,8 +3,10 @@ require([
 	'components/Operation',
 	'text!components/Operation.html',
 	'components/Nav',
-	'text!components/Nav.html'
-	], function (Operation, OperationTemplate, Nav, NavTemplate) {
+	'text!components/Nav.html',
+	'components/Footer',
+	'text!components/Footer.html'
+	], function (Operation, OperationTemplate, Nav, NavTemplate, Footer, FooterTemplate) {
 
 		// Fire up app
 		Mast.raise({
@@ -12,12 +14,14 @@ require([
 			// Build template and component sets
 			templates: {
 				Nav: NavTemplate,
-				Operation: OperationTemplate
+				Operation: OperationTemplate,
+				Footer: FooterTemplate
 			},
 
 			components: {
 				Nav: Nav,
-				Operation: Operation
+				Operation: Operation,
+				Footer: Footer
 			}
 
 		}, function appReady () {
