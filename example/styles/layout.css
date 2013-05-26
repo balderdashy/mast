@@ -29,7 +29,6 @@ h1 {
 	border-radius: 15px;
 }
 .nav > a:hover {
-	/*opacity: 0.8;*/
 	background: #aca;
 	box-shadow: 0 0 5px 3px rgba(0,50,0,0.3);
 }

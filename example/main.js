@@ -1,10 +1,10 @@
 // You can set this up however you like, we're just using require here to try it out.
 require([
 	'Data',
-	'components/Operation',
-	'text!components/Operation.html',
-	'components/Nav',
-	'text!components/Nav.html',
+	'components/Row',
+	'text!components/Row.html',
+	'components/Rainbow',
+	'text!components/Rainbow.html',
 	'components/Footer',
 	'text!components/Footer.html'
 	], function (Data, Operation, OperationTemplate, Nav, NavTemplate, Footer, FooterTemplate) {
@@ -45,5 +45,5 @@ require([
 				}
 			}
 			return color;
-		}
+		};
 });
