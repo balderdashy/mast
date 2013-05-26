@@ -5,11 +5,11 @@ define([], function () {
 		'#settings': ' > Settings',
 
 		events: {
-			click: 'switchContent'
+			click: 'addContent'
 		},
 
-		switchContent: function () {
-			this.navOperations.attach();
+		addContent: function () {
+			this.navOperations.append('Operation');
 		},
 
 		afterRender: function () {
@@ -17,9 +17,11 @@ define([], function () {
 		},
 
 		beforeRender: function (cb) {
+			var self = this;
 			this.$outlet.append('Loading...');
 			this.timer = setTimeout(function () {
 				console.log('beforeRender finished!');
+				self.$outlet.empty();
 				cb();
 			}, 1000);
 		},
