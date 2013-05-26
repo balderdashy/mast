@@ -1,4 +1,4 @@
-define([], function () {
+define(['Data'], function (Data) {
 	return {
 		
 		events: {
@@ -17,7 +17,7 @@ define([], function () {
 			}
 		},
 
-		collection: new Mast.Collection(),
+		collection: new Data.Rainbows(),
 
 		// Standard collection bindings
 		afterAdd: function (model, collection, options) {
