@@ -1,12 +1,8 @@
 // You can set this up however you like, we're just using require here to try it out.
 require([
-	'util',
-	'Data',
-	'components/Row',
-	'text!components/Row.html',
-	'components/Rainbow',
-	'text!components/Rainbow.html'
-	], function (util, Data, Row, Rainbow) {
+	// These are here because we need to wait to raise until they're loaded
+	'util', 'components/Rainbow', 'components/Row'
+	], function (Data) {
 
 		// RequireJS is only used to load templates, components, and data files
 		// Once the files are in memory, as long as Mast knows about your data and templates, 
