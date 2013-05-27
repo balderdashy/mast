@@ -38,9 +38,29 @@
     	<region default="Rainbow"></region>
     </body>
 
+    <!-- ******************************************************** -->
+    <!-- Templates -->
+    <!-- ******************************************************** -->
     <script type="text/template" data-id="Footer">
     	<h1>Footer here?</h1>
     </script>
+
+    <script type="text/template" data-id="Row">
+    	<li style="background-color: <%= color %>;" />
+    </script>
+
+    <script type="text/template" data-id="Rainbow">
+	    <div class="no-select nav">
+			<a class='add-thing'>Add Thing At End</a>
+			<a class='remove-thing'>Remove First Thing</a>
+			<a class='wipe-things'>Wipe All</a>
+			<ul>
+				<span class="emptyhtml">Out of rainbows...</span>
+				<region id="rows" />
+			</ul>
+		</div>
+	</script>
+	<!-- ******************************************************** -->
 
 
 </html>
