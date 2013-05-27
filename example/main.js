@@ -4,10 +4,8 @@ require([
 	'components/Row',
 	'text!components/Row.html',
 	'components/Rainbow',
-	'text!components/Rainbow.html',
-	'components/Footer',
-	'text!components/Footer.html'
-	], function (Data, Row, RowTemplate, Rainbow, RainbowTemplate, Footer, FooterTemplate) {
+	'text!components/Rainbow.html'
+	], function (Data, Row, RowTemplate, Rainbow, RainbowTemplate) {
 
 		// RequireJS is only used to load templates, components, and data files
 		// Once the files are in memory, as long as Mast knows about your data and templates, 
@@ -27,8 +25,7 @@ require([
 			// Load templates
 			templates: {
 				Rainbow: RainbowTemplate,
-				Row: RowTemplate,
-				Footer: FooterTemplate
+				Row: RowTemplate
 			},
 
 			// Load app data
