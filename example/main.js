@@ -16,6 +16,8 @@ require([
 		// You can also use script tags to manually load all of this stuff on the page.
 		// As long as it's before Mast.raise(), you can specify them in any order
 
+		// Any <script> tags with the class="mast-template" will get automatically assimilated by id or data-id
+
 		// Fire up app
 		Mast.raise({
 
