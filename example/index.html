@@ -29,14 +29,33 @@
 		<script type="text/javascript" src="../lib/ready.js"></script>
 		<script type="text/javascript" src="../lib/raise.js"></script>
 
+		<!-- ******************************************************** -->
 		<!-- App code -->
-		<script type="text/javascript" data-main="main" src="deps/require.js"></script>
+		<!-- ******************************************************** -->
+
+		<!-- Simple version (script order doesn't matter) -->
+		<script type="text/javascript" src="util.js"></script>
+		<script type="text/javascript" src="components/Rainbow.js"></script>
+		<script type="text/javascript" src="components/Row.js"></script>
+		<script type="text/javascript">
+			Mast.raise(function appReady () {
+				Mast.log('App is ready.');
+			});
+		</script>
+
+		<!-- ******************************************************** -->
+
     </head>
     
+
+    <!-- ******************************************************** -->
+    <!-- Initial HTML -->
+    <!-- ******************************************************** -->
     <body>
     	<h1>Mast 2.0</h1>
     	<region default="Rainbow"></region>
     </body>
+    <!-- ******************************************************** -->
 
     <!-- ******************************************************** -->
     <!-- Templates -->
