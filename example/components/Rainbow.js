@@ -1,8 +1,6 @@
-Mast.define(function () {
+Mast.define('Rainbow', function () {
 
 	return {
-
-		id: 'Rainbow',
 		
 		events: {
 			'click .add-thing': function addThing () { 

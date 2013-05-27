@@ -1,8 +1,6 @@
-Mast.define(function () {
+Mast.define('Row', function () {
 	
 	return {
-
-		id: 'Row',
 
 		// Model is passed down by parent component when this component is created
 

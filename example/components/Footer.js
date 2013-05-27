@@ -1,5 +1,3 @@
-Mast.define(function () {
-	return {
-		id: 'Footer'
-	};
+Mast.define('Footer', function () {
+	return {};
 });
