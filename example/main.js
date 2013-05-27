@@ -7,7 +7,7 @@ require([
 	'text!components/Rainbow.html',
 	'components/Footer',
 	'text!components/Footer.html'
-	], function (Data, Operation, OperationTemplate, Nav, NavTemplate, Footer, FooterTemplate) {
+	], function (Data, Row, RowTemplate, Rainbow, RainbowTemplate, Footer, FooterTemplate) {
 
 		// Bring in global user data config
 		_.extend(Mast.Data, Data);
@@ -17,14 +17,14 @@ require([
 
 			// Build template and component sets
 			templates: {
-				Nav: NavTemplate,
-				Operation: OperationTemplate,
+				Rainbow: RainbowTemplate,
+				Row: RowTemplate,
 				Footer: FooterTemplate
 			},
 
 			components: {
-				Nav: Nav,
-				Operation: Operation,
+				Rainbow: Rainbow,
+				Row: Row,
 				Footer: Footer
 			}
 

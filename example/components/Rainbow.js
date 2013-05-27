@@ -1,4 +1,4 @@
-define(['Data'], function (Data) {
+define(['../Data'], function (Data) {
 	return {
 		
 		events: {
@@ -21,7 +21,7 @@ define(['Data'], function (Data) {
 
 		// Standard collection bindings
 		afterAdd: function (model, collection, options) {
-			this.navOperations.append('Operation', {
+			this.rows.append('Row', {
 				model: model
 			});
 
@@ -31,7 +31,7 @@ define(['Data'], function (Data) {
 			}
 		},
 		afterRemove: function (model, collection, options) {
-			this.navOperations.remove(0);
+			this.rows.remove(0);
 
 			// Empty state
 			if (this.collection.length < 1) {
@@ -39,7 +39,7 @@ define(['Data'], function (Data) {
 			}
 		},
 		afterReset: function (collection, options) {
-			this.navOperations.empty();
+			this.rows.empty();
 
 			// Empty state
 			if (this.collection.length < 1) {

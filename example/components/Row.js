@@ -1,6 +1,8 @@
 define([], function () {
 	return {
 
+		// Model is passed down by parent component when this component is created
+
 		events: {
 			click: function () {
 				this.model.set({
