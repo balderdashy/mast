@@ -1,5 +1,8 @@
-define(['../Data'], function (Data) {
+Mast.define(function () {
+
 	return {
+
+		id: 'Rainbow',
 		
 		events: {
 			'click .add-thing': function addThing () { 
@@ -17,7 +20,7 @@ define(['../Data'], function (Data) {
 			}
 		},
 
-		collection: Data.Rainbows,
+		collection: Mast.data.Rainbows,
 
 		// Standard collection bindings
 		afterAdd: function (model, collection, options) {
@@ -46,7 +49,5 @@ define(['../Data'], function (Data) {
 				this.$('.emptyhtml').fadeIn();
 			}
 		}
-
 	};
 });
-

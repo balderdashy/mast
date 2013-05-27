@@ -9,24 +9,28 @@ require([
 	'text!components/Footer.html'
 	], function (Data, Row, RowTemplate, Rainbow, RainbowTemplate, Footer, FooterTemplate) {
 
-		// Bring in global user data config
-		_.extend(Mast.Data, Data);
+		// RequireJS is only used to load templates, components, and data files
+		// Once the files are in memory, as long as Mast knows about your data and templates, 
+		// you can use Mast.define() to identify components
+
+		// You can also use script tags to manually load all of this stuff on the page.
+		// As long as it's before Mast.raise(), you can specify them in any order
 
 		// Fire up app
 		Mast.raise({
 
-			// Build template and component sets
+			// Components are automatically integrated when they're loaded
+			// since we're using Mast.define()
+
+			// Load templates
 			templates: {
 				Rainbow: RainbowTemplate,
 				Row: RowTemplate,
 				Footer: FooterTemplate
 			},
 
-			components: {
-				Rainbow: Rainbow,
-				Row: Row,
-				Footer: Footer
-			}
+			// Load app data
+			data: Data
 
 		}, function appReady () {
 			Mast.log('App is ready.');
