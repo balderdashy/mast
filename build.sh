@@ -37,3 +37,6 @@ echo '' >> mast.dev.js
 # Disable debug mode
 echo 'Mast.debug = false;' >> mast.dev.js
 echo '' >> mast.dev.js
+
+# Copy into example
+cp mast.dev.js example/public/mast.dev.js

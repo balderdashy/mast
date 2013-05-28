@@ -17,5 +17,4 @@ public/_target/*.js
 public/_target/*.css
 
 # Ignore cmd line build output
-.rigging_out/*
-.rigging_out
+example/public/mast.dev.js
