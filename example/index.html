@@ -47,10 +47,19 @@
 		<script type="text/javascript" src="components/Rainbow.js"></script>
 		<script type="text/javascript" src="components/Row.js"></script>
 		<script type="text/javascript">
+			$.support.cors = true;
+			
 			Mast.raise({
 				data: {
 					// Custom global state can go here
-					title: 'Mast 2.0'
+					title: 'Mast 2.0',
+
+					// But perhaps most notably
+					// your models and collections also live here
+					Rainbows: new (Backbone.Collection.extend({
+						url: 'http://localhost:1337/rainbow'
+					}))()
+
 				}
 			},function appReady () {
 				Mast.log('App is ready.');

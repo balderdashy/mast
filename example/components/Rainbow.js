@@ -21,7 +21,13 @@ Mast.define('Rainbow', function () {
 		// Doing it this way ensures that this component is bound to a global collection set, 
 		// and if one already exists, it uses it
 		collection: function () {
-			return Mast.data.Rainbows = Mast.data.Rainbows || new Mast.Collection();
+			return Mast.data.Rainbows;
+		},
+
+		beforeRender: function (cb) {
+			this.collection.fetch({
+				success: cb
+			});
 		},
 
 		// Standard collection bindings
