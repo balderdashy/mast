@@ -4,17 +4,20 @@ Mast.define('Rainbow', function () {
 		
 		events: {
 			'click .add-thing': function addThing () { 
-				this.collection.add({
+				this.collection.create({
 					color: Mast.randomPastelColor()
 				});
 			},
 
 			'click .remove-thing': function removeFirstThing () {
-				this.collection.shift();
+				var model = this.collection.shift();
+				model.destroy();
 			},
 
 			'click .wipe-things': function removeAllThings () {
-				this.collection.reset();
+				while (this.collection.length) {
+					this.collection.at(0).destroy();
+				}
 			}
 		},
 
@@ -25,9 +28,17 @@ Mast.define('Rainbow', function () {
 		},
 
 		beforeRender: function (cb) {
+			// TODO: Loading state
 			this.collection.fetch({
-				success: cb
+				silent: true,
+				success: function () {
+					cb();
+				}
 			});
+		},
+
+		afterRender: function () {
+			this.collection.trigger('reset', this.collection);
 		},
 
 		// Standard collection bindings
@@ -56,6 +67,11 @@ Mast.define('Rainbow', function () {
 		},
 		afterReset: function (collection, options) {
 			var self = this;
+
+			// Clear empty state
+			if (this.collection.length > 0) {
+				this.$('.emptyhtml').fadeOut();
+			}
 
 			// Flush region and replace w/ new contents
 			this.rows.empty();

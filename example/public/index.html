@@ -60,7 +60,10 @@
 					// But perhaps most notably
 					// your models and collections also live here
 					Rainbows: new (Backbone.Collection.extend({
-						url: 'http://localhost:1337/rainbow'
+						url: 'http://localhost:1337/rainbow',
+						model: Backbone.Model.extend({
+							urlRoot: 'http://localhost:1337/rainbow'
+						})
 					}))()
 
 				}
