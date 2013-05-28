@@ -13,12 +13,19 @@ Mast.define('Row', function () {
 		},
 
 		beforeClose: function (cb) {
-			this.$el.animate({
-				opacity: 0,
-				height: 0,
-				paddingTop: 0,
-				paddingBottom: 0
-			}, 300, cb);
+			var self = this;
+
+			self.$el.removeClass('lightSpeedIn');
+			self.$el.addClass('lightSpeedOut');
+
+			setTimeout(function () {
+				self.$el.animate({
+					opacity: 0,
+					height: 0,
+					paddingTop: 0,
+					paddingBottom: 0
+				}, 200, cb);
+			},400);
 		},
 
 		cancelClose: function () {
@@ -29,8 +36,8 @@ Mast.define('Row', function () {
 		},
 
 		afterRender: function () {
-			this.$el.hide();
-			this.$el.fadeIn();
+			this.$el.addClass('animated');
+			this.$el.addClass('lightSpeedIn');
 		},
 
 		// Standard model binding

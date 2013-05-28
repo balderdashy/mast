@@ -56,4 +56,10 @@ h1.selected {
 	transition: background-color 350ms;
 	-webkit-transition: background-color 350ms;
 	-moz-transition: background-color 350ms;
+	-o-transition: background-color 350ms;
+
+	-webkit-animation-duration: 400ms;
+	-moz-animation-duration: 400ms;
+	-o-animation-duration: 400ms;
+
 }
