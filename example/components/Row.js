@@ -34,12 +34,10 @@ Mast.define('Row', function () {
 		},
 
 		// Standard model binding
-		afterChange: function (changedAttrs) {
-			
-			// Change color
-			if (changedAttrs.color) {
+		afterChange: {
+			color: function (model, value, options) {
 				this.$el.css({
-					'background-color': changedAttrs.color
+					'background-color': value
 				});
 			}
 		}
