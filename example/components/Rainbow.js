@@ -1,10 +1,6 @@
 Mast.define('Rainbow', function () {
 
 	return {
-
-		'#test': function () {
-			alert('#test');
-		},
 		
 		events: {
 			'click .add-thing': function addThing () { 
