@@ -26,17 +26,22 @@ Mast.define('Rainbow', function () {
 
 		// Standard collection bindings
 		afterAdd: function (model, collection, options) {
-			this.rows.append('Row', {
-				model: model
-			});
 
 			// Clear empty state
 			if (this.collection.length > 0) {
 				this.$('.emptyhtml').fadeOut();
 			}
+
+			// Render the row in the appropriate place
+			this.rows.insert(
+				options.at || collection.length-1,
+				'Row', {
+					model: model
+				});
+
 		},
 		afterRemove: function (model, collection, options) {
-			this.rows.remove(0);
+			this.rows.remove(options.at || 0);
 
 			// Empty state
 			if (this.collection.length < 1) {
@@ -44,7 +49,13 @@ Mast.define('Rainbow', function () {
 			}
 		},
 		afterReset: function (collection, options) {
+			var self = this;
+
+			// Flush region and replace w/ new contents
 			this.rows.empty();
+			collection.each(function (model) {
+				self.rows.append('Row', { model: model });
+			});
 
 			// Empty state
 			if (this.collection.length < 1) {

@@ -21,6 +21,13 @@ Mast.define('Row', function () {
 			}, 300, cb);
 		},
 
+		cancelClose: function () {
+			this.$el.stop();
+		},
+		cancelRender: function () {
+			this.$el.stop();
+		},
+
 		afterRender: function () {
 			this.$el.hide();
 			this.$el.fadeIn();
