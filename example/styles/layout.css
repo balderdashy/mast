@@ -19,6 +19,10 @@ h1.selected {
 	color: blue;
 }
 
+h2 {
+	clear: both;
+}
+
 .nav > a {
 	transition: all 250ms;
 	-webkit-transition: all 250ms;

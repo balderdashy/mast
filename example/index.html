@@ -47,7 +47,12 @@
 		<script type="text/javascript" src="components/Rainbow.js"></script>
 		<script type="text/javascript" src="components/Row.js"></script>
 		<script type="text/javascript">
-			Mast.raise(function appReady () {
+			Mast.raise({
+				data: {
+					// Custom global state can go here
+					title: 'Mast 2.0'
+				}
+			},function appReady () {
 				Mast.log('App is ready.');
 			});
 		</script>
@@ -83,12 +88,9 @@
     <!-- ******************************************************** -->
     <!-- Templates -->
     <!-- ******************************************************** -->
-    <script type="text/template" data-id="Footer">
-    	<h1>Footer here?</h1>
-    </script>
 
     <script type="text/template" data-id="Row">
-    	<li style="background-color: <%= color %>;"></li>
+    	<li style="background-color: <%= color %>;"><%= color %></li>
     </script>
 
     <script type="text/template" data-id="Rainbow">

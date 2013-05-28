@@ -27,14 +27,7 @@ Mast.define('Row', function () {
 				}, 200, cb);
 			},400);
 		},
-
-		cancelClose: function () {
-			this.$el.stop();
-		},
-		cancelRender: function () {
-			this.$el.stop();
-		},
-
+		
 		afterRender: function () {
 			this.$el.addClass('animated');
 			this.$el.addClass('lightSpeedIn');
