@@ -50,6 +50,15 @@
 		<script type="text/javascript" src="components/Rainbow.js"></script>
 		<script type="text/javascript" src="components/Row.js"></script>
 		<script type="text/javascript">
+
+			Mast.define('App', function (){
+				return {
+					'#foo': function () {
+						this.content.attach('Row');
+					}
+				};
+			});
+
 			$.support.cors = true;
 			
 			Mast.raise({
@@ -88,7 +97,7 @@
     <!-- ******************************************************** -->
     <body>
     	<h1>Mast 2.0</h1>
-    	<region default="Rainbow"></region>
+    	<region data-id="content" default="Rainbow"></region>
     </body>
     <!-- ******************************************************** -->
 
