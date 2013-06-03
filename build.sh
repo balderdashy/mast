@@ -25,8 +25,6 @@ cat "lib/Data.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/Router.js" >> mast.dev.js
 echo '' >> mast.dev.js
-cat "lib/Delegator.js" >> mast.dev.js
-echo '' >> mast.dev.js
 cat "lib/Comet.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/ready.js" >> mast.dev.js

@@ -93,7 +93,7 @@
     <!-- Initial HTML -->
     <!-- ******************************************************** -->
     <body>
-    	<h1>Mast 2.0</h1>
+    	<region default="Header"></region>
     	<region data-id="content" default="Rainbow"></region>
     </body>
     <!-- ******************************************************** -->
@@ -109,6 +109,14 @@
     <!-- ******************************************************** -->
     <!-- Templates -->
     <!-- ******************************************************** -->
+
+    <script type="text/template" data-id="Header">
+    	<region default="Logo"></region>
+    </script>
+
+    <script type="text/template" data-id="Logo">
+    	<h1>Mast 2.0</h1>
+    </script>
 
     <script type="text/template" data-id="Row">
     	<li style="background-color: <%= color %>;"><%= color %></li>

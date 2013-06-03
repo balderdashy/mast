@@ -4,8 +4,6 @@ Mast.define('Rainbow', function () {
 		
 		events: {
 
-			click: '#test',
-
 			'click .add-thing': function addThing () { 
 				this.collection.create({
 					color: Mast.randomPastelColor()
