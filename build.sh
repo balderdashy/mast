@@ -1,3 +1,4 @@
+rm mast.dev.js
 touch mast.dev.js
 
 # Core dependencies
