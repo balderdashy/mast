@@ -10,6 +10,5 @@ Mast.define('App', function () {
 		'#contact': function () {
 			this.content.attach('Contact');
 		}
-
 	};
 });
