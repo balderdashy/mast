@@ -16,6 +16,8 @@ cat "lib/mast.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/Util.js" >> mast.dev.js
 echo '' >> mast.dev.js
+cat "lib/touch.js" >> mast.dev.js
+echo '' >> mast.dev.js
 cat "lib/define.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/Component.js" >> mast.dev.js
