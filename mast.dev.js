@@ -3059,7 +3059,7 @@ _.extend(Framework.Component.prototype, {
 		try {
 			// Accept precompiled templates
 			if (_.isFunction(this.template)) {
-				html = this.template(_, templateContext);
+				html = this.template(templateContext);
 			}
 			// Or raw strings
 			else html = _.template(this.template, templateContext);
