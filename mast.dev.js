@@ -2809,29 +2809,14 @@ Framework.Component.prototype.render = function (atIndex) {
 		var html = self._compileTemplate();
 		if (!html) return;
 
-		// Parse a DOM node or series of DOM nodes from the newly templated HTML
-		var parsedNodes = $.parseHTML(html);
-		var el = parsedNodes[0];
+		// Remove the current el
+		delete self.el;
 
-		// If no nodes were parsed, throw an error
-		if (parsedNodes.length === 0) {
-			throw new Error(self.id + ' :: render() ran into a problem rendering the template with HTML => \n'+html);
-		}
+		// Set the el property
+		self._ensureElement();
 
-		// If there is not one single wrapper element,
-		// or if the rendered template contains only a single text node,
-		// (or just a lone region)
-		// wrap the html up in a container <div/>
-		else if (	parsedNodes.length > 1 || parsedNodes[0].nodeType === 3 ||
-			$(parsedNodes[0]).is('region')) {
-
-			el = $('<div/>').append(html);
-			el = el[0];
-		}
-
-		// Set Backbone element (cache and redelegate DOM events)
-		// (Will also update self.$el)
-		self.setElement(el);
+		// Set the el's html to the template
+		self.$el.html(html);
 
 		// Detect and render all regions and their descendent components and regions
 		self._renderRegions();
@@ -2848,6 +2833,24 @@ Framework.Component.prototype.render = function (atIndex) {
 		self.afterRender();
 	});
 
+};
+
+/**
+ * Use Backbone's _ensureElement to ensure we don't change things too
+ * much from normal backbone. This allows us to use things like className,
+ * tagName, etc.
+ *
+ * NOTE: _ensureElement is overridden here to remove the id property.
+ * This is needed because every element has an id set internally and it will
+ * prevent a component from showing up multiple times in the dom if we use
+ * the id.
+ */
+
+Framework.Component.prototype._ensureElement = function() {
+	var attrs = _.extend({}, _.result(this, 'attributes'));
+	if (this.className) attrs['class'] = _.result(this, 'className');
+	var $el = Backbone.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
+	this.setElement($el, false);
 };
 
 
@@ -3059,7 +3062,7 @@ _.extend(Framework.Component.prototype, {
 		try {
 			// Accept precompiled templates
 			if (_.isFunction(this.template)) {
-				html = this.template(_, templateContext);
+				html = this.template(templateContext);
 			}
 			// Or raw strings
 			else html = _.template(this.template, templateContext);
