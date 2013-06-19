@@ -2943,6 +2943,7 @@ _.extend(Framework.Component.prototype, {
 
 	// Constructor
 	initialize: function (properties) {
+		var self = this;
 
 		// Disable or issue warnings about certain properties
 		// and methods to avoid confusion
@@ -2962,7 +2963,6 @@ _.extend(Framework.Component.prototype, {
 		}
 
 		if (this.model) {
-			var self = this;
 
 			// Listen for any attribute changes
 			// e.g.
@@ -2985,12 +2985,66 @@ _.extend(Framework.Component.prototype, {
 			}
 		}
 
-		// Iterate through each subscription on this component
-		// and listen for global events
-		_.each(this.subscriptions, function (handler, key) {
-			this.listenTo(Mast, key, handler);
-		}, this);
+		
 
+		// TODO:	this could be optimized by pull this out of the wildcard event handler,
+		//			but to do it elegantly would involve hacking the Backbone core to allow 
+		//			regex routes.  An important, but easier, optimization would be wildcard 
+		//			routing only as absolutely necessary (so non-param events get static routes)
+		//
+		//			It's very important that we test this part for performance on slower mobile devices
+		//
+
+		// First argument is event name, subsequent args are other params to trigger()
+		this.listenTo(Framework, 'all', function (eRoute) {
+
+			// Trim off all but the first argument to pass through to handler
+			var args = Array.prototype.slice.call(arguments);
+			args.shift();
+
+
+			// Iterate through each subscription on this component
+			// and listen for the specified global events
+			_.each(self.subscriptions, function (handler, matchPattern) {
+
+				// Grab regex and param parsing logic from Backbone core
+				var extractParams = Backbone.Router.prototype._extractParameters,
+					calculateRegex = Backbone.Router.prototype._routeToRegExp;
+
+
+				// Trim trailing
+				matchPattern = matchPattern.replace(/\/*$/g, '');
+				// and er sort of.. leading.. slashes
+				matchPattern = matchPattern.replace(/^([#~%])\/*/g, '$1');
+				// TODO: optimization- this really only has to be done once, on raise(), we should do that
+
+
+				// Come up with regex for this matchPattern
+				var regex = calculateRegex(matchPattern);
+
+				// If this matchPatern is this is not a match for the event, 
+				// `continue` it along to it can try the next matchPattern
+				if (!eRoute.match(regex)) return;
+				
+				// Parse parameters for use as args to the handler
+				// (or an empty list if none exist)
+				var params = extractParams(regex, eRoute);
+
+				// Handle string redirects to function names
+				if ( ! _.isFunction(handler) ) {
+					handler = self[handler];
+
+					if (!handler) {
+						throw new Error('Cannot trigger subscription because of unknown handler: ' +handler);
+					}
+				}
+
+				// Bind context and arguments to subscription handler
+				handler.apply(self,params);
+			});
+		});
+
+		// Encourage child methods to use the component context
 		_.bindAll(this);
 	},
 
@@ -3052,7 +3106,7 @@ _.extend(Framework.Component.prototype, {
 
 		// Create template data context by providing access to the global Data object,
 		// Also fold in the model associated with this component, if there is one
-		var templateContext = _.extend({}, Mast.data);
+		var templateContext = _.extend({}, Framework.data);
 		if (this.model) {
 			_.extend(templateContext, this.model.attributes);
 		}
@@ -3311,6 +3365,23 @@ _.extend(Framework.Data, Framework.Events);
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
 
+	
+// Wildcard routes to global event delegator
+var router = new Framework.Router();
+router.route(/(.*)/, 'route', function (route) {
+
+	// Normalize home routes (# or null) to ''
+	if (!route) {
+		route = '';
+	}
+
+	// Trigger route
+	Framework.trigger('#' + route);
+});
+// TODO: resolve how loading will work
+var Framework = Mast;
+////////////////////////////////////////////////////////////////////////////
+
 
 // TODO: resolve how loading will work
 var Framework = Mast;
@@ -3340,39 +3411,6 @@ Framework.ready = function (cb) {
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
 
-// Share backbone router logic
-// var extractParams = Backbone.Router.prototype._extractParameters,
-	// calculateRegex = Backbone.Router.prototype._routeToRegExp;
-
-Framework.ready(function (cb) {
-
-	// Wildcard routes to global event delegator
-	var router = new Framework.Router();
-	router.route(/(.*)/, 'route', function (route) {
-
-		// Normalize home routes (# or null) to ''
-		if (!route) {
-			route = '';
-		}
-
-		// Trim parameters from route
-		// var trimmedRoute = route;
-		// var params = route.match(/\/((.+)\/?)+/);
-		// var params = route.match(/\/:(.+)\//);
-		console.log('route: ' + route);
-		// var params = {
-
-		// };
-
-		// Trigger route
-		Framework.trigger('#' + route);
-	});
-
-});
-// TODO: resolve how loading will work
-var Framework = Mast;
-////////////////////////////////////////////////////////////////////////////
-
 // TODO: disable debug mode
 Framework.debug = true;
 
@@ -3385,18 +3423,19 @@ Framework.debug = true;
  * @param  {Function} cb
  *
  * options example:
- * 	options = {
- * 		data: {
- * 			authenticated: false
- * 		},
- * 		templates: {
- *		 componentName: templateHTML
- *	  },
- *	  components: {
- *		 componentName: ComponentDefinition
- *	  }
- * 	}
+ *  options = {
+ *    data: {
+ *      authenticated: false
+ *    },
+ *    templates: {
+ *      componentName: templateHTML
+ *    },
+ *    components: {
+ *      componentName: ComponentDefinition
+ *    }
+ *  }
  */
+
 Framework.raise = function (options, cb) {
 
 	// If only one arg is present, use options as callback if possible
@@ -3428,7 +3467,7 @@ Framework.raise = function (options, cb) {
 	// Merge specified templates with Framework.templates
 	_.extend(Framework.templates, options.templates || {});
 
-	// If Mast.define() was used, build the list of components
+	// If Framework.define() was used, build the list of components
 	Framework._buildComponentDefinitions();
 
 	// Merge specified components w/ Framework.components
@@ -3576,7 +3615,7 @@ Framework.raise = function (options, cb) {
 		var templates = {};
 
 		$('script[type="text/template"]').each(function (i, el) {
-			var id = Mast.Util.el2id(el, true);
+			var id = Framework.Util.el2id(el, true);
 			templates[id] = $(el).html();
 
 			// Strip whitespace leftover from script tags
@@ -3598,7 +3637,7 @@ Framework.raise = function (options, cb) {
 		$defaultRegions.each(function(i,el) {
 
 			// Pull id from region
-			var regionId = Mast.Util.el2id(el);
+			var regionId = Framework.Util.el2id(el);
 
 
 			// Build region
@@ -3642,8 +3681,8 @@ Framework.raise = function (options, cb) {
 		// Method to trigger global event
 		else if ( value.match(/^%/) ) {
 			return function triggerEvent () {
-				Mast.trigger(value);
-			};
+				Framework.trigger(value);
+			};			
 		}
 		// Method to add the specified class
 		else if ( (matches = value.match(/^\+\s\.*(.+)/)) && matches[1] ) {

@@ -1,6 +1,14 @@
 Mast.define('Rainbow', function () {
 
 	return {
+
+		'#test': function (x,y,z) {
+			alert('#test routed successfully!  got args:\nx:' + x + '\ny:' + y + '\nz:'+ z);
+		},
+
+		'#test/:id': function (x,y,z) {
+			alert('#test/:id routed successfully!  got args:\nx:' + x + '\ny:' + y + '\nz:'+ z);
+		},
 		
 		events: {
 
