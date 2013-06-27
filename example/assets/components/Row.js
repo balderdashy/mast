@@ -1,6 +1,7 @@
 Mast.define('Row', function () {
 	
 	return {
+		extendComponents: ['Colors', 'Red'],
 
 		// Model is passed down by parent component when this component is created
 

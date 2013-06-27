@@ -3025,7 +3025,7 @@ _.extend(Framework.Component.prototype, {
 				// If this matchPatern is this is not a match for the event, 
 				// `continue` it along to it can try the next matchPattern
 				if (!eRoute.match(regex)) return;
-				
+
 				// Parse parameters for use as args to the handler
 				// (or an empty list if none exist)
 				var params = extractParams(regex, eRoute);
@@ -3040,7 +3040,7 @@ _.extend(Framework.Component.prototype, {
 				}
 
 				// Bind context and arguments to subscription handler
-				handler.apply(self,params);
+				handler.apply(self,_.union(args, params));
 			});
 		});
 
@@ -3240,28 +3240,39 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 		throw new Error(err + '\nUsage: append(atIndex, componentId, [properties])');
 	}
 
-	// Look up component prototype
-	var componentPrototype = Framework.components[componentId];
-	if (!componentPrototype) {
-		var template = Framework.templates[componentId];
-		if (!template) {
-			throw new Error ('In ' +
-				(this.id || 'Anonymous region') + ':: Trying to attach ' +
-				componentId + ', but no component or template exists with that id.');
+	var component;
+	// If componentId is a string, look up component prototype and instatiate
+	if ('string' == typeof componentId) {
+		var componentPrototype = Framework.components[componentId];
+		if (!componentPrototype) {
+			var template = Framework.templates[componentId];
+			if (!template) {
+				throw new Error ('In ' +
+					(this.id || 'Anonymous region') + ':: Trying to attach ' +
+					componentId + ', but no component or template exists with that id.');
+			}
+
+			// If no component prototype with this id exists,
+			// create an anonymous one to use
+			componentPrototype = Framework.Component.extend({
+				id: componentId,
+				template: template
+			});
 		}
 
-		// If no component prototype with this id exists,
-		// create an anonymous one to use
-		componentPrototype = Framework.Component.extend({
-			id: componentId,
-			template: template
-		});
+		// Instantiate and render the component inside this region
+		component = new componentPrototype(_.extend({
+			$outlet: this.$el
+		}, properties || {}));
 	}
 
-	// Instantiate and render the component inside this region
-	var component = new componentPrototype(_.extend({
-		$outlet: this.$el
-	}, properties || {}));
+	// Otherwise assume an instantiated component object was sent
+	/* TODO: Check that component object is valid */
+	else {
+		component = componentId;
+		component.$outlet = this.$el;
+	}
+
 	component.render( atIndex );
 
 	// And keep track of it in the list of this region's children
@@ -3271,6 +3282,8 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 	if (this.id) debugStr += 'region: ' + this.id + ' at index ' + atIndex;
 	else debugStr += 'anonymous region at index ' + atIndex;
 	Framework.debug(debugStr);
+
+	return component;
 
 };
 
@@ -3324,7 +3337,7 @@ Framework.Region.prototype.empty = function () {
 Framework.Region.prototype.append = function (componentId, properties) {
 
 	// Insert at last position
-	this.insert(this._children.length, componentId, properties);
+	return this.insert(this._children.length, componentId, properties);
 
 };
 
