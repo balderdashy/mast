@@ -3615,6 +3615,15 @@ Framework.raise = function (options, cb) {
 							':: Invalid listener for subscription: ' + key);
 					}
 					componentPrototype.prototype.subscriptions[key] = handler;
+				} else if (key === 'extendComponents') {
+					var objToMerge = {};
+					_.each(handler, function(componentId){
+						if(!Framework.components[componentId]){
+							throw new Error(componentDef.id + ':: Trying to extend component that hasn\'t been created');
+						}
+						_.extend(objToMerge, Framework.components[componentId]);
+					});
+					_.defaults(componentPrototype.prototype, objToMerge);
 				}
 			});
 
