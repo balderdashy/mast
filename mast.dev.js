@@ -2785,10 +2785,12 @@ Framework.Component.prototype.render = function (atIndex) {
 
 	// Cancel current render and close jobs, if they're running
 	if (this._rendering) {
+		Framework.debug(this.id + ' :: render() canceled.');
 		this.cancelRender();
 		self._rendering = false;
 	}
 	if (this._closing) {
+		Framework.debug(this.id + ' :: close() canceled.');
 		this.cancelClose();
 		self._closing = false;
 	}
@@ -2809,8 +2811,14 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		// Refresh compiled template
 		var html = self._compileTemplate();
-		if (!html) return;
+		if (!html) {
+			Framework.warn(this.id + ' :: unable to render() because template compilation did not return any HTML.');
+			return;
+		}
 
+		///////////////////////////////////////////////////////////////
+		// Cody's stuff
+		///////////////////////////////////////////////////////////////
 		// Remove the current el
 		delete self.el;
 
@@ -2822,6 +2830,37 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		// Delegate Events
 		self.delegateEvents();
+		///////////////////////////////////////////////////////////////
+
+
+		///////////////////////////////////////////////////////////////
+		// Mike's stuff
+		///////////////////////////////////////////////////////////////
+		// // Parse a DOM node or series of DOM nodes from the newly templated HTML
+		// var parsedNodes = $.parseHTML(html);
+		// var el = parsedNodes[0];
+
+		// // If no nodes were parsed, throw an error
+		// if (parsedNodes.length === 0) {
+		// 	throw new Error(self.id + ' :: render() ran into a problem rendering the template with HTML => \n'+html);
+		// }
+
+		// // If there is not one single wrapper element,
+		// // or if the rendered template contains only a single text node,
+		// // (or just a lone region)
+		// // wrap the html up in a container <div/>
+		// else if (	parsedNodes.length > 1 || parsedNodes[0].nodeType === 3 ||
+		// 	$(parsedNodes[0]).is('region')) {
+
+		// 	el = $('<div/>').append(html);
+		// 	el = el[0];
+		// }
+
+		// // Set Backbone element (cache and redelegate DOM events)
+		// // (Will also update self.$el)
+		// self.setElement(el);
+		///////////////////////////////////////////////////////////////
+
 
 		// Detect and render all regions and their descendent components and regions
 		self._renderRegions();
@@ -2840,6 +2879,8 @@ Framework.Component.prototype.render = function (atIndex) {
 
 };
 
+
+
 /**
  * Use Backbone's _ensureElement to ensure we don't change things too
  * much from normal backbone. This allows us to use things like className,
@@ -2852,9 +2893,13 @@ Framework.Component.prototype.render = function (atIndex) {
  */
 
 Framework.Component.prototype._ensureElement = function() {
+	
 	var attrs = _.extend({}, _.result(this, 'attributes'));
-	if (this.className) attrs['class'] = _.result(this, 'className');
-	var $el = Backbone.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
+	if (this.className) {
+		attrs['class'] = _.result(this, 'className');
+	}
+
+	var $el = Framework.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
 	this.setElement($el, false);
 };
 
@@ -3064,6 +3109,13 @@ _.extend(Framework.Component.prototype, {
 		}, this);
 	},
 
+
+
+
+	/**
+	 * 
+	 */
+
 	_renderRegions: function () {
 		var self = this;
 
@@ -3083,6 +3135,7 @@ _.extend(Framework.Component.prototype, {
 				parent: self
 			});
 
+
 			// Keep track of regions, since we are the parent component
 			self.regions[region.id] = region;
 
@@ -3092,16 +3145,26 @@ _.extend(Framework.Component.prototype, {
 				self[region.id] = region;
 			}
 
-			// If this region has a default components
+			// Extract default component id
+			// if this region has a default components
 			// e.g. <region default="Foo"/>
-			var defaultComponentId = $(el).attr('default');
-			if (defaultComponentId) {
+			var subcomponentId = $(el).attr('template') || $(el).attr('default');
+			if (Mast.prototyping && subcomponentId) {
 
-				// Extract default component id
-				var componentId = defaultComponentId;
+				// Render number of branches of a certain component defined in this region. The two 
+				// attributes that are relevent in the region element are `count` and `template`
+				var count = $(el).attr('count') || 1;
 
 				// And append component to region automatically
-				region.append(componentId);
+				// (if `count` was specified, do it `count` times)
+				console.log('preparing the region, and there are ' + region.$el.children().length + ' subcomponent elements in the region now');
+				while (count > 0) {
+					region.append(subcomponentId);
+
+					console.log('rendering the ' + subcomponentId + ' component, remaining: ' + count + ' and there are ' + region.$el.children().length + ' subcomponent elements in the region now');
+					count--;
+				}
+
 			}
 
 			Framework.debug(self.id + ' :: Instantiated region: ' + region.id);
@@ -3114,7 +3177,23 @@ _.extend(Framework.Component.prototype, {
 
 		// Create template data context by providing access to the global Data object,
 		// Also fold in the model associated with this component, if there is one
-		var templateContext = _.extend({}, Framework.data);
+		var templateContext = _.extend({
+
+			// Allows you to get a hold of data, 
+			// but use a default value if it doesn't exist
+			get: function (key, defaultVal) {
+				var val = templateContext[key];
+				if (typeof val === 'undefined') {
+					val = defaultVal;
+				}
+				return val;
+			}
+		}, 
+
+		// All Framework.data is available in every template
+		Framework.data);
+
+		// If a model is provided for this component, make it available in this template
 		if (this.model) {
 			_.extend(templateContext, this.model.attributes);
 		}
@@ -3245,8 +3324,8 @@ function constructor (properties) {
 
 	// If neither an id nor a `default` was specified,
 	// we'll throw an error, since there's no way to get a hold of the region
-	if (!this.id && !this.$el.attr('default')) {
-		throw new Error(this.parent.id + ' :: Either `data-id`, `default`, or both must be specified on regions. \ne.g. <region data-id="foo" default="SomeComponent"></region>');
+	if (!this.id && !this.$el.attr('default') && !this.$el.attr('template')) {
+		throw new Error(this.parent.id + ' :: Either `data-id`, `template`, or both must be specified on regions. \ne.g. <region data-id="foo" template="SomeComponent"></region>');
 	}
 
 
@@ -3268,7 +3347,7 @@ function constructor (properties) {
 
 Framework.Region.prototype.insert = function ( atIndex, componentId, properties ) {
 	var err = '';
-	if (!atIndex && !_.isFinite(atIndex)) {
+	if ( ! ( atIndex || _.isFinite(atIndex) )) {
 		err += this.id + '.insert() :: No atIndex specified!';
 	}
 	else if (!componentId) {
