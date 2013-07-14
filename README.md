@@ -1,4 +1,25 @@
-# Mast
+# Mast 2.x
+
+> Warning ::
+> Mast is an internal tool that we use at Balderdash.  We made it open-source, because... well, we like open-source software :)
+> It *is* based off of Backbone, and it *does* happen to be a great accompaniment to Sails, but the last thing I want
+> is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
+
+> It's very important to future-proof your API/infrastructure by building an SOA.  A clean breadboard for your business logic
+> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refridgerators, cars, wearables-- these things
+> all speak APIs, but unfortunately they don't (and they won't for many years) all speak HTML 5.
+> So please don't make decisions on a DOM framework based on your backend, or vice versa!
+
+> OK.  Enough of that.
+
+> I think Mast is fantastic, and it has afforded great productivity gains for my team and our customers.
+> We don't yet have the resouces to provide publicly available documentation while still maintaining a professional level
+> of support for our customers already using Mast. 
+
+> So all I can say for now is "use Mast at your own risk."
+> If you feel comfortable reading Backbone's source, you're probably good to go.
+
+> Stay tuned!
 
 ## Philosophy & Goals
 + Minimize complexity
