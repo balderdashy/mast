@@ -2769,9 +2769,8 @@ Framework.Util = {
 		}
 		// Method to trigger global event
 		else if ( value.match(/^%/) ) {
-			console.log('Setting up trigger (' + value + ')...');
 			fn = function triggerEvent () {
-				console.log('Triggering...');
+				console.log('Triggering event (' + value + ')...');
 				Framework.trigger(value);
 			};			
 		}
@@ -2806,6 +2805,8 @@ Framework.Util = {
 
 		// If short-hand matched, return the dereferenced function
 		if (fn) {
+
+			Framework.verbose('Interpreting meaning from shorthand :: `' + value + '`...');
 
 			// Curry the result function with any suffix matches
 			var curriedFn = fn;
@@ -2974,12 +2975,16 @@ var Framework = Mast;
 
 Framework._defineQueue = [];
 
+
+
+
 /**
  * Optional method to require app components. Require.js can be used instead
  * as needed.
  * @param  {string} id Component id override.
  * @param  {Function} definitionFn Definition of component
  */
+
 Framework.define = function (id, definitionFn) {
 	// Id param is optional
 	if (!definitionFn) {
@@ -2993,9 +2998,17 @@ Framework.define = function (id, definitionFn) {
 	});
 };
 
-// Run definition methods to get actual component definitions.
-// This is deferred to avoid having to use Backbone's function () {} approach for things
-// like collections.
+
+
+
+/**
+ * Run definition methods to get actual component definitions.
+ * This is deferred to avoid having to use Backbone's function () {} approach for things
+ * like collections.
+ *
+ * @api private
+ */
+
 Framework._buildComponentDefinitions = function () {
 
 	// Iterate through the define queue and create each definition
@@ -3068,7 +3081,9 @@ Framework.Component.prototype.close = function ( ) {
  */
 
 Framework.Component.prototype.render = function (atIndex) {
-	Framework.debug(this.id + ' :: render()');
+
+	Framework.debug(this.id + ' ::');
+	Framework.verbose(this.id + ' :: render()');
 
 	var self = this;
 
@@ -3095,14 +3110,13 @@ Framework.Component.prototype.render = function (atIndex) {
 		self._rendering = false;
 
 		if (!self.$outlet) {
-			throw new Error(self.id + ' :: render() called, but no $outlet was defined!');
+			throw new Error(self.id + ' :: Trying to render(), but no $outlet was defined!');
 		}
 
 		// Refresh compiled template
 		var html = self._compileTemplate();
 		if (!html) {
-			Framework.warn(this.id + ' :: unable to render() because template compilation did not return any HTML.');
-			return;
+			throw new Error(this.id + ' :: Unable to render component because template compilation did not return any HTML.');
 		}
 
 		//
@@ -3859,6 +3873,8 @@ Framework.Region.fromElement = function (el, parent) {
 		parent: parent
 	});
 
+	Framework.debug(parent.id + ' :: Instantiated new region `' + region.id + '`');
+
 
 	// If this region has a default component/template set, 
 	// grab the id  --  e.g. <region template="Foo" />
@@ -3913,8 +3929,6 @@ Framework.Region.fromElement = function (el, parent) {
 		}
 
 	}
-
-	Framework.debug(region.id + ' :: Region instantiated');
 
 	return region;
 };
