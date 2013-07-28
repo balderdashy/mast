@@ -3553,20 +3553,31 @@ Framework.Region.fromElement = function (el, parent) {
 	// If `count` is set, render sub-component specified number of times.
 	// e.g. <region template="Foo" count="3" />
 	// (verify Framework.shortcut.count is enabled)
-	var count = 1;
+	var countAttr,
+		count = 1;
+
 	if ( Framework.shortcut.count ) {
-		count = $(el).attr('count') || 1;
+
+		// If `count` attribute is not false or undefined,
+		// that means it was set explicitly, and we should use it
+		countAttr = $(el).attr('count');
+		// Framework.debug('Count attr is :: ', countAttr);
+		if ( !!countAttr ) {
+			count = countAttr;
+		}
+
 	}
+
 
 	// Append sub-component(s) to region automatically
 	// (verify Framework.shortcut.template is enabled)
 	if ( Framework.shortcut.template && componentId ) {
 		
-		Framework.debug(
-			'preparing the region, and there are ' + 
-			region.$el.children().length + 
-			' subcomponent elements in the region now'
-		);
+		// Framework.debug(
+		// 	'Preparing to render ' + count + ' ' + componentId + ' components into region ' +
+		// 	'(' + region.id + '), which already contains ' + region.$el.children().length + 
+		// 	' subcomponents.'
+		// );
 
 		//////////////////////////////////////////
 		// SERIOUSLY WTF
@@ -3579,17 +3590,17 @@ Framework.Region.fromElement = function (el, parent) {
 
 			region.append(componentId);
 
-			Framework.debug(
-				'rendering the ' + componentId + ' component, remaining: ' + 
-				count + ' and there are ' + region.$el.children().length + 
-				' subcomponent elements in the region now'
-			);
+			// Framework.debug(
+			// 	'rendering the ' + componentId + ' component, remaining: ' + 
+			// 	count + ' and there are ' + region.$el.children().length + 
+			// 	' subcomponent elements in the region now'
+			// );
 
 		}
 
 	}
 
-	Framework.debug(self.id + ' :: Instantiated region: ' + region.id);
+	Framework.debug(region.id + ' :: Region instantiated');
 
 	return region;
 };
@@ -3628,6 +3639,9 @@ router.route(/(.*)/, 'route', function (route) {
 	// Trigger route
 	Framework.trigger('#' + route);
 });
+
+// Expose `navigate()` method
+Framework.navigate = Framework.history.navigate;
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -3775,6 +3789,7 @@ Framework.raise = function (options, cb) {
 		// ################################
 
 		// Grab initial regions from DOM
+		// (and append default templates)
 		collectRegions();
 
 
@@ -3869,6 +3884,8 @@ Framework.raise = function (options, cb) {
 		});
 	}
 
+
+
 	// Load any script tags on the page with type="text/template"
 	function collectTemplates() {
 		var templates = {};
@@ -3888,6 +3905,8 @@ Framework.raise = function (options, cb) {
 		return templates;
 	}
 
+
+
 	// Collect any regions with the default component set from the DOM
 	function collectRegions () {
 
@@ -3904,25 +3923,44 @@ Framework.raise = function (options, cb) {
 		});
 	}
 
-	// Translate right-hand-side shorthand from things like #about_me and %mainMenu:open
-	// to functions that perform the proper behaviors
+
+
+	/**
+	 * Translate **right-hand-side abbreviations** into functions that perform
+	 * the proper behaviors, e.g.
+	 *		#about_me
+	 *		%mainMenu:open
+	 */
+
 	function translateShorthand (value, key) {
 
-		// If this is an important, Framework-specific data key, and a function was specified,
-		// run it to get the value
+		// If this is an important, Framework-specific data key, 
+		// and a function was specified, run it to get its value
+		// (this is to keep parity with Backbone's similar functionality)
 		if (_.isFunction(value) && (key === 'collection' || key === 'model')) {
 			return value();
 		}
 
 		// Ignore other non-strings
-		if (!_.isString(value)) return value;
+		if ( !_.isString(value) ) {
+			return value;
+		}
 
 		var matches;
 
-		// Method to redirect user to a client-side URL
+		// Method to redirect user to a client-side URL, then call the handler
 		if ( value.match(/^#/) ) {
 			return function changeUrlFragment () {
-				window.location.hash = value;
+				var url = value.replace(/^#/,'');
+				Framework.history.navigate(url, { trigger: true });
+			};
+		}
+		// Redirects user to client-side URL, w/o affecting browser history
+		// Like calling `Backbone.history.navigate('/foo', { replace: true })`
+		else if ( value.match(/^##/) ) {
+			return function redirectAndCoverTracks () {
+				var url = value.replace(/^##/,'');
+				Framework.history.navigate(url, { trigger: true, replace: true });
 			};
 		}
 		// Method to trigger global event
