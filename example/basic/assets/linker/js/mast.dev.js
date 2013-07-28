@@ -2775,6 +2775,9 @@ Framework.Component.prototype.close = function ( ) {
 	});
 };
 
+
+
+
 /**
  * Run HTML template through engine and append results to outlet. Also rerender regions.
  * If atIndex is specified, the component is rendered at the given position within its
@@ -2888,6 +2891,8 @@ Framework.Component.prototype.render = function (atIndex) {
 
 
 
+
+
 /**
  * Use Backbone's _ensureElement to ensure we don't change things too
  * much from normal backbone. This allows us to use things like className,
@@ -2909,6 +2914,8 @@ Framework.Component.prototype._ensureElement = function() {
 	var $el = Framework.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
 	this.setElement($el, false);
 };
+
+
 
 
 
@@ -2947,19 +2954,31 @@ _.extend(Framework.Component.prototype, {
 });
 
 
+
+/**
+ * Default lifecycle events for bound model and/or collection
+ */
 _.extend(Framework.Component.prototype, {
 
-	// this.model
+	// Fired when the bound model is updated (`this.model`)
 	afterChange: function (model, options) {},
 	// afterInvalid: function (model, error, options) {},
 
-	// this.collection
+	// Fired when a model is added to the bound collection (`this.collection`)
 	afterAdd: function (model, collection, options) {},
+
+	// Fired when a model is removed from the bound collection (`this.collection`)
 	afterRemove: function (model, collection, options) {},
+
+	// Fired when the bound collection is wiped (`this.collection`)
 	afterReset: function (collection, options) {}
+
+
+	// TODO:
+	// Backbone version compatibility issues make this one tricky
 	// afterSort: function (collection, options) {},
 
-	// Server
+	// TODO: Server-oriented model/collection event bindings
 	// afterDestroy: function (model, collection, options) {},
 	// afterError: function (model, xhr, options) {},
 	// afterRequest: function (collectionOrModel, xhr, options) {},
@@ -2976,17 +2995,31 @@ _.extend(Framework.Component.prototype, {
  
 _.extend(Framework.Component.prototype, {
 
+	// Provide access to banned methods in `_ev` sub-object for private use
+	_ev: {
+		on: Framework.Component.prototype.on,
+		off: Framework.Component.prototype.off,
+		trigger: Framework.Component.prototype.trigger,
+		once: Framework.Component.prototype.once,
+		bind: Framework.Component.prototype.bind,
+		listenTo: Framework.Component.prototype.listenTo,
+		listenToOnce: Framework.Component.prototype.listenToOnce,
+		stopListening: Framework.Component.prototype.stopListening
+	},
+
 	// Non-global event delegation is disabled at the user level
 	on: this._disableLocalEventDelegator,
 	off: this._disableLocalEventDelegator,
 	trigger: this._disableLocalEventDelegator,
 	once: this._disableLocalEventDelegator,
-	bind: this._disableLocalEventDelegator
+	bind: this._disableLocalEventDelegator,
+
 
 	// These seem to be required by Backbone core
-	// listenTo: this._disableLocalEventDelegator,
-	// listenToOnce: this._disableLocalEventDelegator,
+	listenTo: this._disableLocalEventDelegator,
+	listenToOnce: this._disableLocalEventDelegator
 	// stopListening: this._disableLocalEventDelegator
+
 });
 
 
@@ -3017,9 +3050,9 @@ _.extend(Framework.Component.prototype, {
 		if (this.collection) {
 
 			// Listen to events
-			this.listenTo(this.collection, 'add', this.afterAdd);
-			this.listenTo(this.collection, 'remove', this.afterRemove);
-			this.listenTo(this.collection, 'reset', this.afterReset);
+			this._ev.listenTo(this.collection, 'add', this.afterAdd);
+			this._ev.listenTo(this.collection, 'remove', this.afterRemove);
+			this._ev.listenTo(this.collection, 'reset', this.afterReset);
 		}
 
 		if (this.model) {
@@ -3028,7 +3061,7 @@ _.extend(Framework.Component.prototype, {
 			// e.g.
 			// .afterChange(model, options)
 			//
-			this.listenTo(this.model, 'change', function (model, options) {
+			this._ev.listenTo(this.model, 'change', function (model, options) {
 				if (_.isFunction(this.afterChange)) {
 					this.afterChange(model, options);
 				}
@@ -3056,7 +3089,7 @@ _.extend(Framework.Component.prototype, {
 		//
 
 		// First argument is event name, subsequent args are other params to trigger()
-		this.listenTo(Framework, 'all', function (eRoute) {
+		this._ev.listenTo(Framework, 'all', function (eRoute) {
 
 			// Trim off all but the first argument to pass through to handler
 			var args = Array.prototype.slice.call(arguments);
@@ -3113,7 +3146,8 @@ _.extend(Framework.Component.prototype, {
 
 
 	/**
-	 * If any regions exist, empty them
+	 * If any regions exist in this component, 
+	 * empty them, and then delete them
 	 */
 
 	_emptyAllRegions: function () {
@@ -3128,7 +3162,8 @@ _.extend(Framework.Component.prototype, {
 
 
 	/**
-	 * 
+	 * Instantiate region components and append any default
+	 * templates/components to the DOM
 	 */
 
 	_renderRegions: function () {
@@ -3139,6 +3174,10 @@ _.extend(Framework.Component.prototype, {
 		// Detect child regions in template
 		var $regions = this.$('region');
 		$regions.each(function (i, el) {
+
+			// Provide backwards compatibility for old `default` notation
+			var template = $(el).attr('default');
+			$(el).attr('template', template);
 
 			// Generate a region instance from the element
 			// (modifying the DOM as necessary)
@@ -3155,7 +3194,15 @@ _.extend(Framework.Component.prototype, {
 		});
 	},
 
-	// Convert template HTML and data into a compiled $template
+
+
+
+
+
+	/**
+	 * Convert template HTML and data into a compiled $template
+	 */
+
 	_compileTemplate: function () {
 
 		// Create template data context by providing access to the global Data object,
@@ -3200,6 +3247,14 @@ _.extend(Framework.Component.prototype, {
 
 		return html;
 	},
+
+
+
+
+	/**
+	 * Check the specified definition for obvious mistakes,
+	 * especially likely deprecation issues from Mast 1.x
+	 */
 
 	_validateDefinition: function (properties) {
 		if (_.isObject(properties)) {
@@ -3279,8 +3334,19 @@ _.extend(Framework.Component.prototype, {
 		else return {};
 	},
 
+
+
+
+	/**
+	 * Disable binding and triggering of component-local Backbone events.
+	 * Global events are more powerful and maintainable, and always a better choice!
+	 */
+
 	_disableLocalEventDelegator: function () {
-		Framework.warn(this.id + ' :: on(), off(), trigger(), and the like are not allowed on components.  Global event delegation ftw!');
+		Framework.warn(
+			this.id + 
+			' :: on(), off(), trigger(), and the like are not allowed on components.' +
+			'  Global event delegation ftw!');
 	}
 
 });
@@ -3527,6 +3593,7 @@ Framework.Region.fromElement = function (el, parent) {
 
 	return region;
 };
+
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -3824,16 +3891,15 @@ Framework.raise = function (options, cb) {
 	// Collect any regions with the default component set from the DOM
 	function collectRegions () {
 
-		// Backwards compatibility for old `default` notation
+		// Provide backwards compatibility for old `default` notation
 		$('region[default]').each(function () {
 			var template = $(this).attr('default');
 			$(this).attr('template', template);
 		});
 
-		var $defaultRegions = $('region[template]');
-
 		// Now instantiate the appropriate default component in each
-		$defaultRegions.each(function(i,el) {
+		// region with a specified template/component
+		$('region[template]').each(function(i,el) {
 			Framework.Region.fromElement(el);
 		});
 	}
