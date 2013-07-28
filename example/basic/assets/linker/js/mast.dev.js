@@ -3132,6 +3132,8 @@ _.extend(Framework.Component.prototype, {
 		var $regions = this.$('region');
 		$regions.each(function (i, el) {
 
+			// Framework.Region.fromElement(el);
+
 			// Pull id from region
 			var regionId = $(el).attr('data-id') || $(el).attr('id');
 
@@ -3155,8 +3157,7 @@ _.extend(Framework.Component.prototype, {
 			
 			// If this region has a default sub-component set, grab the id.
 			// e.g. <region template="Foo" />
-			//		<region default="Foo" /> (legacy support)
-			var subcomponentId = $(el).attr('template') || $(el).attr('default');
+			var subcomponentId = $(el).attr('template');
 
 			// If `count` is set, render sub-component specified number of times.
 			// e.g. <region template="Foo" count="3" />
@@ -3167,7 +3168,7 @@ _.extend(Framework.Component.prototype, {
 			}
 
 			// Append sub-component(s) to region automatically
-			// (verify Framework.shortcut.default is enabled)
+			// (verify Framework.shortcut.template is enabled)
 			if ( Framework.shortcut.template && subcomponentId ) {
 				
 				Framework.debug(
@@ -3504,6 +3505,36 @@ Framework.Region.prototype.attach = function (component, properties) {
 };
 
 
+
+
+/**
+ * Factory method to generate a new region instance from a DOM element
+ * Implements `template`, `count`, and `data-*` HTML attributes.
+ *
+ * @param {Object} options
+ * @returns region instance
+ */
+
+Framework.Region.fromElement = function (el, parent) {
+
+	// If parent is not specified, make-believe
+	parent = parent || { id: '*' };
+
+	// Build region
+	var region = new Framework.Region({
+		id: Framework.Util.el2id(el),
+		$el: $(el),
+		parent: parent
+	});
+
+	// Extract default component id
+	var defaultComponentId = $(el).attr('template');
+	if (defaultComponentId) {
+		region.append(defaultComponentId);
+	}
+
+	return region;
+};
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -3800,29 +3831,18 @@ Framework.raise = function (options, cb) {
 
 	// Collect any regions with the default component set from the DOM
 	function collectRegions () {
-		var $defaultRegions = $('region[template],region[default]');
+
+		// Backwards compatibility for old `default` notation
+		$('region[default]').each(function () {
+			var template = $(this).attr('default');
+			$(this).attr('template', template);
+		});
+
+		var $defaultRegions = $('region[template]');
 
 		// Now instantiate the appropriate default component in each
 		$defaultRegions.each(function(i,el) {
-
-			// Pull id from region
-			var regionId = Framework.Util.el2id(el);
-
-
-			// Build region
-			var region = new Framework.Region({
-				id: regionId,
-				$el: $(el),
-
-				parent: { id: '*' }
-
-				// Use app component as parent if one was specified
-				// parent: Framework.components.App ? new Framework.components.App() : { id: '*' }
-			});
-
-			// Extract default component id
-			var componentId = $(el).attr('template') || $(el).attr('default');
-			region.append(componentId);
+			Framework.Region.fromElement(el);
 		});
 	}
 
