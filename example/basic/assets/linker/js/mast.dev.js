@@ -2709,11 +2709,15 @@ Framework.Util = {
 	},
 
 
-	// Regexp to match "first class" DOM events
-	// (these are allowed in the top level of a component definition as method keys)
-	// 		i.e. /^(click|hover|blur|focus)( (.+))/
-	//				[1] => event name
-	//				[3] => selector
+
+	/**
+	 * Regexp to match "first class" DOM events
+	 * (these are allowed in the top level of a component definition as method keys)
+	 *		i.e. /^(click|hover|blur|focus)( (.+))/
+	 *			[1] => event name
+	 *			[3] => selector
+	 */
+
 	'/DOMEvent/': new RegExp('^(' + _.reduce(DOMEvents, 
 		function buildRegexp (memo, eventName, index) {
 
@@ -2725,6 +2729,30 @@ Framework.Util = {
 			return memo + '|' + eventName;
 		}, '') +
 		')( (.+))?'),
+
+
+
+	/**
+	 * Returns whether the specified event key matches a DOM event
+	 *
+	 * if no match is found
+	 * @returns {Boolean} `false`
+	 *
+	 * otherwise
+	 * @returns {Object} {
+	 *		event		: name of DOM event
+	 *		selector	: optionally, DOM selector(s) for delegation, or `undefined`
+	 *	}
+	 */
+
+	isDOMEvent: function (key) {
+		var matches = key.match(Framework.Util['/DOMEvent']);
+		return matches && matches[1] ? {
+			event		: matches[1],
+			selector	: matches[3]
+		} : false;
+	},
+
 
 
 
@@ -3186,7 +3214,6 @@ Framework.Component.prototype.render = function (atIndex) {
 		///////////////////////////////////////////////////////////////
 
 
-
 		// Detect and render all regions and their descendent components and regions
 		self._renderRegions();
 
@@ -3204,20 +3231,22 @@ Framework.Component.prototype.render = function (atIndex) {
 
 
 		// TODO:
-		//		Automatically disable user text selection on the relevant elements
-		//		when a click or touch event is bound (even for delegated event bindings.)
+		//		Automatically disable user text selection when a click/touch event is bound
+		//		(even for delegated event bindings.)
 		//
-		//		This can be canceled out by setting `disableUserSelect: false`
-		//		on the component.
-		//
-		// For reference, the CSS syntax is:
-		//
-		//		-webkit-touch-callout: none;
-		//		-webkit-user-select: none;
-		//		-khtml-user-select: none;
-		//		-moz-user-select: moz-none;
-		//		-ms-user-select: none;
-		//		user-select: none;
+		//		This is ignored if `disableUserSelect` is `false`
+		if (self.disableUserSelect !== false) {
+
+			
+			// For reference, the CSS syntax is:
+			//
+			//	-webkit-touch-callout: none;
+			//	-webkit-user-select: none;
+			//	-khtml-user-select: none;
+			//	-moz-user-select: moz-none;
+			//	-ms-user-select: none;
+			//	user-select: none;
+		}
 	});
 
 };
