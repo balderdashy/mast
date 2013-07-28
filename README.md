@@ -6,7 +6,7 @@
 > is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
 
 > It's very important to future-proof your API/infrastructure by building an SOA.  A clean breadboard for your business logic
-> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refridgerators, cars, wearables-- these things
+> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refrigerators, cars, wearables-- these things
 > all speak APIs, but unfortunately they don't (and they won't for many years) all speak HTML 5.
 > So please don't make decisions on a DOM framework based on your backend, or vice versa!
 
@@ -60,6 +60,62 @@
   + Flexible communication with a server-side API is a requirement.  It probably makes the most sense to do this in the context of either RESTful operations on models or RPC-style calls on them.  But in either case, a static collection represents a remote endpoint for performing operations and receiving server-sent events.  These are probably Backbone models and collections, but not necessarily.
 
 
+
+##Getting Started with Mast
+>As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to be using Sails in order to use Mast.
+
+###Setting up Mast
+####1. Get Mast
+Add the `mast.dev.js` file to your project and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
+
+>If you're in a Sails app, save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
+```
+<!--SCRIPTS-->
+<script src="/linker/js/mast.dev.js"></script>
+<!--SCRIPTS END-->
+```
+
+####2. Modify JST templates and raise Mast 
+Paste this script into the body of your page:
+
+```html
+<script type="text/javascript">
+	 // Modify JST templates to eliminate the nasty parts of the file path
+    _.each(JST, function (fn, path) {
+      var id = path.match(/\/([^\/]+)\..+$/)[1];
+      Mast.templates[id] = fn;
+    });
+
+    Mast.raise();
+</script>
+```
+
+>In Sails, you can paste this into `assets/index.html` after:
+```
+<!--SCRIPTS-->
+<script src="/linker/js/mast.dev.js"></script>
+<!--SCRIPTS END-->
+```
+
+###Regions
+Regions are similar to view partials. The regions contain the parts of your application that can be changed out, and a region can contain other regions. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching the `template` of a region, you can easily work on whichever part of the application you need to.
+
+To insert a region, you add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be the contents of the region. It will look something like this: 
+```
+<region template="PonyPartyRegion"></region>
+```
+
+
+###Templates
+Templates are the contents of a region. You can create a template using a `<script>` tag that looks like this:
+```html
+<script data-id="PonyPartyRegion" type="text/template">
+  Stuff inside of the region
+</script>
+```
+The `data-id` should be the same as the `template` of the region.
+
+>In Sails apps, you don't need to link up templates using script tags -- you just put the region's content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`)
 
 
 <!--
