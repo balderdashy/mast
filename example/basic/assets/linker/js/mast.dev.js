@@ -2525,13 +2525,13 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     }
 
 }());
-// Create global Mast
-var Mast;
-
-// Allow dependencies to be passed in to keep global namespace clean
-Mast = (function (Backbone, _, $) {
+(function (frameworkId, $, _, Backbone) {
 	var Framework = Backbone;
-	
+
+	// Remember the frameworkId for usage examples in warnings and errors
+	Framework.id = frameworkId;
+
+	// Start w/ empty templates, components, and data
 	Framework.templates = {};
 	Framework.components = {};
 	Framework.data = {};
@@ -2543,9 +2543,18 @@ Mast = (function (Backbone, _, $) {
 	Framework.shortcut = {};
 	Framework.shortcut.template = true;
 	Framework.shortcut.count = true;
-	
-	return Framework;
-})(Backbone, _, $);
+
+	// Expose framework global on window object
+	window[Framework.id] = Framework;
+})(
+	// Name your framework
+	'Mast',
+
+	// Pass dependencies as args to keep global namespace clean
+	$,
+	_,
+	Backbone
+);
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -3008,17 +3017,17 @@ _.extend(Framework.Component.prototype, {
 	},
 
 	// Non-global event delegation is disabled at the user level
-	on: this._disableLocalEventDelegator,
-	off: this._disableLocalEventDelegator,
-	trigger: this._disableLocalEventDelegator,
-	once: this._disableLocalEventDelegator,
-	bind: this._disableLocalEventDelegator,
+	on: _disableLocalEventDelegator,
+	off: _disableLocalEventDelegator,
+	trigger: _disableLocalEventDelegator,
+	once: _disableLocalEventDelegator,
+	bind: _disableLocalEventDelegator,
 
 
 	// These seem to be required by Backbone core
-	listenTo: this._disableLocalEventDelegator,
-	listenToOnce: this._disableLocalEventDelegator
-	// stopListening: this._disableLocalEventDelegator
+	listenTo: _disableLocalEventDelegator,
+	listenToOnce: _disableLocalEventDelegator
+	// stopListening: _disableLocalEventDelegator
 
 });
 
@@ -3241,7 +3250,15 @@ _.extend(Framework.Component.prototype, {
 			else html = _.template(this.template, templateContext);
 		}
 		catch (e) {
-			Framework.error(this.id + ' :: render() error in template :\n' + e.toString() + '\nTemplate :: ' + html);
+			var str = e, 
+				stack = '';
+
+			if (e instanceof Error) {
+				str =  e.toString();
+				stack = e.stack;
+			}
+
+			Framework.error(this.id + ' :: render() error in template :\n' + str + '\nTemplate :: ' + html + '\n' + stack);
 			html = this.template;
 		}
 
@@ -3282,7 +3299,7 @@ _.extend(Framework.Component.prototype, {
 			}
 			if (properties.bindings) {
 				delete properties.bindings;
-				Framework.warn(id + ' :: `bindings` are not allowed in component definitions.  Try using the onChange(changedAttributes) method instead.');
+				Framework.warn(id + ' :: `bindings` are not allowed in component definitions.  Try using the onChange(changedAttrs) method instead.\nYou can also specify an object corresponding to the model attributes to emulate the old behavior (e.g. `onChange: { someAttr: function myBinding(newVal) {} }` )');
 			}
 			if (properties.template) {
 				delete properties.template;
@@ -3290,12 +3307,25 @@ _.extend(Framework.Component.prototype, {
 			}
 			if (properties.afterCreate) {
 				delete properties.afterCreate;
-				Framework.warn(id + ' :: afterCreate() is not allowed in component definitions.  You can use afterRender() for the same effect.');
+				Framework.warn(id + ' :: afterCreate() is not allowed in component definitions.  You can now use afterRender() for the same effect.');
 			}
 			if (properties.beforeCreate) {
 				delete properties.beforeCreate;
-				Framework.warn(id + ' :: beforeCreate() is not allowed in component definitions.  You can use beforeRender() for the same effect, but be sure and trigger the callback when you\'re finished, and to also write a cancelRender() so your component knows how to cancel any asynchronous operations.');
+				Framework.warn(id + ' :: beforeCreate() is not allowed in component definitions.  You can now use beforeRender(cb) for the same effect, but be sure and trigger the callback when you\'re finished, and to also write a cancelRender() so your component knows how to cancel any asynchronous operations.');
 			}
+
+
+			// Handle bad event bindings
+			// In particular, `window.onerror` should not be bound via Framework 
+			// since it shouldn't use the jQuery `error` event
+			// (see http://api.jquery.com/error/ for more information)
+			properties.events = properties.events || {};
+			if (properties['window error'] || properties.events['window error']) {
+				delete properties['window error'];
+				delete properties.events['window error'];
+				Framework.warn(id + ' :: `window error` should not be bound using Backbone/jQuery.  See `http://api.jquery.com/error` for more information.');
+			}
+
 
 			// Check that this.collection is actually an instance of Backbone.Collection
 			// and that this.model is actually an instance of Backbone.Model
@@ -3310,15 +3340,15 @@ _.extend(Framework.Component.prototype, {
 
 					Framework.error(
 						'Component (' + id + ') has an invalid ' + type + '-- \n' + 
-						'If `' + type + '` is set on a component, ' + 
+						'If `' + type + '` is specified for a component, ' + 
 						'it must be an *instance* of a Backbone.' + Type + '.\n');
 
 					if (properties[type] instanceof Backbone[Type].constructor) {
 						Framework.error(
-							'However, a Backbone.' + Type + ' prototype was specified instead of a ' +
-							'Backbone.' + Type + ' instance.\n' +
-							'Please `new` up the ' + type + ' before assigning it ' + 
-							'to the component, or use a wrapper function, e.g.:\n' +
+							'It looks like a Backbone.' + Type + ' *prototype* was specified instead of a ' +
+							'Backbone.' + Type + ' *instance*.\n' +
+							'Please `new` up the ' + type + ' -before- ' + Framework.id + '.raise(),' +
+							'or use a wrapper function to achieve the same effect, e.g.:\n' +
 							'`' + type + ': function () {\nreturn new Some' + Type + '();\n}`'
 						);
 					}
@@ -3332,25 +3362,31 @@ _.extend(Framework.Component.prototype, {
 			return _.clone(properties);
 		}
 		else return {};
-	},
-
-
-
-
-	/**
-	 * Disable binding and triggering of component-local Backbone events.
-	 * Global events are more powerful and maintainable, and always a better choice!
-	 */
-
-	_disableLocalEventDelegator: function () {
-		Framework.warn(
-			this.id + 
-			' :: on(), off(), trigger(), and the like are not allowed on components.' +
-			'  Global event delegation ftw!');
 	}
 
 });
 
+
+/**
+ * Disable binding and triggering of component-local Backbone events.
+ * Global events are more powerful and maintainable, and always a better choice!
+ */
+
+function _disableLocalEventDelegator () {
+	throw new Error('\n' +
+		'Local event binders like ' + this.id+'.on(\'foo\', fn), '+this.id+'.off(\'foo\', fn), '+this.id+'.trigger(\'foo\', theId), etc. \n' +
+		'are no longer allowed on components.  Global event delegation is a much more maintainable solution\n' + 
+		'for cross-component messaging anyways.\n\n' +
+		'Please use global triggers and listeners on the ' + Framework.id + ' object instead--\n' +
+		'e.g. ' + Framework.id + '.on(\'' + this.id + ':foo\', fn), ' + Framework.id + '.trigger(\''+this.id+':foo\', theId), etc.' + 
+		'Alternatively, you can use the (%) shorthand syntax, which is available for subscriptions and triggers ' +
+		'on all ' + Framework.id + ' components.\n\n' + 
+		'For example, to bind a function to a custom global event called `' + this.id + ':foo` :: \n' +
+		'\'%' + this.id + ':foo\': fn\n\n' +
+		'To trigger the custom event ::\n' +
+		'\'click .whatever\': \'%' + this.id + ':foo\''
+	);
+}
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -3679,9 +3715,8 @@ var Framework = Mast;
 Framework.debug = true;
 
 /**
- * This is the starting point to your Mast application. It runs multiple proccess that allow a
- * Mast application to run. You should grab templates and components with something like
- * Require.js before calling Framework.raise().
+ * This is the starting point to your application.  You should grab templates and components
+ * before calling Framework.raise() using something like Require.js.
  *
  * @param  {Object}   options
  * @param  {Function} cb

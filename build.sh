@@ -2,6 +2,7 @@ rm mast.dev.js
 touch mast.dev.js
 
 # Core dependencies
+## (this part should be disabled eventually for cleaner distribution)
 cat "lib/deps/$.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/deps/_.js" >> mast.dev.js
@@ -12,7 +13,7 @@ cat "lib/deps/async.js" >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Core
-cat "lib/mast.js" >> mast.dev.js
+cat "lib/Framework.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/Util.js" >> mast.dev.js
 echo '' >> mast.dev.js
