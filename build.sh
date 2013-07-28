@@ -40,5 +40,5 @@ echo 'Mast.debug = false;' >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Copy into example
-cp mast.dev.js example/assets/mast.dev.js
+#cp mast.dev.js example/assets/mast.dev.js
 

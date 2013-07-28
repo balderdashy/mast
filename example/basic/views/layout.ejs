@@ -28,6 +28,7 @@
     -->
 
     <!--STYLES-->
+    
     <!--STYLES END-->
   </head>
 
@@ -58,6 +59,7 @@
     -->
 
     <!--TEMPLATES-->
+    <script type="text/javascript" src="/jst.js"></script>
     <!--TEMPLATES END-->
 
 
@@ -84,6 +86,29 @@
     -->
 
     <!--SCRIPTS-->
+    <script src="/linker/js/socket.io.js"></script>
+    <script src="/linker/js/sails.io.js"></script>
+    <script src="/linker/js/app.js"></script>
+    <script src="/linker/js/mast.dev.js"></script>
     <!--SCRIPTS END-->
+
+
+
+
+    <script>
+    // Modify JST templates to eliminate the nasty parts of the file path
+    for (var key in JST) {
+      var id = key.match(/\/([^\/]+)\..+$/)[1];
+      Mast.templates[id] = JST[key];
+    }
+
+    // When visiting home page change url hash to hashbang.
+    if (window.location.hash === '') {
+      window.location.hash = '#!';
+    }
+
+    // DAT MASST
+    Mast.raise();
+  </script>
   </body>
 </html>
