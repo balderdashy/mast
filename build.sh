@@ -15,6 +15,8 @@ echo '' >> mast.dev.js
 # Core
 cat "lib/Framework.js" >> mast.dev.js
 echo '' >> mast.dev.js
+cat "lib/Logger.js" >> mast.dev.js
+echo '' >> mast.dev.js
 cat "lib/Util.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/touch.js" >> mast.dev.js

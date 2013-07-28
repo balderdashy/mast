@@ -2528,9 +2528,6 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 (function (frameworkId, $, _, Backbone) {
 	var Framework = Backbone;
 
-	// TODO: set up a proper build script
-	window.Framework = Framework;
-
 	// Remember the frameworkId for usage examples in warnings and errors
 	Framework.id = frameworkId;
 
@@ -2558,8 +2555,66 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	_,
 	Backbone
 );
+/**
+ *
+ *
+ */
+
+function Logger (Framework) {
+
+	// If log is specified, use it, otherwise use the console
+	if (Framework.logger) {
+		Framework.error		= Framework.logger.error;
+		Framework.warn		= Framework.logger.warn;
+		Framework.log		= Framework.logger.debug || Framework.logger;
+		Framework.verbose	= Framework.logger.verbose;
+	}
+	// In IE, we can't default to the browser console because there IS NO BROWSER CONSOLE
+	else if (typeof console !== 'undefined') {
+		Framework.error		= console && console.error && console.error.bind(console);
+		Framework.warn		= console && console.warn && console.warn.bind(console);
+		Framework.log		= console && console.log && console.log.bind(console);
+		Framework.verbose	= console && console.debug && console.debug.bind(console);
+	}
+
+	// Support for `debug` for backwards compatibility
+	Framework.debug = Framework.log;
+
+	// Turn off all logs in production
+	if (Framework.production) {
+		Framework.logLevel = 'silent';
+	}
+
+
+	// Use log level config if provided
+	var noop = function () {};
+	switch ( Framework.logLevel ) {
+
+		case 'verbose':	break;
+
+		case 'debug':	Framework.verbose = noop;
+						break;
+
+		case 'warn':	Framework.verbose = Framework.log = noop;
+						break;
+
+		case 'error':	Framework.verbose = Framework.log = 
+						Framework.warn = noop;
+						break;
+
+		case 'silent':	Framework.verbose = Framework.log = 
+						Framework.warn = Framework.error = noop;
+						break;
+
+		default:		throw new Error ('Unrecognized logging level config ' + 
+						'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
+
+	}
+
+}
+
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = window.Mast;
 ////////////////////////////////////////////////////////////////////////////
 
 // Supported "first-class" DOM events
@@ -2961,7 +3016,7 @@ Framework._buildComponentDefinitions = function () {
 };
 
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = window.Mast;
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -3054,6 +3109,7 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		///////////////////////////////////////////////////////////////
 		// Cody's stuff
+		// (disabled for now while debugging issue w/ `count`)
 		///////////////////////////////////////////////////////////////
 		// Remove the current el
 		// delete self.el;
@@ -3610,7 +3666,7 @@ function _disableLocalEventDelegator () {
 	);
 }
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = window.Mast;
 ////////////////////////////////////////////////////////////////////////////
 
 Framework.Region = constructor;
@@ -3930,11 +3986,9 @@ Framework.ready = function (cb) {
 	});
 };
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = window.Mast;
 ////////////////////////////////////////////////////////////////////////////
 
-// TODO: disable debug mode
-Framework.debug = true;
 
 /**
  * This is the starting point to your application.  You should grab templates and components
@@ -3968,60 +4022,19 @@ Framework.raise = function (options, cb) {
 		options = {};
 	}
 
-	// Apply overrides from options
-	_.defaults(Framework, {
-		// Default log level to 'debug'
+	// Apply defaults
+	_.defaults({
 		logLevel: 'debug',
 		logger: undefined,
 		production: false
-	}, options || {});
+	}, Framework);
 
+	// Apply overrides from options
+	options = options || {};
+	_.extend(Framework, options);
 
-	// If log is specified, use it, otherwise use the console
-	if (options.logger) {
-		Framework.log = options.logger;
-		Framework.warn = options.logger.warn;
-		Framework.error = options.logger.error;
-		Framework.debug = options.log.debug;
-		Framework.verbose = options.log.verbose;
-	}
-	// In IE, we can't default to the browser console because there IS NO BROWSER CONSOLE
-	else if (typeof console !== 'undefined') {
-		Framework.log = console && console.log && console.log.bind(console);
-		Framework.warn = console && console.warn && console.warn.bind(console);
-		Framework.error = console && console.error && console.error.bind(console);
-		Framework.debug = console && console.debug && console.debug.bind(console);
-		Framework.verbose = console && console.log && console.log.bind(console);
-	}
-
-	// Turn off all logs in production
-	if (Framework.production) {
-		options.logLevel = 'silent';
-	}
-
-	// Use log level config if provided
-	if (options.logLevel) {
-		var noop = function () {};
-		switch ( options.logLevel ) {
-			case 'debug':	Framework.verbose = noop;
-							break;
-
-			case 'warn':	Framework.verbose = Framework.debug = Framework.log = noop;
-							break;
-
-			case 'error':	Framework.verbose = Framework.debug = 
-							Framework.log = Framework.warn = noop;
-							break;
-
-			case 'silent':	Framework.verbose = Framework.debug = Framework.log = 
-							Framework.warn = Framework.error = noop;
-							break;
-
-			default:		throw new Error ('Unknown ' + 
-							Framework.id + '.logLevel (' + 
-							options.logLevel + ')');
-		}
-	}
+	// Initialize logger
+	new Logger(Framework);
 
 	// Merge data into Framework.data
 	_.extend(Framework.data, options.data || {});
@@ -4162,7 +4175,7 @@ Framework.raise = function (options, cb) {
 			}
 
 			// Go ahead and turn the definition into a real component prototype
-			Framework.debug(componentDef.id + ' :: Building component prototype...');
+			Framework.verbose(componentDef.id + ' :: Building component prototype...');
 			var componentPrototype = Framework.Component.extend(componentDef);
 
 			// Discover subscriptions
