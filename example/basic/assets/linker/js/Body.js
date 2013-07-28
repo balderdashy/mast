@@ -10,7 +10,7 @@ Mast.define('App', function () {
 
 		// 'click': '!',
 
-		'%test': '!'
+		'%test': '!.highlighted'
 	};
 });
 

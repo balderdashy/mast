@@ -2770,20 +2770,25 @@ Framework.Util = {
 		// Method to trigger global event
 		else if ( value.match(/^%/) ) {
 			fn = function triggerEvent () {
-				console.log('Triggering event (' + value + ')...');
+				Framework.verbose(this.id + ' :: Triggering event (' + value + ')...');
 				Framework.trigger(value);
 			};			
 		}
 		// Method to fire a test alert
-		else if ( value.match(/^\!/) ) {
+		// (use message, if specified)
+		else if ( matches = value.match(/^!!!\s*(.+)?/) ) {
 			fn = function bangAlert (e) {
-				var msg = '! :: Alert triggered';
 
+				// If specified, message is used, otherwise 'Alert triggered!'
+				var msg = (matches && matches[1]) || 'Debug alert (!!!) triggered!';
+
+				// Other diagnostic information
+				msg += '\n\nDiagnostics\n========================\n';
 				if (e && e.currentTarget) {
-					msg += '\n\ne.currentTarget :: ' + e.currentTarget;
+					msg += 'e.currentTarget :: ' + e.currentTarget;
 				}
 				if (this.id) {
-					msg +='\n\nthis.id :: ' + this.id;
+					msg +='this.id :: ' + this.id;
 				}
 
 				alert(msg);
@@ -2801,6 +2806,17 @@ Framework.Util = {
 				this.$el.removeClass(matches[1]);
 			};
 		}
+		// Method to toggle the specified class
+		else if ( (matches = value.match(/^\!\s*\.(.+)/)) && matches[1] ) {
+			fn = function toggleClass () {
+				Framework.verbose(this.id + ' :: Toggling class (' + matches[1] + ')...');
+				this.$el.toggleClass(matches[1]);
+			};
+		}
+
+		// TODO:	allow descendants to be controlled via shorthand
+		//			e.g. : 'li.row -.highlighted'
+		//			would remove the `highlighted` class from this.$('li.row')
 
 
 		// If short-hand matched, return the dereferenced function
@@ -3082,8 +3098,7 @@ Framework.Component.prototype.close = function ( ) {
 
 Framework.Component.prototype.render = function (atIndex) {
 
-	Framework.debug(this.id + ' ::');
-	Framework.verbose(this.id + ' :: render()');
+	Framework.debug(this.id + ' :---: Rendering component...');
 
 	var self = this;
 
@@ -3170,22 +3185,39 @@ Framework.Component.prototype.render = function (atIndex) {
 		self.setElement(el);
 		///////////////////////////////////////////////////////////////
 
-		//
 
 
 		// Detect and render all regions and their descendent components and regions
 		self._renderRegions();
 
 		// Insert the element at the proper place amongst the outlet's children
-		// But if the outlet is empty, or there's no atIndex, just stick it on the end
 		var neighbors = self.$outlet.children();
 		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length >= atIndex) {
 			neighbors.eq(atIndex).before(self.$el);
 		}
+
+		// But if the outlet is empty, or there's no atIndex, just stick it on the end
 		else self.$outlet.append(self.$el);
 
-		// Trigger afterRender method
+		// Finally, trigger afterRender method
 		self.afterRender();
+
+
+		// TODO:
+		//		Automatically disable user text selection on the relevant elements
+		//		when a click or touch event is bound (even for delegated event bindings.)
+		//
+		//		This can be canceled out by setting `disableUserSelect: false`
+		//		on the component.
+		//
+		// For reference, the CSS syntax is:
+		//
+		//		-webkit-touch-callout: none;
+		//		-webkit-user-select: none;
+		//		-khtml-user-select: none;
+		//		-moz-user-select: moz-none;
+		//		-ms-user-select: none;
+		//		user-select: none;
 	});
 
 };
@@ -3772,10 +3804,11 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 	// And keep track of it in the list of this region's children
 	this._children.splice(atIndex, 0, component);
 
+	// Log for debugging `count` declarative
 	var debugStr = this.parent.id + ' :: Inserted ' + componentId + ' into ';
 	if (this.id) debugStr += 'region: ' + this.id + ' at index ' + atIndex;
 	else debugStr += 'anonymous region at index ' + atIndex;
-	Framework.debug(debugStr);
+	Framework.verbose(debugStr);
 
 	return component;
 
@@ -3873,12 +3906,10 @@ Framework.Region.fromElement = function (el, parent) {
 		parent: parent
 	});
 
-	Framework.debug(parent.id + ' :: Instantiated new region `' + region.id + '`');
-
-
 	// If this region has a default component/template set, 
 	// grab the id  --  e.g. <region template="Foo" />
 	var componentId = $(el).attr('template');
+
 
 	// If `count` is set, render sub-component specified number of times.
 	// e.g. <region template="Foo" count="3" />
@@ -3899,6 +3930,17 @@ Framework.Region.fromElement = function (el, parent) {
 	}
 
 
+	Framework.debug(
+		parent.id + ' :-: Instantiated new region' + 
+		( region.id ? ' `' + region.id + '`' : '' ) + 
+		( componentId ? ' and populated it with' + 
+			( count > 1 ? count + ' instances of' : ' 1' ) + 
+			' `' + componentId + '`' : ''
+		) + '.'
+	);
+
+
+
 	// Append sub-component(s) to region automatically
 	// (verify Framework.shortcut.template is enabled)
 	if ( Framework.shortcut.template && componentId ) {
@@ -3909,24 +3951,26 @@ Framework.Region.fromElement = function (el, parent) {
 		// 	' subcomponents.'
 		// );
 
-		//////////////////////////////////////////
-		// SERIOUSLY WTF
-		// MAJOR HAXXXXXXX
-		//////////////////////////////////////////
-		count = +count + 1;
-		//////////////////////////////////////////
+		region.append(componentId);
 
-		for (var j=0; j < count; j++ ) {
+		// //////////////////////////////////////////
+		// // SERIOUSLY WTF
+		// // MAJOR HAXXXXXXX
+		// //////////////////////////////////////////
+		// count = +count + 1;
+		// //////////////////////////////////////////
 
-			region.append(componentId);
+		// for (var j=0; j < count; j++ ) {
 
-			// Framework.debug(
-			// 	'rendering the ' + componentId + ' component, remaining: ' + 
-			// 	count + ' and there are ' + region.$el.children().length + 
-			// 	' subcomponent elements in the region now'
-			// );
+		// 	region.append(componentId);
 
-		}
+		// 	// Framework.debug(
+		// 	// 	'rendering the ' + componentId + ' component, remaining: ' + 
+		// 	// 	count + ' and there are ' + region.$el.children().length + 
+		// 	// 	' subcomponent elements in the region now'
+		// 	// );
+
+		// }
 
 	}
 
@@ -4234,9 +4278,10 @@ Framework.raise = function (options, cb) {
 					_.each(handler, function(childId){
 
 						if (!Framework.components[childId]){
-							throw new Error(componentDef.id + 
-							':: Trying to extend component (' + childId + ') ' + 
-							'that hasn\'t been defined!'
+							throw new Error(
+							componentDef.id + ' :: ' + 
+							'Trying to define/extend this component from `' + childId + '`, ' +
+							'but no component with that id can be found.'
 							);
 						}
 
