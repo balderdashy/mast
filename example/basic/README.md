@@ -1,0 +1,2 @@
+# basic
+### a Sails application
