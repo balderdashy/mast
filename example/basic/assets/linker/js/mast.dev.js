@@ -3796,7 +3796,11 @@ Framework.raise = function (options, cb) {
 
 		// Do the initial routing sequence
 		// Look at the #fragment url and fire the global route event
-		Framework.history.start();
+		Framework.history.start(_.defaults({
+			pushState: undefined,
+			hashChange: undefined,
+			root: undefined
+		}, options));
 
 
 		// TODO: v2.1
@@ -3831,10 +3835,14 @@ Framework.raise = function (options, cb) {
 			var template = Framework.templates[componentDef.id];
 
 			// If no match for component was found in templates, issue a warning
-			// (unless this is the global app component, in which case it's fine)
-			// if (!template && componentDef.id !== 'App') {
 			if (!template) {
-				return Framework.warn(componentDef.id + ' :: No template found for component!');
+				return Framework.warn(
+					componentDef.id + ' :: No template found for component!' +
+					'\nTemplates don\'t need a component unless you want interactivity, ' + 
+					'every component *should* have a matching template!!' +
+					'\nUsing components without templates may seem necessary, ' + 
+					'but it\'s not.  It makes your view logic incorporeal, and makes your colleagues ' +
+					'uncomfortable.');
 			}
 
 			// Save reference to template in component prototype
@@ -3854,27 +3862,42 @@ Framework.raise = function (options, cb) {
 			componentPrototype.prototype.subscriptions = {};
 
 			// Iterate through each property on this component prototype
-			// Add to subscriptions hash if necessary
 			_.each(componentPrototype.prototype, function (handler, key) {
+				
+				// Add app events (%), routes (#), and comet listeners (~) to subscriptions hash
 				if (key.match(/^(%|#|~)/)) {
+
 					if (_.isString(handler)) {
 						throw new Error(componentDef.id + 
-							':: Invalid listener for subscription: ' + key +
-							'. Define your callback with an anonymous function instead of a string.');
+							':: Invalid listener for subscription: ' + key + '.\n' +
+							'Define your callback with an anonymous function instead of a string.'
+						);
 					}
 					if (!_.isFunction(handler)) {
 						throw new Error(componentDef.id + 
 							':: Invalid listener for subscription: ' + key);
 					}
+
 					componentPrototype.prototype.subscriptions[key] = handler;
-				} else if (key === 'extendComponents') {
+
+				}
+
+				// Extend one or more other components
+				else if (key === 'extendComponents') {
 					var objToMerge = {};
-					_.each(handler, function(componentId){
-						if(!Framework.components[componentId]){
-							throw new Error(componentDef.id + ':: Trying to extend component that hasn\'t been created');
+					_.each(handler, function(childId){
+
+						if (!Framework.components[childId]){
+							throw new Error(componentDef.id + 
+							':: Trying to extend component (' + childId + ') ' + 
+							'that hasn\'t been defined!'
+							);
 						}
-						_.extend(objToMerge, Framework.components[componentId]);
+
+						_.extend(objToMerge, Framework.components[childId]);
+
 					});
+
 					_.defaults(componentPrototype.prototype, objToMerge);
 				}
 			});
@@ -3948,19 +3971,20 @@ Framework.raise = function (options, cb) {
 
 		var matches;
 
+		// Redirects user to client-side URL, w/o affecting browser history
+		// Like calling `Backbone.history.navigate('/foo', { replace: true })`
+		if ( value.match(/^##/) ) {
+			return function redirectAndCoverTracks () {
+				var url = value.replace(/^##/,'');
+				console.log('routing to ' + url + ' and covering footprints');
+				Framework.history.navigate(url, { trigger: true, replace: true });
+			};
+		}
 		// Method to redirect user to a client-side URL, then call the handler
-		if ( value.match(/^#/) ) {
+		else if ( value.match(/^#/) ) {
 			return function changeUrlFragment () {
 				var url = value.replace(/^#/,'');
 				Framework.history.navigate(url, { trigger: true });
-			};
-		}
-		// Redirects user to client-side URL, w/o affecting browser history
-		// Like calling `Backbone.history.navigate('/foo', { replace: true })`
-		else if ( value.match(/^##/) ) {
-			return function redirectAndCoverTracks () {
-				var url = value.replace(/^##/,'');
-				Framework.history.navigate(url, { trigger: true, replace: true });
 			};
 		}
 		// Method to trigger global event
