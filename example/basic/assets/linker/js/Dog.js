@@ -2,37 +2,13 @@ Mast.define('Dog', function () {
 	return {
 
 		afterRender: function () {
-			this.off('foo', function (){});
+			console.log('rendered this::', this.$el)
+			console.log('events::', this.events);
 		},
 
-		click: '##foo'
+		'click p': function (){
+			alert('works!');
+		}
 	};
 });
 
-[
-	// Global window events
-	'window resize',
-	'window scroll',
-
-	// Localized browser events
-	// (works on individual elements)
-	'error',
-	'scroll',
-
-	// Form events
-	'blur',
-	'change',
-	'focus',
-	'focusin',
-	'select',
-	'submit',
-
-	// Raw touch events
-	'touchstart',
-	'touchend',
-	'touchmove',
-	'touchcancel',
-
-	// Manufactured touch event
-	'touch'
-];
