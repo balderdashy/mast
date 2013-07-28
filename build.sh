@@ -37,7 +37,7 @@ cat "lib/raise.js" >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Disable debug mode
-echo 'Mast.debug = false;' >> mast.dev.js
+# echo 'Mast.debug = false;' >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Copy into example
