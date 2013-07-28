@@ -3108,13 +3108,21 @@ _.extend(Framework.Component.prototype, {
 		_.bindAll(this);
 	},
 
-	// If any regions exist, empty them
+
+
+
+
+	/**
+	 * If any regions exist, empty them
+	 */
+
 	_emptyAllRegions: function () {
 		_.each(this.regions, function (region, key) {
 			region.empty();
 			delete this.regions[key];
 		}, this);
 	},
+
 
 
 
@@ -3132,18 +3140,9 @@ _.extend(Framework.Component.prototype, {
 		var $regions = this.$('region');
 		$regions.each(function (i, el) {
 
-			// Framework.Region.fromElement(el);
-
-			// Pull id from region
-			var regionId = $(el).attr('data-id') || $(el).attr('id');
-
-			// Build region
-			var region = new Framework.Region({
-				id: regionId,
-				$el: $(el),
-				parent: self
-			});
-
+			// Generate a region instance from the element
+			// (modifying the DOM as necessary)
+			var region = Framework.Region.fromElement(el, self);
 
 			// Keep track of regions, since we are the parent component
 			self.regions[region.id] = region;
@@ -3153,53 +3152,6 @@ _.extend(Framework.Component.prototype, {
 			if (!self[region.id]) {
 				self[region.id] = region;
 			}
-
-			
-			// If this region has a default sub-component set, grab the id.
-			// e.g. <region template="Foo" />
-			var subcomponentId = $(el).attr('template');
-
-			// If `count` is set, render sub-component specified number of times.
-			// e.g. <region template="Foo" count="3" />
-			// (verify Framework.shortcut.count is enabled)
-			var count = 1;
-			if ( Framework.shortcut.count ) {
-				count = $(el).attr('count') || 1;
-			}
-
-			// Append sub-component(s) to region automatically
-			// (verify Framework.shortcut.template is enabled)
-			if ( Framework.shortcut.template && subcomponentId ) {
-				
-				Framework.debug(
-					'preparing the region, and there are ' + 
-					region.$el.children().length + 
-					' subcomponent elements in the region now'
-				);
-
-				//////////////////////////////////////////
-				// SERIOUSLY WTF
-				// MAJOR HAXXXXXXX
-				//////////////////////////////////////////
-				count = +count + 1;
-				//////////////////////////////////////////
-
-				for (var j=0; j < count; j++ ) {
-
-					region.append(subcomponentId);
-
-					Framework.debug(
-						'rendering the ' + subcomponentId + ' component, remaining: ' + 
-						count + ' and there are ' + region.$el.children().length + 
-						' subcomponent elements in the region now'
-					);
-
-				}
-
-			}
-
-			Framework.debug(self.id + ' :: Instantiated region: ' + region.id);
-
 		});
 	},
 
@@ -3527,11 +3479,51 @@ Framework.Region.fromElement = function (el, parent) {
 		parent: parent
 	});
 
-	// Extract default component id
-	var defaultComponentId = $(el).attr('template');
-	if (defaultComponentId) {
-		region.append(defaultComponentId);
+
+	// If this region has a default component/template set, 
+	// grab the id  --  e.g. <region template="Foo" />
+	var componentId = $(el).attr('template');
+
+	// If `count` is set, render sub-component specified number of times.
+	// e.g. <region template="Foo" count="3" />
+	// (verify Framework.shortcut.count is enabled)
+	var count = 1;
+	if ( Framework.shortcut.count ) {
+		count = $(el).attr('count') || 1;
 	}
+
+	// Append sub-component(s) to region automatically
+	// (verify Framework.shortcut.template is enabled)
+	if ( Framework.shortcut.template && componentId ) {
+		
+		Framework.debug(
+			'preparing the region, and there are ' + 
+			region.$el.children().length + 
+			' subcomponent elements in the region now'
+		);
+
+		//////////////////////////////////////////
+		// SERIOUSLY WTF
+		// MAJOR HAXXXXXXX
+		//////////////////////////////////////////
+		count = +count + 1;
+		//////////////////////////////////////////
+
+		for (var j=0; j < count; j++ ) {
+
+			region.append(componentId);
+
+			Framework.debug(
+				'rendering the ' + componentId + ' component, remaining: ' + 
+				count + ' and there are ' + region.$el.children().length + 
+				' subcomponent elements in the region now'
+			);
+
+		}
+
+	}
+
+	Framework.debug(self.id + ' :: Instantiated region: ' + region.id);
 
 	return region;
 };
