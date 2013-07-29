@@ -116,6 +116,8 @@ Regions give you a canvas to work on whichever template you want, in the proper 
 
 
 
+## Some quick examples
+
 Here are three examples where regions make your life a lot easier:
 
 ### 1) Building sections of your interface that change dynamically
@@ -217,27 +219,51 @@ This time, we used the `count` attribute.  This allows us to inject more than on
 
 
 3) Referencing a common component from more than one place
-> (e.g. your contact form appears on two very different sections of your single-page site.  You might stick a region in both places so that you can inject the contact form as needed)
+
+So I think we should be feeling pretty good, since we've implemented all of the HTML/CSS for the single-page website and type-as-you-go search.  What more could we possibly ask for?
+
+
+a-h-ha-dhdsour contact form appears on two very different sections of your single-page site.  You might stick a region in both places so that you can inject the contact form as needed)
 
 
 
 
 
+## TODO: Making things interactive with Components
 
 
-## Not using those $!&%@# script tags
 
-Mast includes some built-in shortcuts that allow you to put together single-page apps using only HTML/CSS.  Just by switching a region's `template`, you can easily work on whichever part of the application you need to. Regions can contain other regions, so you can get as in-depth as you want.
 
-To insert a region, add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be injected into the region when the page loads. It will look something like this: 
-```html
-<region template="PonyPartyRegion"></region>
+
+## Getting rid of those ugly `<script>` tags
+
+
+Mast, like Backbone, supports Underscore templates by default (basically the same thing as EJS, JST).
+Aside from the shortcut method we've been discussing up until now (the `<script>` tags), you can load templates as strings or underscore-compatible functions (if you want to precompile them).
+You can hook these templates up to Mast in one of two ways:
+
++ Set `Mast.templates.Foo = myTemplate`, where `Foo` is the desired id of your template e,g,
+```javascript
+Mast.templates.header = '<header>The header</header>';
+Mast.templates.footer = '<footer>The footer</footer>';
+});
+```
+
++ Pass in a collection of templates when you call `Mast.raise()`, e.g.:
+```javascript
+Mast.raise({
+  header: '<header>The header</header>',
+  footer: '<footer>The footer</footer>'
+});
 ```
 
 
+This flexibility is crucial so that, regardless how the project is set up, you can count on Mast to work.  If you're using AMD (e.g. RequireJS), for example, you might bring in your templates with the RequireJS template plugin.  At the end of the day, you'll stuff your templates into Mast using one of the two techniques above.
+
 
 ## Using Mast in a Sails.js App
-Here is a quick way to get started if you're already using Sails:
+
+If you're already using Sails on the backend, here is a quick way to get started with some fancier template loading:
 
 1. Save the `mast.dev.js` file in `assets/linker/js`
 2. Go to `assets/index.html` and  link to the Mast file after `<!--SCRIPTS-->`:
@@ -263,9 +289,6 @@ Here is a quick way to get started if you're already using Sails:
 This raises mast, and also sets up your templates so that you don't need to wrap them in `<script>` tags.
 
 4. You create regions the same way as before, but the templates are a bit easier to set up. To create a template, just create a file in `linker/templates` that has the same name as your region's `template` (e.g. `PonyPartyRegion.html`).
-
-
-
 
 
 
