@@ -2902,6 +2902,87 @@ Framework.Util = {
 	}
 };
 
+
+
+
+/**
+ * Event toolkit
+ */
+Framework.Util.Events = {
+
+
+	/**
+	 * Parse a dictionary of events
+	 * (optionally filter by event type)
+	 *
+	 * @param {Object} events
+	 *		`events` is a Backbone.View event object
+	 *
+	 * @param {Object} options
+	 *	{
+	 *		only: return the events explicitly laid out in this list
+	 *	}
+	 *
+	 * @returns list of matching event keys
+	 */
+
+	parse: function (events, options) {
+
+		var eventKeys = _.keys(events || {}),
+			limitEvents,
+			parsedEvents = [];
+
+		// Optionally filter using set of acceptable event types
+		limitEvents = options.only;
+		eventKeys = _.filter(eventKeys, function checkEventName (eventKey) {
+			
+			// Parse event string into semantic representation
+			var event = Framework.Util.parseDOMEvent(eventKey);
+			parsedEvents.push(event);
+			
+			// Optional filter
+			if (limitEvents) {
+				return _.contains(limitEvents, event.name);
+			}
+			return true;
+		});
+
+		return parsedEvents;
+	},
+
+
+
+
+	/**
+	 * Given a list of event expressions
+	 *
+	 * @param {Array} semanticEvents
+	 *		List of event objs from `Framwork.Util.Events.parse`
+	 *
+	 * @returns jQuery set of matched elements
+	 */
+
+	getElements: function (semanticEvents) {
+
+		// Iteratively build a set of affected elements
+		var $affected = $();
+		_.each(semanticEvents, function lookupElementsForEvent (event) {
+
+			// Determine matched elements
+			// Use delegate selector if specified
+			// Otherwise, grab the element for this component
+			var $matched =	event.selector ? 
+							self.$(event.selector) :
+							self.$el;
+
+			// Add matched elements to set
+			$affected = $affected.add( $matched );
+		});
+
+		return $affected;
+	}
+};
+
 /**
  * Module that adds touch support for mobile devices.
  *
@@ -3237,7 +3318,6 @@ Framework.Component.prototype.render = function (atIndex) {
 		// Finally, trigger afterRender method
 		self.afterRender();
 
-
 		
 		// Automatically disable user text selection when a click/touch event is bound
 		// (even for delegated event bindings.)
@@ -3245,33 +3325,14 @@ Framework.Component.prototype.render = function (atIndex) {
 		// This is ignored if `disableUserSelect` is `false`
 		if (self.disableUserSelect !== false) {
 
-			// `interactions` is the list of events where user text selection
-			// is disabled by default
-			var noSelectInteractions = ['click', 'touch', 'touchstart', 'touchend'];
+			// Build subset of just the click/touch events
+			var clickOrTouchEvents = Framework.Util.Events.parse(
+				self.events,
+				{ only: ['click', 'touch', 'touchstart', 'touchend'] }
+			);
 
-			// Build subset of just the click/touch event keys
-			var eventKeys = _.keys(self.events || {});
-			var noSelectEventKeys = _.filter(eventKeys, function (eventKey) {
-				var event = Framework.Util.parseDOMEvent(eventKey);
-				return _.contains(noSelectInteractions, event.name);
-			});
-
-			// Iteratively build a set of affected elements
-			var $affected = $();
-			_.each(noSelectEventKeys, function (eventKey) {
-
-				// Determine matched elements
-				// Use delegate selector if specified
-				// Otherwise, grab the element for this component
-				var event = Framework.Util.parseDOMEvent(eventKey);
-				var $matched =	event.selector ? 
-								self.$(event.selector) :
-								self.$el;
-
-				// Add matched elements to set
-				$affected = $affected.add( $matched );
-			});
-
+			// Lookup affected elements
+			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents);
 
 			// Disable user text selection on the elements
 			$affected.css({
@@ -3286,10 +3347,8 @@ Framework.Component.prototype.render = function (atIndex) {
 			Framework.verbose(
 				self.id + ' :: ' +
 				'Disabled user text selection on elements w/ click/touch events:',
-				noSelectEventKeys,
-				$affected
-			);
-			
+				clickOrTouchEvents
+			);			
 		}
 	});
 
