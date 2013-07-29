@@ -120,7 +120,7 @@ Regions give you a canvas to work on whichever template you want, in the proper 
 
 Here are three examples where regions make your life a lot easier:
 
-### 1) Building sections of your interface that change dynamically
+### 1. Building sections of your interface that change dynamically
 
 Let's say we're implementing a simple single-page website with a header and footer that stays the same, but a main content section that changes depending on what navigation item is clicked. This seems easy, but can be sort of a mess.  Here's how your `<body>` might look:
 
@@ -187,7 +187,7 @@ Those three blocks at the bottom are our templates, and the region is where our 
 Later on, you can tie these changes to interactive events using JavaScript, but for now, we're done!  The HTML/CSS is done and looks great.
 
 
-### 2) Rendering a list with an unknown number of items
+### 2. Rendering a list with an unknown number of items
 
 Let's say we need to implement a table of emails, with a search box that changes contents of the table as you type to match the criteria (i.e. start typing "Summ" and the user sees 3 or 4 emails about her vacation plans this summer)
 
@@ -218,7 +218,7 @@ This time, we used the `count` attribute.  This allows us to inject more than on
 
 
 
-###3) Referencing a common component from more than one place
+###3. Referencing a common component from more than one place
 
 So I think we should be feeling pretty good, since we've implemented all of the HTML/CSS for the single-page website and type-as-you-go search.  What more could we possibly ask for?  Well, maybe there are parts of your application that you want to re-use in more than one section, but that aren't in *every* section like, for instance, the header & footer in the first example.
 
@@ -287,15 +287,13 @@ This flexibility is crucial so that, regardless how the project is set up, you c
 If you're already using Sails on the backend, here is a quick way to get started with some fancier template loading:
 
 1. Save the `mast.dev.js` file in `assets/linker/js`
-2. Go to `assets/index.html` and  link to the Mast file after `<!--SCRIPTS-->`:
+2. In `assets/index.html`, link to the Mast file after `<!--SCRIPTS-->`:
 ```html
 <!--SCRIPTS-->
 <script src="/linker/js/mast.dev.js"></script>
 <!--SCRIPTS END-->
 ```
-
-3. Instead of putting the `Mast.raise();` script in the head, go to `assets/index.html` and paste the following after `<!--SCRIPTS END-->`:
-
+3. Also in `assets/index.html`, paste the following after `<!--SCRIPTS END-->`:
 ```html
 <script type="text/javascript">
 	 // Modify JST templates to eliminate the nasty parts of the file path
@@ -307,11 +305,8 @@ If you're already using Sails on the backend, here is a quick way to get started
     Mast.raise();
  </script>
 ```
-This raises mast, and also sets up your templates so that you don't need to wrap them in `<script>` tags.
 
-4. You create regions the same way as before, but the templates are a bit easier to set up. To create a template, just create a file in `linker/templates` that has the same name as your region's `template` (e.g. `PonyPartyRegion.html`).
-
-
+This makes the templates a bit easier to set up. Now when you create a file in `linker/templates`, that template's name becomes the ID with which you would reference it in a region. (e.g. `Home.html` would be brought in with `<region template="Home"></region>`)
 
 
 
