@@ -2728,7 +2728,7 @@ Framework.Util = {
 
 			return memo + '|' + eventName;
 		}, '') +
-		')( (.+))?'),
+		')( (.+))?$'),
 
 
 
@@ -3324,8 +3324,9 @@ Framework.Component.prototype.render = function (atIndex) {
 		// Strip trailing and leading whitespace to avoid falsely diagnosing
 		// multiple elements, when only one actually exists
 		// (this misdiagnosis wraps the template in an extraneous <div>)
-		html = html.replace(/^(\s+)/, '');
-		html = html.replace(/(\s+)$/, '');
+		html = html.replace(/^\s*/, '');
+		html = html.replace(/\s*$/, '');
+		html = html.replace(/(\r|\n)*/, '');
 
 		// Parse a DOM node or series of DOM nodes from the newly templated HTML
 		var parsedNodes = $.parseHTML(html);
@@ -4413,6 +4414,16 @@ Framework.raise = function (options, cb) {
 			if (componentDef.events) {
 				componentDef.events = Framework.Util.objMap(
 					componentDef.events,
+					Framework.Util.translateShorthand
+				);
+			}
+
+			// and afterChange bindings
+			if (	_.isObject(componentDef.afterChange) && 
+					!_.isFunction(componentDef.afterChange)		) {
+				
+				componentDef.afterChange = Framework.Util.objMap(
+					componentDef.afterChange,
 					Framework.Util.translateShorthand
 				);
 			}

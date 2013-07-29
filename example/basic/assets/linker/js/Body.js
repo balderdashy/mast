@@ -30,7 +30,40 @@ Mast.define('Body', function () {
 		'#home'		: 'content@Home',
 
 		// Redirect empty URL to '#home' handler (changes URL)
-		'#'			: '#home'
+		'#'			: '#home',
+
+
+
+		// TODO
+		////////////////////////////////////////////
+
+		// Increment/decrement % 5
+		'click .next-page': function () {
+			var newVal = this.get('pageIndex');
+			newVal++;
+			newVal %= 5;
+			this.set('pageIndex', newVal);
+		},
+
+		// Bindings
+		afterChange: {
+			pageIndex: function (newVal) {
+				var page = this.get('pages')[newVal];
+				this.content.attach(page);
+			}
+		},
+
+		model: function () {
+			return new Mast.Model({
+				pages: [
+					'Project_1',
+					'Project_2',
+					'Project_3',
+					'Project_4',
+					'Project_5'
+				]
+			});
+		}
 	};
 });
 
