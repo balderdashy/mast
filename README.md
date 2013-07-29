@@ -120,7 +120,7 @@ Here is a quick way to get started if you're already using Sails:
 ```
 This raises mast, and also sets up your templates so that you don't need to wrap them in `<script>` tags.
 
-4. To create a template, just create a file in `linker/templates` that has the same name as your region's `template` (e.g. `PonyPartyRegion.html`).
+4. You create regions the same way as before, but the templates are a bit easier to set up. To create a template, just create a file in `linker/templates` that has the same name as your region's `template` (e.g. `PonyPartyRegion.html`).
 
 
 <!--
