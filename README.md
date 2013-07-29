@@ -294,9 +294,7 @@ To navigate to the News section, for example, you can now use `<a href="#news">N
 
 
 ###Adding/Removing Classes
-Mast has some simple shorthand for adding, removing, and toggling classes. This is a handy tool for implementing prototypes, because you can, for example, set up your contact form submit button to go into a loading state when it's clicked.
-
-
+Mast has some simple shorthand for adding, removing, and toggling classes. We find this handy for prototyping, because we can have our error, loading, and success states in CSS classes and just add and remove them.
 
 
 
