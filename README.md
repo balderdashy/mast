@@ -251,11 +251,21 @@ And the "Portfolio" template like this:
 
 
 ## Making things interactive with Components
-Defining components gives you the power to make things more interactive. A really cool thing about Mast, though, is that it has some shortcuts to let you do some of this without writing JavaScript.
+Defining components gives you the power to make things more interactive. A really cool thing about Mast, though, is that it has shortcuts to let you do some of this without writing JavaScript. Here's a quick walkthrough of how to set up components and add some simple interactivity to your app.
 
 ###Defining a Component
-To create a component, make a JavaScript file in your app, and call it the same name as the template you want it to work for.
+To create a component, make a JavaScript file in your app, and give it the same name as the template you want it to work for. Then, paste in the following bit of code, replacing `NameofTemplate` with the template you're using:
+```javascript
+Mast.define('NameOfTemplate', function() {
+  return {
+    //DO COOL STUFF IN HERE!
+  	
+  	
+  };
+});
+```
 
+Now that you've created the component, it's time to make your app more awesome!
 
 
 ###Creating Navigation for a Single-page App
