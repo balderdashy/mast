@@ -6,7 +6,7 @@
 > is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
 
 > It's very important to future-proof your API/infrastructure by building an SOA.  A clean breadboard for your business logic
-> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refridgerators, cars, wearables-- these things
+> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refrigerators, cars, wearables-- these things
 > all speak APIs, but unfortunately they don't (and they won't for many years) all speak HTML 5.
 > So please don't make decisions on a DOM framework based on your backend, or vice versa!
 
@@ -61,6 +61,64 @@
 
 
 
+#Getting Started with Mast
+>As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to be using Sails in order to use Mast.
+
+##Setting up Mast
+###1. Get Mast
+Add the `mast.dev.js` file to your project and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
+
+>####In a Sails app:
+>Save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
+```html
+<!--SCRIPTS-->
+<script src="/linker/js/mast.dev.js"></script>
+<!--SCRIPTS END-->
+```
+
+###2. Raise Mast 
+Paste this after your script tags:
+
+```html
+<script type="text/javascript">
+    Mast.raise();
+</script>
+```
+>####In a Sails app:
+>You can paste this into the `assets/index.html` file after `<!--SCRIPTS END-->`.
+
+##Regions
+Regions are similar to view partials, in the sense that they contain a just a section of what you see in the browser. Regions are usually used for the parts of an application that will be changed out. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching a region's `template`, you can easily work on whichever part of the application you need to. Regions can contain other regions, so you can get as in-depth as you want.
+
+To insert a region, add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be the contents of the region. It will look something like this: 
+```html
+<region template="PonyPartyRegion"></region>
+```
+
+
+##Templates
+The template is the region's content. You can create a template for your region using a `<script>` tag that looks like this:
+```html
+<script data-id="PonyPartyRegion" type="text/template">
+  Stuff inside of the region
+</script>
+```
+The `data-id` should be the same as `template` for the region.
+
+>####In a Sails app:
+>To make things easier, you can set up your Sails app so that you don't have to wrap your templates in `<script>` tags.
+>In `assets/index.html`, paste the following after `<!--SCRIPTS END-->` and before `Mast.raise();`:
+```html
+<script type="text/javascript">
+	 // Modify JST templates to eliminate the nasty parts of the file path
+    _.each(JST, function (fn, path) {
+      var id = path.match(/\/([^\/]+)\..+$/)[1];
+      Mast.templates[id] = fn;
+    });
+</script>
+```
+>Now, you just put your content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`.)
+
 
 <!--
 ## The old stuff
@@ -91,7 +149,7 @@ See the Wiki.
 
 -->
 
-The MIT License (MIT)
+#The MIT License (MIT)
 --
 
 Copyright © 2012-2013 Balderdash Design Co.
