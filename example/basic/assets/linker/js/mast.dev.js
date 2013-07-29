@@ -2773,6 +2773,8 @@ Framework.Util = {
 
 	translateShorthand: function translateShorthand (value, key) {
 
+		var matches, fn;
+
 		// If this is an important, Framework-specific data key, 
 		// and a function was specified, run it to get its value
 		// (this is to keep parity with Backbone's similar functionality)
@@ -2785,34 +2787,32 @@ Framework.Util = {
 			return value;
 		}
 
-		var matches;
-		var fn;
-
 		// Redirects user to client-side URL, w/o affecting browser history
 		// Like calling `Backbone.history.navigate('/foo', { replace: true })`
-		if ( value.match(/^##/) ) {
+		if ( ( matches = value.match(/^##(.*[^.\s])/) ) && matches[1] ) {
 			fn = function redirectAndCoverTracks () {
-				var url = value.replace(/^##/,'');
+				var url = matches[1];
 				Framework.history.navigate(url, { trigger: true, replace: true });
 			};
 		}
 		// Method to redirect user to a client-side URL, then call the handler
-		else if ( value.match(/^#/) ) {
+		else if ( ( matches = value.match(/^#(.*[^.\s]+)/) ) && matches[1] ) {
 			fn = function changeUrlFragment () {
-				var url = value.replace(/^#/,'');
+				var url = matches[1];
 				Framework.history.navigate(url, { trigger: true });
 			};
 		}
 		// Method to trigger global event
-		else if ( value.match(/^%/) ) {
+		else if ( ( matches = value.match(/^(%.*[^.\s])/) ) && matches[1] ) {
 			fn = function triggerEvent () {
-				Framework.verbose(this.id + ' :: Triggering event (' + value + ')...');
-				Framework.trigger(value);
+				var trigger = matches[1];
+				Framework.verbose(this.id + ' :: Triggering event (' + trigger + ')...');
+				Framework.trigger(trigger);
 			};			
 		}
 		// Method to fire a test alert
 		// (use message, if specified)
-		else if ( matches = value.match(/^!!!\s*(.+)?/) ) {
+		else if ( ( matches = value.match(/^!!!\s*(.*[^.\s])?/) ) ) {
 			fn = function bangAlert (e) {
 
 				// If specified, message is used, otherwise 'Alert triggered!'
@@ -2830,20 +2830,46 @@ Framework.Util = {
 				alert(msg);
 			};
 		}
+
+		// Method to log a message to the console
+		// (use message, if specified)
+		else if ( ( matches = value.match(/^>>>\s*(.*[^.\s])?/) ) ) {
+			fn = function logMessage (e) {
+
+				// If specified, message is used, otherwise use default
+				var msg = (matches && matches[1]) || 'Log message (>>>) triggered!';
+				Framework.log(msg);
+			};
+		}
+
+		// Method to attach the specified component/template to a region
+		else if ( (matches = value.match(/^(.+)@(.*[^.\s])/)) && matches[1] && matches[2] ) {
+			fn = function attachTemplate () {
+				Framework.verbose(this.id + ' :: Attaching `' + matches[2] + '` to `' + matches[1] + '`...');
+
+				var region = matches[1];
+				var template = matches[2];
+				this[region].attach(template);
+			};
+		}
+
+
 		// Method to add the specified class
-		else if ( (matches = value.match(/^\+\s*\.(.+)/)) && matches[1] ) {
+		else if ( (matches = value.match(/^\+\s*\.(.*[^.\s])/)) && matches[1] ) {
 			fn = function addClass () {
+				Framework.verbose(this.id + ' :: Adding class (' + matches[1] + ')...');
 				this.$el.addClass(matches[1]);
 			};
 		}
 		// Method to remove the specified class
-		else if ( (matches = value.match(/^\-\s*\.(.+)/)) && matches[1] ) {
+		else if ( (matches = value.match(/^\-\s*\.(.*[^.\s])/)) && matches[1] ) {
 			fn = function removeClass () {
+				Framework.verbose(this.id + ' :: Removing class (' + matches[1] + ')...');
 				this.$el.removeClass(matches[1]);
 			};
 		}
 		// Method to toggle the specified class
-		else if ( (matches = value.match(/^\!\s*\.(.+)/)) && matches[1] ) {
+		else if ( (matches = value.match(/^\!\s*\.(.*[^.\s])/)) && matches[1] ) {
 			fn = function toggleClass () {
 				Framework.verbose(this.id + ' :: Toggling class (' + matches[1] + ')...');
 				this.$el.toggleClass(matches[1]);
@@ -2867,8 +2893,8 @@ Framework.Util = {
 			if (value.match(/\.\s*$/)) {
 				curriedFn = function andStopPropagation (e) {
 					
-					// Call original function
-					fn();
+					// Bind (so it inherits component context) and call interior function 
+					fn.apply(this);
 
 					// then immediately stop event bubbling/propagation
 					if (e && e.stopPropagation) {
@@ -2905,9 +2931,20 @@ Framework.Util = {
 
 
 
+
+
+
+
+
+
+
+
+
+
 /**
  * Event toolkit
  */
+
 Framework.Util.Events = {
 
 
@@ -2959,10 +2996,17 @@ Framework.Util.Events = {
 	 * @param {Array} semanticEvents
 	 *		List of event objs from `Framwork.Util.Events.parse`
 	 *
+	 * @param {Component} context
+	 *		Instance of a component to use as a starting point for the DOM queries
+	 *		(optional-- defaults to global context)
+	 *
 	 * @returns jQuery set of matched elements
 	 */
 
-	getElements: function (semanticEvents) {
+	getElements: function (semanticEvents, context) {
+
+		// Context optional
+		context = context || { $: $ };
 
 		// Iteratively build a set of affected elements
 		var $affected = $();
@@ -2972,12 +3016,12 @@ Framework.Util.Events = {
 			// Use delegate selector if specified
 			// Otherwise, grab the element for this component
 			var $matched =	event.selector ? 
-							self.$(event.selector) :
-							self.$el;
+							context.$(event.selector) :
+							context.$el;
 
 			// Add matched elements to set
 			$affected = $affected.add( $matched );
-		});
+		}, this);
 
 		return $affected;
 	}
@@ -3325,6 +3369,7 @@ Framework.Component.prototype.render = function (atIndex) {
 		// This is ignored if `disableUserSelect` is `false`
 		if (self.disableUserSelect !== false) {
 
+
 			// Build subset of just the click/touch events
 			var clickOrTouchEvents = Framework.Util.Events.parse(
 				self.events,
@@ -3332,7 +3377,7 @@ Framework.Component.prototype.render = function (atIndex) {
 			);
 
 			// Lookup affected elements
-			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents);
+			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, self);
 
 			// Disable user text selection on the elements
 			$affected.css({
@@ -3344,10 +3389,12 @@ Framework.Component.prototype.render = function (atIndex) {
 				'user-select': 'none'
 			});
 
+
 			Framework.verbose(
 				self.id + ' :: ' +
 				'Disabled user text selection on elements w/ click/touch events:',
-				clickOrTouchEvents
+				clickOrTouchEvents,
+				$affected
 			);			
 		}
 	});
@@ -3542,10 +3589,9 @@ _.extend(Framework.Component.prototype, {
 				}, this);
 			}
 		}
-
 		
 
-		// TODO:	This could be optimized by pulling this out of the wildcard event handler,
+		// TODO:	This could be optimized by pulling it out of the wildcard event handler,
 		//			but to do it elegantly would involve hacking the Backbone core to allow 
 		//			regex routes.  An important, but easier, optimization would be wildcard 
 		//			routing only as absolutely necessary (so non-param events get static routes)

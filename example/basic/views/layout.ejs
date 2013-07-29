@@ -108,10 +108,13 @@
       Mast.templates[id] = JST[key];
     }
 
-    // When visiting home page change url hash to hashbang.
-    if (window.location.hash === '') {
-      window.location.hash = '#!';
-    }
+    // Disabled for purposes of keeping the demo simple:
+    ////////////////////////////////////////////////////////
+    //
+    // // When visiting home page change url hash to hashbang.
+    // if (window.location.hash === '') {
+    //   window.location.hash = '#!';
+    // }
 
 
     Mast.raise();
