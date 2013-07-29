@@ -288,6 +288,7 @@ If you're already using Sails on the backend, here is a quick way to get started
 
 1. Save the `mast.dev.js` file in `assets/linker/js`
 2. In `assets/index.html`, link to the Mast file after `<!--SCRIPTS-->`:
+
 ```html
 <!--SCRIPTS-->
 <script src="/linker/js/mast.dev.js"></script>
