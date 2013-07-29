@@ -3319,8 +3319,14 @@ Framework.Component.prototype.render = function (atIndex) {
 		///////////////////////////////////////////////////////////////
 		// Mike's stuff
 		// (trying to diagnose issue with "count", put this here in case it worked)
-		// (p.s. it doesn't work anyways)
 		///////////////////////////////////////////////////////////////
+
+		// Strip trailing and leading whitespace to avoid falsely diagnosing
+		// multiple elements, when only one actually exists
+		// (this misdiagnosis wraps the template in an extraneous <div>)
+		html = html.replace(/^(\s+)/, '');
+		html = html.replace(/(\s+)$/, '');
+
 		// Parse a DOM node or series of DOM nodes from the newly templated HTML
 		var parsedNodes = $.parseHTML(html);
 		var el = parsedNodes[0];
@@ -3333,10 +3339,13 @@ Framework.Component.prototype.render = function (atIndex) {
 		// If there is not one single wrapper element,
 		// or if the rendered template contains only a single text node,
 		// (or just a lone region)
-		// wrap the html up in a container <div/>
-		else if (	parsedNodes.length > 1 || parsedNodes[0].nodeType === 3 ||
-			$(parsedNodes[0]).is('region')) {
+		else if (	parsedNodes.length > 1 || 
+					parsedNodes[0].nodeType === 3 ||
+					$(parsedNodes[0]).is('region') ) {
 
+			Framework.log(self.id + ' :: Wrapping template in <div/>...', parsedNodes);
+
+			// wrap the html up in a container <div/>
 			el = $('<div/>').append(html);
 			el = el[0];
 		}
@@ -3736,8 +3745,6 @@ _.extend(Framework.Component.prototype, {
 		if (this.model) {
 			_.extend(templateContext, this.model.attributes);
 		}
-
-		// TODO: support for precompiled templates
 
 		// Template the HTML with the data
 		var html;
