@@ -175,9 +175,9 @@ So we could implement the Home page, but how are we going to do the others?  Her
 </section>
 </script>
 
-<script data-id="Contact" type="text/template">
+<script data-id="News" type="text/template">
 <section>
-  <h1>Contact stuff goes here</h1>
+  <h1>Portfolio stuff goes here</h1>
 </section>
 </script>
 ```
@@ -218,15 +218,36 @@ This time, we used the `count` attribute.  This allows us to inject more than on
 
 
 
-3) Referencing a common component from more than one place
+###3) Referencing a common component from more than one place
 
-So I think we should be feeling pretty good, since we've implemented all of the HTML/CSS for the single-page website and type-as-you-go search.  What more could we possibly ask for?
+So I think we should be feeling pretty good, since we've implemented all of the HTML/CSS for the single-page website and type-as-you-go search.  What more could we possibly ask for?  Well, maybe there are parts of your application that you want to re-use in more than one section, but that aren't in *every* section like, for instance, the header & footer in the first example.
 
+Let's say we're still working on the single-page website from before. It's an event photographer's website, and one of the navigation items now goes to a "Portfolio" section. Maybe you already have a contact form in the "Home" section, but you realize that visitors should also have quick access to it while they're mesmerized by the pretty pictures.
 
-a-h-ha-dhdsour contact form appears on two very different sections of your single-page site.  You might stick a region in both places so that you can inject the contact form as needed)
+You don't need to copy/paste the form code into the "Portfolio" section; just stick the code into a new template, and add contact form regions to the places where you want it to be.
 
+So your "Home" template might look like this:
+```html
+<script data-id="Home" type="text/template">
+  <h1>Home Page Stuff</h1>
+  <p>Blah blah blah</p>
+  
+  //Your contact form will show up here.
+  <region template="Contact"></region>
+</script>
+```
 
-
+And the "Portfolio" template like this:
+```html
+<script data-id="Portfolio" type="text/template">
+  <img src="purdy_picture_1"/>
+  <img src="purdy_picture_2"/>
+  <img src="purdy_picture_3"/>
+  
+  //Your contact form will show up here, too!
+  <region template="Contact"></region>
+</script>
+```
 
 
 ## TODO: Making things interactive with Components
