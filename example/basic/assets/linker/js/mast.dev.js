@@ -3595,7 +3595,12 @@ _.extend(Framework.Component.prototype, {
 			//
 			if (_.isObject(this.afterChange)) {
 				_.each(this.afterChange, function(handler, attrName) {
-					this.model.on('change:' + attrName, handler, this);
+
+					// Call handler with newVal to keep arguments straightforward
+					this.model.on('change:' + attrName, function (model, newVal) {
+						handler.call(this,newVal);
+					}, this);
+
 				}, this);
 			}
 		}
@@ -3658,6 +3663,11 @@ _.extend(Framework.Component.prototype, {
 
 		// Encourage child methods to use the component context
 		_.bindAll(this);
+
+		// Bind context to event handlers
+		_.each(this.events, function (handler, eventString) {
+			_.bind(handler, this);
+		}, this);
 	},
 
 
@@ -4421,7 +4431,7 @@ Framework.raise = function (options, cb) {
 			// and afterChange bindings
 			if (	_.isObject(componentDef.afterChange) && 
 					!_.isFunction(componentDef.afterChange)		) {
-				
+
 				componentDef.afterChange = Framework.Util.objMap(
 					componentDef.afterChange,
 					Framework.Util.translateShorthand
@@ -4437,7 +4447,6 @@ Framework.raise = function (options, cb) {
 
 			// Iterate through each property on this component prototype
 			_.each(componentPrototype.prototype, function (handler, key) {
-				
 				
 				// Detect DOM events
 				var matchedDOMEvents = key.match(Framework.Util['/DOMEvent/']);

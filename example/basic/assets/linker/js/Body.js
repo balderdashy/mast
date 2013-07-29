@@ -39,16 +39,18 @@ Mast.define('Body', function () {
 
 		// Increment/decrement % 5
 		'click .next-page': function () {
-			var newVal = this.get('pageIndex');
+			var newVal = this.model.get('pageIndex');
 			newVal++;
 			newVal %= 5;
-			this.set('pageIndex', newVal);
+			this.model.set('pageIndex', newVal);
 		},
 
 		// Bindings
 		afterChange: {
 			pageIndex: function (newVal) {
-				var page = this.get('pages')[newVal];
+				var page = this.model.get('pages')[newVal];
+				console.log('pageIndex :: ', newVal);
+				console.log('page :: ', page);
 				this.content.attach(page);
 			}
 		},
