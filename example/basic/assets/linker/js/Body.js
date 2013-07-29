@@ -6,7 +6,7 @@ Mast.define('App', function () {
 			// console.log('events::', this.events);
 		},
 
-		'click p': '%test',
+		'click p': '%test.',
 
 		// 'click': '!',
 
