@@ -144,7 +144,7 @@ See the Wiki.
 
 -->
 
-The MIT License (MIT)
+#The MIT License (MIT)
 --
 
 Copyright © 2012-2013 Balderdash Design Co.
