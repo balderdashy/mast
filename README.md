@@ -250,7 +250,42 @@ And the "Portfolio" template like this:
 ```
 
 
-## TODO: Making things interactive with Components
+## Making things interactive with Components
+Defining components gives you the power to make things more interactive, without having to write JavaScript.
+
+###Defining a Component
+To create a component, make a JavaScript file in your app with the same name as the template 
+
+
+
+###Creating Navigation for a Single-page App
+To switch out the content of a region, you will first need to give that region a `data-id`. The `<region>` tag should now look something like this: `<region data-id="content" template="Home"></region>`.
+
+Then, create a component for the template that contains that region.
+
+Inside the function, you can define the navigation paths. First, you put a string that has the name of the path, starting with `#`. Follow that with a `:`, and then a string that has the region's `data-id@TemplateName`.
+So it will look like: `'#path' : 'data-id@TemplateName'`
+
+It's pretty simple when you see it. Here is how we would set up navigation for our example website:
+
+```javascript
+Mast.define('Body', function() {
+  return {
+    
+    '#'			: 'content@Home',
+    '#about'	: 'content@About',
+    '#news'		: 'content@News'
+    
+  };	
+});
+```
+
+To navigate to the News section, for example, you can now use `<a href="#news">News</a>`. Easy!
+
+
+###Adding/Removing Classes
+Mast has some simple shorthand for adding, removing, and toggling classes. This is a handy tool for implementing prototypes, because you can, for example, set up your contact form submit button to go into a loading state when it's clicked.
+
 
 
 
