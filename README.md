@@ -62,11 +62,11 @@
 
 
 #Getting Started with Mast
->As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to be using Sails in order to use Mast.
+>As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use Mast.
 
 ##Setting up Mast
-###1. Get Mast
-Add the `mast.dev.js` file to your project and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
+###1. Grab the Mast file
+Add the `mast.dev.js` file to your project, and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
 
 ###2. Raise Mast 
 Paste this in the head of your document after your scripts:
@@ -95,10 +95,10 @@ The template is the region's content. You can create a template for your region 
 ```
 
 
-##Setting up Mast in a Sails.js App
+##Mast in a Sails.js App
 Here is a quick way to get started if you're already using Sails:
 
-1. Save `mast.dev.js` in `assets/linker/js`
+1. Save the `mast.dev.js` file in `assets/linker/js`
 2. Go to `assets/index.html` and  link to the Mast file after `<!--SCRIPTS-->`:
 ```html
 <!--SCRIPTS-->
