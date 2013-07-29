@@ -2525,13 +2525,13 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
     }
 
 }());
-(function (frameworkId, $, _, Backbone) {
+// Create global Mast
+var Mast;
+
+// Allow dependencies to be passed in to keep global namespace clean
+Mast = (function (Backbone, _, $) {
 	var Framework = Backbone;
-
-	// Remember the frameworkId for usage examples in warnings and errors
-	Framework.id = frameworkId;
-
-	// Start w/ empty templates, components, and data
+	
 	Framework.templates = {};
 	Framework.components = {};
 	Framework.data = {};
@@ -2543,157 +2543,16 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	Framework.shortcut = {};
 	Framework.shortcut.template = true;
 	Framework.shortcut.count = true;
-
-	// Expose framework global on window object
-	window[Framework.id] = Framework;
-})(
-	// Name your framework
-	'Mast',
-
-	// Pass dependencies as args to keep global namespace clean
-	$,
-	_,
-	Backbone
-);
-/**
- *
- *
- */
-
-function Logger (Framework) {
-
-	// If log is specified, use it, otherwise use the console
-	if (Framework.logger) {
-		Framework.error		= Framework.logger.error;
-		Framework.warn		= Framework.logger.warn;
-		Framework.log		= Framework.logger.debug || Framework.logger;
-		Framework.verbose	= Framework.logger.verbose;
-	}
-	// In IE, we can't default to the browser console because there IS NO BROWSER CONSOLE
-	else if (typeof console !== 'undefined') {
-		Framework.error		= console && console.error && console.error.bind(console);
-		Framework.warn		= console && console.warn && console.warn.bind(console);
-		Framework.log		= console && console.log && console.log.bind(console);
-		Framework.verbose	= console && console.debug && console.debug.bind(console);
-	}
-
-	// Support for `debug` for backwards compatibility
-	Framework.debug = Framework.log;
-
-	// Turn off all logs in production
-	if (Framework.production) {
-		Framework.logLevel = 'silent';
-	}
-
-
-	// Use log level config if provided
-	var noop = function () {};
-	switch ( Framework.logLevel ) {
-
-		case 'verbose':	break;
-
-		case 'debug':	Framework.verbose = noop;
-						break;
-
-		case 'warn':	Framework.verbose = Framework.log = noop;
-						break;
-
-		case 'error':	Framework.verbose = Framework.log = 
-						Framework.warn = noop;
-						break;
-
-		case 'silent':	Framework.verbose = Framework.log = 
-						Framework.warn = Framework.error = noop;
-						break;
-
-		default:		throw new Error ('Unrecognized logging level config ' + 
-						'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
-
-	}
-
-}
-
-// TODO: resolve how loading will work
-var Framework = window.Mast;
-////////////////////////////////////////////////////////////////////////////
-
-// Supported "first-class" DOM events
-var DOMEvents = [
-
-	// Localized browser events
-	// (works on individual elements)
-	'error',
-	'scroll',
-
-	// Mouse events
-	'click',
-	'dblclick',
-	'mousedown',
-	'mouseup',
-	'hover',
-	'mouseenter',
-	'mouseleave',
-	'mouseover',
-	'mouseout',
-	'mousemove',
 	
-
-	// Keyboard events
-	'keydown',
-	'keyup',
-	'keypress',
-
-	// Form events
-	'blur',
-	'change',
-	'focus',
-	'focusin',
-	'focusout',
-	'select',
-	'submit',
-
-	// Raw touch events
-	'touchstart',
-	'touchend',
-	'touchmove',
-	'touchcancel',
-
-	// Manufactured touch event
-	'touch'
-];
-
-
-
-// Special Framework events
-// (not implemented yet)
-var FrameworkEvents = [
-
-	// e.g. 'window resize', 'window scroll', 'window mousemove'...
-	'window .+',
-
-	'rightclick',
-
-	'clickoutside'
-];
-
-
-/*
-// Handle global window events
-// (which are not covered by backbone natively)
-var matchedSpecialDOMEvent = eventName.match(/window (.+)/);
-if (matchedSpecialDOMEvent && matchedSpecialDOMEvent[1]) {
-	$(window).unbind(matchedSpecialDOMEvent[1], handler);
-	$(window).bind(matchedSpecialDOMEvent[1], handler);
-}
-*/
-
-
-
-
+	return Framework;
+})(Backbone, _, $);
+// TODO: resolve how loading will work
+var Framework = Mast;
+////////////////////////////////////////////////////////////////////////////
 
 Framework.Util = {
 
-	// Grab id xor data-id from an HTML element
+	// Grab id or data-id from an HTML element
 	el2id: function (el, required) {
 		var id = $(el).attr('id');
 		var dataId = $(el).attr('data-id');
@@ -2706,327 +2565,9 @@ Framework.Util = {
 		}
 
 		return id || dataId;
-	},
-
-
-
-	/**
-	 * Regexp to match "first class" DOM events
-	 * (these are allowed in the top level of a component definition as method keys)
-	 *		i.e. /^(click|hover|blur|focus)( (.+))/
-	 *			[1] => event name
-	 *			[3] => selector
-	 */
-
-	'/DOMEvent/': new RegExp('^(' + _.reduce(DOMEvents, 
-		function buildRegexp (memo, eventName, index) {
-
-			// Omit `|` the first time
-			if (index === 0) {
-				return memo + eventName;
-			}
-
-			return memo + '|' + eventName;
-		}, '') +
-		')( (.+))?'),
-
-
-
-	/**
-	 * Returns whether the specified event key matches a DOM event
-	 *
-	 * if no match is found
-	 * @returns {Boolean} `false`
-	 *
-	 * otherwise
-	 * @returns {Object} {
-	 *		name		: name of DOM event
-	 *		selector	: optionally, DOM selector(s) for delegation, or `undefined`
-	 *	}
-	 *
-	 * NOTE: this function is cached using _.memoize
-	 */
-
-	parseDOMEvent: _.memoize(function (key) {
-
-		var matches = key.match(Framework.Util['/DOMEvent/']);
-		
-		if (!matches || !matches[1]) {
-			return false;
-		}
-
-		return {
-			name		: matches[1],
-			selector	: matches[3]
-		};
-	}),
-
-
-
-
-	/**
-	 * Translate **right-hand-side abbreviations** into functions that perform
-	 * the proper behaviors, e.g.
-	 *		#about_me
-	 *		%mainMenu:open
-	 */
-
-	translateShorthand: function translateShorthand (value, key) {
-
-		var matches, fn;
-
-		// If this is an important, Framework-specific data key, 
-		// and a function was specified, run it to get its value
-		// (this is to keep parity with Backbone's similar functionality)
-		if (_.isFunction(value) && (key === 'collection' || key === 'model')) {
-			return value();
-		}
-
-		// Ignore other non-strings
-		if ( !_.isString(value) ) {
-			return value;
-		}
-
-		// Redirects user to client-side URL, w/o affecting browser history
-		// Like calling `Backbone.history.navigate('/foo', { replace: true })`
-		if ( ( matches = value.match(/^##(.*[^.\s])/) ) && matches[1] ) {
-			fn = function redirectAndCoverTracks () {
-				var url = matches[1];
-				Framework.history.navigate(url, { trigger: true, replace: true });
-			};
-		}
-		// Method to redirect user to a client-side URL, then call the handler
-		else if ( ( matches = value.match(/^#(.*[^.\s]+)/) ) && matches[1] ) {
-			fn = function changeUrlFragment () {
-				var url = matches[1];
-				Framework.history.navigate(url, { trigger: true });
-			};
-		}
-		// Method to trigger global event
-		else if ( ( matches = value.match(/^(%.*[^.\s])/) ) && matches[1] ) {
-			fn = function triggerEvent () {
-				var trigger = matches[1];
-				Framework.verbose(this.id + ' :: Triggering event (' + trigger + ')...');
-				Framework.trigger(trigger);
-			};			
-		}
-		// Method to fire a test alert
-		// (use message, if specified)
-		else if ( ( matches = value.match(/^!!!\s*(.*[^.\s])?/) ) ) {
-			fn = function bangAlert (e) {
-
-				// If specified, message is used, otherwise 'Alert triggered!'
-				var msg = (matches && matches[1]) || 'Debug alert (!!!) triggered!';
-
-				// Other diagnostic information
-				msg += '\n\nDiagnostics\n========================\n';
-				if (e && e.currentTarget) {
-					msg += 'e.currentTarget :: ' + e.currentTarget;
-				}
-				if (this.id) {
-					msg +='this.id :: ' + this.id;
-				}
-
-				alert(msg);
-			};
-		}
-
-		// Method to log a message to the console
-		// (use message, if specified)
-		else if ( ( matches = value.match(/^>>>\s*(.*[^.\s])?/) ) ) {
-			fn = function logMessage (e) {
-
-				// If specified, message is used, otherwise use default
-				var msg = (matches && matches[1]) || 'Log message (>>>) triggered!';
-				Framework.log(msg);
-			};
-		}
-
-		// Method to attach the specified component/template to a region
-		else if ( (matches = value.match(/^(.+)@(.*[^.\s])/)) && matches[1] && matches[2] ) {
-			fn = function attachTemplate () {
-				Framework.verbose(this.id + ' :: Attaching `' + matches[2] + '` to `' + matches[1] + '`...');
-
-				var region = matches[1];
-				var template = matches[2];
-				this[region].attach(template);
-			};
-		}
-
-
-		// Method to add the specified class
-		else if ( (matches = value.match(/^\+\s*\.(.*[^.\s])/)) && matches[1] ) {
-			fn = function addClass () {
-				Framework.verbose(this.id + ' :: Adding class (' + matches[1] + ')...');
-				this.$el.addClass(matches[1]);
-			};
-		}
-		// Method to remove the specified class
-		else if ( (matches = value.match(/^\-\s*\.(.*[^.\s])/)) && matches[1] ) {
-			fn = function removeClass () {
-				Framework.verbose(this.id + ' :: Removing class (' + matches[1] + ')...');
-				this.$el.removeClass(matches[1]);
-			};
-		}
-		// Method to toggle the specified class
-		else if ( (matches = value.match(/^\!\s*\.(.*[^.\s])/)) && matches[1] ) {
-			fn = function toggleClass () {
-				Framework.verbose(this.id + ' :: Toggling class (' + matches[1] + ')...');
-				this.$el.toggleClass(matches[1]);
-			};
-		}
-
-		// TODO:	allow descendants to be controlled via shorthand
-		//			e.g. : 'li.row -.highlighted'
-		//			would remove the `highlighted` class from this.$('li.row')
-
-
-		// If short-hand matched, return the dereferenced function
-		if (fn) {
-
-			Framework.verbose('Interpreting meaning from shorthand :: `' + value + '`...');
-
-			// Curry the result function with any suffix matches
-			var curriedFn = fn;
-
-			// Trailing `.` indicates an e.stopPropagation()
-			if (value.match(/\.\s*$/)) {
-				curriedFn = function andStopPropagation (e) {
-					
-					// Bind (so it inherits component context) and call interior function 
-					fn.apply(this);
-
-					// then immediately stop event bubbling/propagation
-					if (e && e.stopPropagation) {
-						e.stopPropagation();
-					}
-					else {
-						Framework.warn(
-							this.id + ' :: Trailing `.` shorthand was used to invoke an ' +
-							'e.stopPropagation(), but "' + value + '" was not triggered by a DOM event!\n' + 
-							'Probably best to double-check this was what you meant to do.');
-					}
-				};
-			}
-
-
-			return curriedFn;
-		}
-
-
-		// Otherwise, if no short-hand matched, pass the original value
-		// straight through
-		return value;
-	},
-
-
-
-	// Map an object's values, but return a valid object
-	// (this function is handy because underscore.map() returns a list, not an object)
-	objMap: function objMap (obj, transformFn) {
-		return _.object(_.keys(obj), _.map(obj, transformFn));
 	}
+
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Event toolkit
- */
-
-Framework.Util.Events = {
-
-
-	/**
-	 * Parse a dictionary of events
-	 * (optionally filter by event type)
-	 *
-	 * @param {Object} events
-	 *		`events` is a Backbone.View event object
-	 *
-	 * @param {Object} options
-	 *	{
-	 *		only: return the events explicitly laid out in this list
-	 *	}
-	 *
-	 * @returns list of matching event keys
-	 */
-
-	parse: function (events, options) {
-
-		var eventKeys = _.keys(events || {}),
-			limitEvents,
-			parsedEvents = [];
-
-		// Optionally filter using set of acceptable event types
-		limitEvents = options.only;
-		eventKeys = _.filter(eventKeys, function checkEventName (eventKey) {
-			
-			// Parse event string into semantic representation
-			var event = Framework.Util.parseDOMEvent(eventKey);
-			parsedEvents.push(event);
-			
-			// Optional filter
-			if (limitEvents) {
-				return _.contains(limitEvents, event.name);
-			}
-			return true;
-		});
-
-		return parsedEvents;
-	},
-
-
-
-
-	/**
-	 * Given a list of event expressions
-	 *
-	 * @param {Array} semanticEvents
-	 *		List of event objs from `Framwork.Util.Events.parse`
-	 *
-	 * @param {Component} context
-	 *		Instance of a component to use as a starting point for the DOM queries
-	 *		(optional-- defaults to global context)
-	 *
-	 * @returns jQuery set of matched elements
-	 */
-
-	getElements: function (semanticEvents, context) {
-
-		// Context optional
-		context = context || { $: $ };
-
-		// Iteratively build a set of affected elements
-		var $affected = $();
-		_.each(semanticEvents, function lookupElementsForEvent (event) {
-
-			// Determine matched elements
-			// Use delegate selector if specified
-			// Otherwise, grab the element for this component
-			var $matched =	event.selector ? 
-							context.$(event.selector) :
-							context.$el;
-
-			// Add matched elements to set
-			$affected = $affected.add( $matched );
-		}, this);
-
-		return $affected;
-	}
-};
-
 /**
  * Module that adds touch support for mobile devices.
  *
@@ -3152,16 +2693,12 @@ var Framework = Mast;
 
 Framework._defineQueue = [];
 
-
-
-
 /**
  * Optional method to require app components. Require.js can be used instead
  * as needed.
  * @param  {string} id Component id override.
  * @param  {Function} definitionFn Definition of component
  */
-
 Framework.define = function (id, definitionFn) {
 	// Id param is optional
 	if (!definitionFn) {
@@ -3175,17 +2712,9 @@ Framework.define = function (id, definitionFn) {
 	});
 };
 
-
-
-
-/**
- * Run definition methods to get actual component definitions.
- * This is deferred to avoid having to use Backbone's function () {} approach for things
- * like collections.
- *
- * @api private
- */
-
+// Run definition methods to get actual component definitions.
+// This is deferred to avoid having to use Backbone's function () {} approach for things
+// like collections.
 Framework._buildComponentDefinitions = function () {
 
 	// Iterate through the define queue and create each definition
@@ -3206,7 +2735,7 @@ Framework._buildComponentDefinitions = function () {
 };
 
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -3246,9 +2775,6 @@ Framework.Component.prototype.close = function ( ) {
 	});
 };
 
-
-
-
 /**
  * Run HTML template through engine and append results to outlet. Also rerender regions.
  * If atIndex is specified, the component is rendered at the given position within its
@@ -3258,8 +2784,7 @@ Framework.Component.prototype.close = function ( ) {
  */
 
 Framework.Component.prototype.render = function (atIndex) {
-
-	Framework.debug(this.id + ' :---: Rendering component...');
+	Framework.debug(this.id + ' :: render()');
 
 	var self = this;
 
@@ -3286,73 +2811,61 @@ Framework.Component.prototype.render = function (atIndex) {
 		self._rendering = false;
 
 		if (!self.$outlet) {
-			throw new Error(self.id + ' :: Trying to render(), but no $outlet was defined!');
+			throw new Error(self.id + ' :: render() called, but no $outlet was defined!');
 		}
 
 		// Refresh compiled template
 		var html = self._compileTemplate();
 		if (!html) {
-			throw new Error(this.id + ' :: Unable to render component because template compilation did not return any HTML.');
+			Framework.warn(this.id + ' :: unable to render() because template compilation did not return any HTML.');
+			return;
 		}
-
-		//
 
 		///////////////////////////////////////////////////////////////
 		// Cody's stuff
-		// (disabled for now while debugging issue w/ `count`)
 		///////////////////////////////////////////////////////////////
 		// Remove the current el
-		// delete self.el;
+		delete self.el;
 
-		// // Set the el property
-		// self._ensureElement();
+		// Set the el property
+		self._ensureElement();
 
-		// // Set the el's html to the template
-		// self.$el.html(html);
+		// Set the el's html to the template
+		self.$el.html(html);
 
-		// // Delegate Events
-		// self.delegateEvents();
+		// Delegate Events
+		self.delegateEvents();
 		///////////////////////////////////////////////////////////////
 
-		// -either/or-
 
 		///////////////////////////////////////////////////////////////
 		// Mike's stuff
 		// (trying to diagnose issue with "count", put this here in case it worked)
+		// (p.s. it doesn't work anyways)
 		///////////////////////////////////////////////////////////////
+		// // Parse a DOM node or series of DOM nodes from the newly templated HTML
+		// var parsedNodes = $.parseHTML(html);
+		// var el = parsedNodes[0];
 
-		// Strip trailing and leading whitespace to avoid falsely diagnosing
-		// multiple elements, when only one actually exists
-		// (this misdiagnosis wraps the template in an extraneous <div>)
-		html = html.replace(/^(\s+)/, '');
-		html = html.replace(/(\s+)$/, '');
+		// // If no nodes were parsed, throw an error
+		// if (parsedNodes.length === 0) {
+		// 	throw new Error(self.id + ' :: render() ran into a problem rendering the template with HTML => \n'+html);
+		// }
 
-		// Parse a DOM node or series of DOM nodes from the newly templated HTML
-		var parsedNodes = $.parseHTML(html);
-		var el = parsedNodes[0];
+		// // If there is not one single wrapper element,
+		// // or if the rendered template contains only a single text node,
+		// // (or just a lone region)
+		// // wrap the html up in a container <div/>
+		// else if (	parsedNodes.length > 1 || parsedNodes[0].nodeType === 3 ||
+		// 	$(parsedNodes[0]).is('region')) {
 
-		// If no nodes were parsed, throw an error
-		if (parsedNodes.length === 0) {
-			throw new Error(self.id + ' :: render() ran into a problem rendering the template with HTML => \n'+html);
-		}
+		// 	el = $('<div/>').append(html);
+		// 	el = el[0];
+		// }
 
-		// If there is not one single wrapper element,
-		// or if the rendered template contains only a single text node,
-		// (or just a lone region)
-		else if (	parsedNodes.length > 1 || 
-					parsedNodes[0].nodeType === 3 ||
-					$(parsedNodes[0]).is('region') ) {
-
-			Framework.log(self.id + ' :: Wrapping template in <div/>...', parsedNodes);
-
-			// wrap the html up in a container <div/>
-			el = $('<div/>').append(html);
-			el = el[0];
-		}
-
-		// Set Backbone element (cache and redelegate DOM events)
-		// (Will also update self.$el)
-		self.setElement(el);
+		// // Set Backbone element (cache and redelegate DOM events)
+		// // (Will also update self.$el)
+		// self.setElement(el);
 		///////////////////////////////////////////////////////////////
 
 
@@ -3360,57 +2873,18 @@ Framework.Component.prototype.render = function (atIndex) {
 		self._renderRegions();
 
 		// Insert the element at the proper place amongst the outlet's children
+		// But if the outlet is empty, or there's no atIndex, just stick it on the end
 		var neighbors = self.$outlet.children();
 		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length >= atIndex) {
 			neighbors.eq(atIndex).before(self.$el);
 		}
-
-		// But if the outlet is empty, or there's no atIndex, just stick it on the end
 		else self.$outlet.append(self.$el);
 
-		// Finally, trigger afterRender method
+		// Trigger afterRender method
 		self.afterRender();
-
-		
-		// Automatically disable user text selection when a click/touch event is bound
-		// (even for delegated event bindings.)
-		//
-		// This is ignored if `disableUserSelect` is `false`
-		if (self.disableUserSelect !== false) {
-
-
-			// Build subset of just the click/touch events
-			var clickOrTouchEvents = Framework.Util.Events.parse(
-				self.events,
-				{ only: ['click', 'touch', 'touchstart', 'touchend'] }
-			);
-
-			// Lookup affected elements
-			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, self);
-
-			// Disable user text selection on the elements
-			$affected.css({
-				'-webkit-touch-callout': 'none',
-				'-webkit-user-select': 'none',
-				'-khtml-user-select': 'none',
-				'-moz-user-select': 'moz-none',
-				'-ms-user-select': 'none',
-				'user-select': 'none'
-			});
-
-
-			Framework.verbose(
-				self.id + ' :: ' +
-				'Disabled user text selection on elements w/ click/touch events:',
-				clickOrTouchEvents,
-				$affected
-			);			
-		}
 	});
 
 };
-
-
 
 
 
@@ -3435,8 +2909,6 @@ Framework.Component.prototype._ensureElement = function() {
 	var $el = Framework.$('<' + _.result(this, 'tagName') + '>').attr(attrs);
 	this.setElement($el, false);
 };
-
-
 
 
 
@@ -3475,31 +2947,19 @@ _.extend(Framework.Component.prototype, {
 });
 
 
-
-/**
- * Default lifecycle events for bound model and/or collection
- */
 _.extend(Framework.Component.prototype, {
 
-	// Fired when the bound model is updated (`this.model`)
+	// this.model
 	afterChange: function (model, options) {},
 	// afterInvalid: function (model, error, options) {},
 
-	// Fired when a model is added to the bound collection (`this.collection`)
+	// this.collection
 	afterAdd: function (model, collection, options) {},
-
-	// Fired when a model is removed from the bound collection (`this.collection`)
 	afterRemove: function (model, collection, options) {},
-
-	// Fired when the bound collection is wiped (`this.collection`)
 	afterReset: function (collection, options) {}
-
-
-	// TODO:
-	// Backbone version compatibility issues make this one tricky
 	// afterSort: function (collection, options) {},
 
-	// TODO: Server-oriented model/collection event bindings
+	// Server
 	// afterDestroy: function (model, collection, options) {},
 	// afterError: function (model, xhr, options) {},
 	// afterRequest: function (collectionOrModel, xhr, options) {},
@@ -3516,31 +2976,17 @@ _.extend(Framework.Component.prototype, {
  
 _.extend(Framework.Component.prototype, {
 
-	// Provide access to banned methods in `_ev` sub-object for private use
-	_ev: {
-		on: Framework.Component.prototype.on,
-		off: Framework.Component.prototype.off,
-		trigger: Framework.Component.prototype.trigger,
-		once: Framework.Component.prototype.once,
-		bind: Framework.Component.prototype.bind,
-		listenTo: Framework.Component.prototype.listenTo,
-		listenToOnce: Framework.Component.prototype.listenToOnce,
-		stopListening: Framework.Component.prototype.stopListening
-	},
-
 	// Non-global event delegation is disabled at the user level
-	on: _disableLocalEventDelegator,
-	off: _disableLocalEventDelegator,
-	trigger: _disableLocalEventDelegator,
-	once: _disableLocalEventDelegator,
-	bind: _disableLocalEventDelegator,
-
+	on: this._disableLocalEventDelegator,
+	off: this._disableLocalEventDelegator,
+	trigger: this._disableLocalEventDelegator,
+	once: this._disableLocalEventDelegator,
+	bind: this._disableLocalEventDelegator
 
 	// These seem to be required by Backbone core
-	listenTo: _disableLocalEventDelegator,
-	listenToOnce: _disableLocalEventDelegator
-	// stopListening: _disableLocalEventDelegator
-
+	// listenTo: this._disableLocalEventDelegator,
+	// listenToOnce: this._disableLocalEventDelegator,
+	// stopListening: this._disableLocalEventDelegator
 });
 
 
@@ -3571,9 +3017,9 @@ _.extend(Framework.Component.prototype, {
 		if (this.collection) {
 
 			// Listen to events
-			this._ev.listenTo(this.collection, 'add', this.afterAdd);
-			this._ev.listenTo(this.collection, 'remove', this.afterRemove);
-			this._ev.listenTo(this.collection, 'reset', this.afterReset);
+			this.listenTo(this.collection, 'add', this.afterAdd);
+			this.listenTo(this.collection, 'remove', this.afterRemove);
+			this.listenTo(this.collection, 'reset', this.afterReset);
 		}
 
 		if (this.model) {
@@ -3582,7 +3028,7 @@ _.extend(Framework.Component.prototype, {
 			// e.g.
 			// .afterChange(model, options)
 			//
-			this._ev.listenTo(this.model, 'change', function (model, options) {
+			this.listenTo(this.model, 'change', function (model, options) {
 				if (_.isFunction(this.afterChange)) {
 					this.afterChange(model, options);
 				}
@@ -3598,16 +3044,19 @@ _.extend(Framework.Component.prototype, {
 				}, this);
 			}
 		}
+
 		
 
-		// TODO:	This could be optimized by pulling it out of the wildcard event handler,
+		// TODO:	this could be optimized by pull this out of the wildcard event handler,
 		//			but to do it elegantly would involve hacking the Backbone core to allow 
 		//			regex routes.  An important, but easier, optimization would be wildcard 
 		//			routing only as absolutely necessary (so non-param events get static routes)
 		//
+		//			It's very important that we test this part for performance on slower mobile devices
+		//
 
 		// First argument is event name, subsequent args are other params to trigger()
-		this._ev.listenTo(Framework, 'all', function (eRoute) {
+		this.listenTo(Framework, 'all', function (eRoute) {
 
 			// Trim off all but the first argument to pass through to handler
 			var args = Array.prototype.slice.call(arguments);
@@ -3659,15 +3108,7 @@ _.extend(Framework.Component.prototype, {
 		_.bindAll(this);
 	},
 
-
-
-
-
-	/**
-	 * If any regions exist in this component, 
-	 * empty them, and then delete them
-	 */
-
+	// If any regions exist, empty them
 	_emptyAllRegions: function () {
 		_.each(this.regions, function (region, key) {
 			region.empty();
@@ -3678,10 +3119,8 @@ _.extend(Framework.Component.prototype, {
 
 
 
-
 	/**
-	 * Instantiate region components and append any default
-	 * templates/components to the DOM
+	 * 
 	 */
 
 	_renderRegions: function () {
@@ -3693,13 +3132,16 @@ _.extend(Framework.Component.prototype, {
 		var $regions = this.$('region');
 		$regions.each(function (i, el) {
 
-			// Provide backwards compatibility for old `default` notation
-			var template = $(el).attr('default');
-			$(el).attr('template', template);
+			// Pull id from region
+			var regionId = $(el).attr('data-id') || $(el).attr('id');
 
-			// Generate a region instance from the element
-			// (modifying the DOM as necessary)
-			var region = Framework.Region.fromElement(el, self);
+			// Build region
+			var region = new Framework.Region({
+				id: regionId,
+				$el: $(el),
+				parent: self
+			});
+
 
 			// Keep track of regions, since we are the parent component
 			self.regions[region.id] = region;
@@ -3709,18 +3151,58 @@ _.extend(Framework.Component.prototype, {
 			if (!self[region.id]) {
 				self[region.id] = region;
 			}
+
+			
+			// If this region has a default sub-component set, grab the id.
+			// e.g. <region template="Foo" />
+			//		<region default="Foo" /> (legacy support)
+			var subcomponentId = $(el).attr('template') || $(el).attr('default');
+
+			// If `count` is set, render sub-component specified number of times.
+			// e.g. <region template="Foo" count="3" />
+			// (verify Framework.shortcut.count is enabled)
+			var count = 1;
+			if ( Framework.shortcut.count ) {
+				count = $(el).attr('count') || 1;
+			}
+
+			// Append sub-component(s) to region automatically
+			// (verify Framework.shortcut.default is enabled)
+			if ( Framework.shortcut.template && subcomponentId ) {
+				
+				Framework.debug(
+					'preparing the region, and there are ' + 
+					region.$el.children().length + 
+					' subcomponent elements in the region now'
+				);
+
+				//////////////////////////////////////////
+				// SERIOUSLY WTF
+				// MAJOR HAXXXXXXX
+				//////////////////////////////////////////
+				count = +count + 1;
+				//////////////////////////////////////////
+
+				for (var j=0; j < count; j++ ) {
+
+					region.append(subcomponentId);
+
+					Framework.debug(
+						'rendering the ' + subcomponentId + ' component, remaining: ' + 
+						count + ' and there are ' + region.$el.children().length + 
+						' subcomponent elements in the region now'
+					);
+
+				}
+
+			}
+
+			Framework.debug(self.id + ' :: Instantiated region: ' + region.id);
+
 		});
 	},
 
-
-
-
-
-
-	/**
-	 * Convert template HTML and data into a compiled $template
-	 */
-
+	// Convert template HTML and data into a compiled $template
 	_compileTemplate: function () {
 
 		// Create template data context by providing access to the global Data object,
@@ -3746,6 +3228,8 @@ _.extend(Framework.Component.prototype, {
 			_.extend(templateContext, this.model.attributes);
 		}
 
+		// TODO: support for precompiled templates
+
 		// Template the HTML with the data
 		var html;
 		try {
@@ -3757,28 +3241,12 @@ _.extend(Framework.Component.prototype, {
 			else html = _.template(this.template, templateContext);
 		}
 		catch (e) {
-			var str = e, 
-				stack = '';
-
-			if (e instanceof Error) {
-				str =  e.toString();
-				stack = e.stack;
-			}
-
-			Framework.error(this.id + ' :: render() error in template :\n' + str + '\nTemplate :: ' + html + '\n' + stack);
+			Framework.error(this.id + ' :: render() error in template :\n' + e.toString() + '\nTemplate :: ' + html);
 			html = this.template;
 		}
 
 		return html;
 	},
-
-
-
-
-	/**
-	 * Check the specified definition for obvious mistakes,
-	 * especially likely deprecation issues from Mast 1.x
-	 */
 
 	_validateDefinition: function (properties) {
 		if (_.isObject(properties)) {
@@ -3806,7 +3274,7 @@ _.extend(Framework.Component.prototype, {
 			}
 			if (properties.bindings) {
 				delete properties.bindings;
-				Framework.warn(id + ' :: `bindings` are not allowed in component definitions.  Try using the onChange(changedAttrs) method instead.\nYou can also specify an object corresponding to the model attributes to emulate the old behavior (e.g. `onChange: { someAttr: function myBinding(newVal) {} }` )');
+				Framework.warn(id + ' :: `bindings` are not allowed in component definitions.  Try using the onChange(changedAttributes) method instead.');
 			}
 			if (properties.template) {
 				delete properties.template;
@@ -3814,26 +3282,12 @@ _.extend(Framework.Component.prototype, {
 			}
 			if (properties.afterCreate) {
 				delete properties.afterCreate;
-				Framework.warn(id + ' :: afterCreate() is not allowed in component definitions.  You can now use afterRender() for the same effect.');
+				Framework.warn(id + ' :: afterCreate() is not allowed in component definitions.  You can use afterRender() for the same effect.');
 			}
 			if (properties.beforeCreate) {
 				delete properties.beforeCreate;
-				Framework.warn(id + ' :: beforeCreate() is not allowed in component definitions.  You can now use beforeRender(cb) for the same effect, but be sure and trigger the callback when you\'re finished, and to also write a cancelRender() so your component knows how to cancel any asynchronous operations.');
+				Framework.warn(id + ' :: beforeCreate() is not allowed in component definitions.  You can use beforeRender() for the same effect, but be sure and trigger the callback when you\'re finished, and to also write a cancelRender() so your component knows how to cancel any asynchronous operations.');
 			}
-
-
-			// Handle bad event bindings
-			// In particular, `window.onerror` should not be bound via Framework 
-			// since it shouldn't use the jQuery `error` event
-			// (see http://api.jquery.com/error/ for more information)
-			if (properties['window error'] || (properties.events && properties.events['window error'])) {
-				delete properties['window error'];
-				if (properties.events) {
-					delete properties.events['window error'];
-				}
-				Framework.warn(id + ' :: `window error` should not be bound using Backbone/jQuery.  See `http://api.jquery.com/error` for more information.');
-			}
-
 
 			// Check that this.collection is actually an instance of Backbone.Collection
 			// and that this.model is actually an instance of Backbone.Model
@@ -3848,15 +3302,15 @@ _.extend(Framework.Component.prototype, {
 
 					Framework.error(
 						'Component (' + id + ') has an invalid ' + type + '-- \n' + 
-						'If `' + type + '` is specified for a component, ' + 
+						'If `' + type + '` is set on a component, ' + 
 						'it must be an *instance* of a Backbone.' + Type + '.\n');
 
 					if (properties[type] instanceof Backbone[Type].constructor) {
 						Framework.error(
-							'It looks like a Backbone.' + Type + ' *prototype* was specified instead of a ' +
-							'Backbone.' + Type + ' *instance*.\n' +
-							'Please `new` up the ' + type + ' -before- ' + Framework.id + '.raise(),' +
-							'or use a wrapper function to achieve the same effect, e.g.:\n' +
+							'However, a Backbone.' + Type + ' prototype was specified instead of a ' +
+							'Backbone.' + Type + ' instance.\n' +
+							'Please `new` up the ' + type + ' before assigning it ' + 
+							'to the component, or use a wrapper function, e.g.:\n' +
 							'`' + type + ': function () {\nreturn new Some' + Type + '();\n}`'
 						);
 					}
@@ -3866,38 +3320,20 @@ _.extend(Framework.Component.prototype, {
 				}
 			}
 
-
 			// Clone properties to avoid inadvertent modifications
 			return _.clone(properties);
 		}
 		else return {};
+	},
+
+	_disableLocalEventDelegator: function () {
+		Framework.warn(this.id + ' :: on(), off(), trigger(), and the like are not allowed on components.  Global event delegation ftw!');
 	}
 
 });
 
-
-/**
- * Disable binding and triggering of component-local Backbone events.
- * Global events are more powerful and maintainable, and always a better choice!
- */
-
-function _disableLocalEventDelegator () {
-	throw new Error('\n' +
-		'Local event binders like ' + this.id+'.on(\'foo\', fn), '+this.id+'.off(\'foo\', fn), '+this.id+'.trigger(\'foo\', theId), etc. \n' +
-		'are no longer allowed on components.  Global event delegation is a much more maintainable solution\n' + 
-		'for cross-component messaging anyways.\n\n' +
-		'Please use global triggers and listeners on the ' + Framework.id + ' object instead--\n' +
-		'e.g. ' + Framework.id + '.on(\'' + this.id + ':foo\', fn), ' + Framework.id + '.trigger(\''+this.id+':foo\', theId), etc.' + 
-		'Alternatively, you can use the (%) shorthand syntax, which is available for subscriptions and triggers ' +
-		'on all ' + Framework.id + ' components.\n\n' + 
-		'For example, to bind a function to a custom global event called `' + this.id + ':foo` :: \n' +
-		'\'%' + this.id + ':foo\': fn\n\n' +
-		'To trigger the custom event ::\n' +
-		'\'click .whatever\': \'%' + this.id + ':foo\''
-	);
-}
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
 
 Framework.Region = constructor;
@@ -3916,7 +3352,7 @@ function constructor (properties) {
 	// Fold in properties to prototype
 	_.extend(this,properties);
 
-	// If neither an id nor a `template` was specified,
+	// If neither an id nor a `default` was specified,
 	// we'll throw an error, since there's no way to get a hold of the region
 	if (!this.id && !this.$el.attr('default') && !this.$el.attr('template')) {
 		throw new Error(this.parent.id + ' :: Either `data-id`, `template`, or both must be specified on regions. \ne.g. <region data-id="foo" template="SomeComponent"></region>');
@@ -3989,11 +3425,10 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 	// And keep track of it in the list of this region's children
 	this._children.splice(atIndex, 0, component);
 
-	// Log for debugging `count` declarative
 	var debugStr = this.parent.id + ' :: Inserted ' + componentId + ' into ';
 	if (this.id) debugStr += 'region: ' + this.id + ' at index ' + atIndex;
 	else debugStr += 'anonymous region at index ' + atIndex;
-	Framework.verbose(debugStr);
+	Framework.debug(debugStr);
 
 	return component;
 
@@ -4069,99 +3504,6 @@ Framework.Region.prototype.attach = function (component, properties) {
 };
 
 
-
-
-/**
- * Factory method to generate a new region instance from a DOM element
- * Implements `template`, `count`, and `data-*` HTML attributes.
- *
- * @param {Object} options
- * @returns region instance
- */
-
-Framework.Region.fromElement = function (el, parent) {
-
-	// If parent is not specified, make-believe
-	parent = parent || { id: '*' };
-
-	// Build region
-	var region = new Framework.Region({
-		id: Framework.Util.el2id(el),
-		$el: $(el),
-		parent: parent
-	});
-
-	// If this region has a default component/template set, 
-	// grab the id  --  e.g. <region template="Foo" />
-	var componentId = $(el).attr('template');
-
-
-	// If `count` is set, render sub-component specified number of times.
-	// e.g. <region template="Foo" count="3" />
-	// (verify Framework.shortcut.count is enabled)
-	var countAttr,
-		count = 1;
-
-	if ( Framework.shortcut.count ) {
-
-		// If `count` attribute is not false or undefined,
-		// that means it was set explicitly, and we should use it
-		countAttr = $(el).attr('count');
-		// Framework.debug('Count attr is :: ', countAttr);
-		if ( !!countAttr ) {
-			count = countAttr;
-		}
-
-	}
-
-
-	Framework.debug(
-		parent.id + ' :-: Instantiated new region' + 
-		( region.id ? ' `' + region.id + '`' : '' ) + 
-		( componentId ? ' and populated it with' + 
-			( count > 1 ? count + ' instances of' : ' 1' ) + 
-			' `' + componentId + '`' : ''
-		) + '.'
-	);
-
-
-
-	// Append sub-component(s) to region automatically
-	// (verify Framework.shortcut.template is enabled)
-	if ( Framework.shortcut.template && componentId ) {
-		
-		// Framework.debug(
-		// 	'Preparing to render ' + count + ' ' + componentId + ' components into region ' +
-		// 	'(' + region.id + '), which already contains ' + region.$el.children().length + 
-		// 	' subcomponents.'
-		// );
-
-		region.append(componentId);
-
-		// //////////////////////////////////////////
-		// // SERIOUSLY WTF
-		// // MAJOR HAXXXXXXX
-		// //////////////////////////////////////////
-		// count = +count + 1;
-		// //////////////////////////////////////////
-
-		// for (var j=0; j < count; j++ ) {
-
-		// 	region.append(componentId);
-
-		// 	// Framework.debug(
-		// 	// 	'rendering the ' + componentId + ' component, remaining: ' + 
-		// 	// 	count + ' and there are ' + region.$el.children().length + 
-		// 	// 	' subcomponent elements in the region now'
-		// 	// );
-
-		// }
-
-	}
-
-	return region;
-};
-
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -4196,9 +3538,6 @@ router.route(/(.*)/, 'route', function (route) {
 	// Trigger route
 	Framework.trigger('#' + route);
 });
-
-// Expose `navigate()` method
-Framework.navigate = Framework.history.navigate;
 // TODO: resolve how loading will work
 var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
@@ -4229,13 +3568,16 @@ Framework.ready = function (cb) {
 	});
 };
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = Mast;
 ////////////////////////////////////////////////////////////////////////////
 
+// TODO: disable debug mode
+Framework.debug = true;
 
 /**
- * This is the starting point to your application.  You should grab templates and components
- * before calling Framework.raise() using something like Require.js.
+ * This is the starting point to your Mast application. It runs multiple proccess that allow a
+ * Mast application to run. You should grab templates and components with something like
+ * Require.js before calling Framework.raise().
  *
  * @param  {Object}   options
  * @param  {Function} cb
@@ -4265,19 +3607,19 @@ Framework.raise = function (options, cb) {
 		options = {};
 	}
 
-	// Apply defaults
-	_.defaults({
-		logLevel: 'debug',
-		logger: undefined,
-		production: false
-	}, Framework);
-
-	// Apply overrides from options
-	options = options || {};
-	_.extend(Framework, options);
-
-	// Initialize logger
-	new Logger(Framework);
+	// If log is specified, use it, otherwise use the console
+	if (options.log) {
+		Framework.log = options.log;
+		Framework.warn = options.log.warn;
+		Framework.error = options.log.error;
+		Framework.debug = Framework.debug ? options.log.debug : function () {};
+	}
+	else {
+		Framework.log = Framework.isProduction ? function () {} : console && console.log && console.log.bind(console);
+		Framework.warn = Framework.isProduction ? function () {} : console && console.warn && console.warn.bind(console);
+		Framework.error = Framework.isProduction ? function () {} : console && console.error && console.error.bind(console);
+		Framework.debug = Framework.debug ? console && console.debug && console.debug.bind(console) : function () {};
+	}
 
 	// Merge data into Framework.data
 	_.extend(Framework.data, options.data || {});
@@ -4343,18 +3685,13 @@ Framework.raise = function (options, cb) {
 		// ################################
 
 		// Grab initial regions from DOM
-		// (and append default templates)
 		collectRegions();
 
 
 
 		// Do the initial routing sequence
 		// Look at the #fragment url and fire the global route event
-		Framework.history.start(_.defaults({
-			pushState: undefined,
-			hashChange: undefined,
-			root: undefined
-		}, options));
+		Framework.history.start();
 
 
 		// TODO: v2.1
@@ -4389,91 +3726,50 @@ Framework.raise = function (options, cb) {
 			var template = Framework.templates[componentDef.id];
 
 			// If no match for component was found in templates, issue a warning
+			// (unless this is the global app component, in which case it's fine)
+			// if (!template && componentDef.id !== 'App') {
 			if (!template) {
-				return Framework.warn(
-					componentDef.id + ' :: No template found for component!' +
-					'\nTemplates don\'t need a component unless you want interactivity, ' + 
-					'every component *should* have a matching template!!' +
-					'\nUsing components without templates may seem necessary, ' + 
-					'but it\'s not.  It makes your view logic incorporeal, and makes your colleagues ' +
-					'uncomfortable.');
+				return Framework.warn(componentDef.id + ' :: No template found for component!');
 			}
 
 			// Save reference to template in component prototype
-			Framework.verbose(componentDef.id + ' :: Pairing component with template...');
+			Framework.debug(componentDef.id + ' :: Pairing component with template...');
 			componentDef.template = template;
 
-			// Translate right-hand shorthand for top-level keys
-			componentDef = Framework.Util.objMap(
-				componentDef,
-				Framework.Util.translateShorthand
-			);
-
-			// and events object
+			// Translate right-hand shorthand for top-level keys and events object
+			componentDef = objMap(componentDef, translateShorthand);
 			if (componentDef.events) {
-				componentDef.events = Framework.Util.objMap(
-					componentDef.events,
-					Framework.Util.translateShorthand
-				);
+				componentDef.events = objMap(componentDef.events, translateShorthand);
 			}
 
 			// Go ahead and turn the definition into a real component prototype
-			Framework.verbose(componentDef.id + ' :: Building component prototype...');
 			var componentPrototype = Framework.Component.extend(componentDef);
 
 			// Discover subscriptions
 			componentPrototype.prototype.subscriptions = {};
 
 			// Iterate through each property on this component prototype
+			// Add to subscriptions hash if necessary
 			_.each(componentPrototype.prototype, function (handler, key) {
-				
-				
-				// Detect DOM events
-				var matchedDOMEvents = key.match(Framework.Util['/DOMEvent/']);
-				if (matchedDOMEvents) {
-					var eventName = matchedDOMEvents[1];
-					var delegateSelector = matchedDOMEvents[3];
-
-					// Stow them in events hash
-					componentPrototype.prototype.events = componentPrototype.prototype.events || {};
-					componentPrototype.prototype.events[key] = handler;
-				}
-
-				// Add app events (%), routes (#), and comet listeners (~) to subscriptions hash
-				else if (key.match(/^(%|#|~)/)) {
-
+				if (key.match(/^(%|#|~)/)) {
 					if (_.isString(handler)) {
 						throw new Error(componentDef.id + 
-							':: Invalid listener for subscription: ' + key + '.\n' +
-							'Define your callback with an anonymous function instead of a string.'
-						);
+							':: Invalid listener for subscription: ' + key +
+							'. Define your callback with an anonymous function instead of a string.');
 					}
 					if (!_.isFunction(handler)) {
 						throw new Error(componentDef.id + 
 							':: Invalid listener for subscription: ' + key);
 					}
-
 					componentPrototype.prototype.subscriptions[key] = handler;
-
-				}
-
-				// Extend one or more other components
-				else if (key === 'extendComponents') {
+				} else if (key === 'extendComponents') {
 					var objToMerge = {};
-					_.each(handler, function(childId){
-
-						if (!Framework.components[childId]){
-							throw new Error(
-							componentDef.id + ' :: ' + 
-							'Trying to define/extend this component from `' + childId + '`, ' +
-							'but no component with that id can be found.'
-							);
+					_.each(handler, function(componentId){
+						if(!Framework.components[componentId]){
+							throw new Error(componentDef.id + ':: Trying to extend component that hasn\'t been created');
 						}
-
-						_.extend(objToMerge, Framework.components[childId]);
-
+						_.extend(objToMerge, Framework.components[componentId]);
 					});
-
 					_.defaults(componentPrototype.prototype, objToMerge);
 				}
 			});
@@ -4482,8 +3778,6 @@ Framework.raise = function (options, cb) {
 			Framework.components[componentDef.id] = componentPrototype;
 		});
 	}
-
-
 
 	// Load any script tags on the page with type="text/template"
 	function collectTemplates() {
@@ -4504,25 +3798,84 @@ Framework.raise = function (options, cb) {
 		return templates;
 	}
 
-
-
 	// Collect any regions with the default component set from the DOM
 	function collectRegions () {
-
-		// Provide backwards compatibility for old `default` notation
-		$('region[default]').each(function () {
-			var template = $(this).attr('default');
-			$(this).attr('template', template);
-		});
+		var $defaultRegions = $('region[default]');
 
 		// Now instantiate the appropriate default component in each
-		// region with a specified template/component
-		$('region[template]').each(function(i,el) {
-			Framework.Region.fromElement(el);
+		$defaultRegions.each(function(i,el) {
+
+			// Pull id from region
+			var regionId = Framework.Util.el2id(el);
+
+
+			// Build region
+			var region = new Framework.Region({
+				id: regionId,
+				$el: $(el),
+
+				parent: { id: '*' }
+
+				// Use app component as parent if one was specified
+				// parent: Framework.components.App ? new Framework.components.App() : { id: '*' }
+			});
+
+			// Extract default component id
+			var componentId = $(el).attr('default');
+			region.append(componentId);
 		});
+	}
+
+	// Translate right-hand-side shorthand from things like #about_me and %mainMenu:open
+	// to functions that perform the proper behaviors
+	function translateShorthand (value, key) {
+
+		// If this is an important, Framework-specific data key, and a function was specified,
+		// run it to get the value
+		if (_.isFunction(value) && (key === 'collection' || key === 'model')) {
+			return value();
+		}
+
+		// Ignore other non-strings
+		if (!_.isString(value)) return value;
+
+		var matches;
+
+		// Method to redirect user to a client-side URL
+		if ( value.match(/^#/) ) {
+			return function changeUrlFragment () {
+				window.location.hash = value;
+			};
+		}
+		// Method to trigger global event
+		else if ( value.match(/^%/) ) {
+			return function triggerEvent () {
+				Framework.trigger(value);
+			};			
+		}
+		// Method to add the specified class
+		else if ( (matches = value.match(/^\+\s\.*(.+)/)) && matches[1] ) {
+			return function addClass () {
+				this.$el.addClass(matches[1]);
+			};
+		}
+		// Method to remove the specified class
+		else if ( (matches = value.match(/^\-\s*\.(.+)/)) && matches[1] ) {
+			return function removeClass () {
+				this.$el.removeClass(matches[1]);
+			};
+		}
+
+		return value;
+	}
+
+	// Map an object's values, but return a valid object
+	function objMap(obj, transformFn) {
+		return _.object(_.keys(obj), _.map(obj, transformFn));
 	}
 
 
 };
 
+Mast.debug = false;
 

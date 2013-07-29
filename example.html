@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>Mast Example</title>
+	<script type="text/javascript" src="mast.dev.js"></script>
+	<script>Mast.debug = true;Mast.prototyping=true; Mast.raise();</script>
+</head>
+<body>
+
+	<region default="Cat"></region>
+
+	<script data-id="Cat" type="text/template">
+	<div>
+	Meow.
+	<region data-id="whiskers" default="Whisker" count="5"></region>
+	</div>
+	</script>
+
+	<script data-id="Whisker" type="text/template">------</script>
+
+</body>
+</html>

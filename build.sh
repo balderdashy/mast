@@ -2,6 +2,7 @@ rm mast.dev.js
 touch mast.dev.js
 
 # Core dependencies
+## (this part should be disabled eventually for cleaner distribution)
 cat "lib/deps/$.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/deps/_.js" >> mast.dev.js
@@ -12,7 +13,9 @@ cat "lib/deps/async.js" >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Core
-cat "lib/mast.js" >> mast.dev.js
+cat "lib/Framework.js" >> mast.dev.js
+echo '' >> mast.dev.js
+cat "lib/Logger.js" >> mast.dev.js
 echo '' >> mast.dev.js
 cat "lib/Util.js" >> mast.dev.js
 echo '' >> mast.dev.js
@@ -36,9 +39,9 @@ cat "lib/raise.js" >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Disable debug mode
-echo 'Mast.debug = false;' >> mast.dev.js
+# echo 'Mast.debug = false;' >> mast.dev.js
 echo '' >> mast.dev.js
 
 # Copy into example
-cp mast.dev.js example/assets/mast.dev.js
+#cp mast.dev.js example/assets/mast.dev.js
 
