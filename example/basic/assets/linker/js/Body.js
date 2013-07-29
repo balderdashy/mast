@@ -49,14 +49,13 @@ Mast.define('Body', function () {
 		afterChange: {
 			pageIndex: function (newVal) {
 				var page = this.model.get('pages')[newVal];
-				console.log('pageIndex :: ', newVal);
-				console.log('page :: ', page);
 				this.content.attach(page);
 			}
 		},
 
 		model: function () {
 			return new Mast.Model({
+				pageIndex: 0,
 				pages: [
 					'Project_1',
 					'Project_2',
