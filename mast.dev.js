@@ -2740,17 +2740,23 @@ Framework.Util = {
 	 *
 	 * otherwise
 	 * @returns {Object} {
-	 *		event		: name of DOM event
+	 *		name		: name of DOM event
 	 *		selector	: optionally, DOM selector(s) for delegation, or `undefined`
 	 *	}
 	 */
 
-	isDOMEvent: function (key) {
-		var matches = key.match(Framework.Util['/DOMEvent']);
-		return matches && matches[1] ? {
-			event		: matches[1],
+	parseDOMEvent: function (key) {
+
+		var matches = key.match(Framework.Util['/DOMEvent/']);
+		
+		if (!matches || !matches[1]) {
+			return false;
+		}
+
+		return {
+			name		: matches[1],
 			selector	: matches[3]
-		} : false;
+		};
 	},
 
 
@@ -3230,22 +3236,55 @@ Framework.Component.prototype.render = function (atIndex) {
 		self.afterRender();
 
 
-		// TODO:
-		//		Automatically disable user text selection when a click/touch event is bound
-		//		(even for delegated event bindings.)
+		
+		// Automatically disable user text selection when a click/touch event is bound
+		// (even for delegated event bindings.)
 		//
-		//		This is ignored if `disableUserSelect` is `false`
+		// This is ignored if `disableUserSelect` is `false`
 		if (self.disableUserSelect !== false) {
 
+			// `interactions` is the list of events where user text selection
+			// is disabled by default
+			var noSelectInteractions = ['click', 'touch', 'touchstart', 'touchend'];
+
+			_.each(self.events, function (handler, eventKey) {
+				
+				var event = Framework.Util.parseDOMEvent(eventKey);
+				
+				if ( _.contains(noSelectInteractions, event.name) ) {
+					
+					var $elements;
+
+					// Use delegate selectors if specified
+					if (event.selector) {
+						$elements = self.$(event.selector);
+					}
+
+					// Otherwise, grab the element for this component
+					else $elements = self.$el;
+
+					// Disable selection
+					$elements.css({
+						'-webkit-touch-callout': 'none',
+						'-webkit-user-select': 'none',
+						'-khtml-user-select': 'none',
+						'-moz-user-select': 'moz-none',
+						'-ms-user-select': 'none',
+						'user-select': 'none'
+					});
+
+					// For reference, the CSS syntax is:
+					//	-webkit-touch-callout: none;
+					//	-webkit-user-select: none;
+					//	-khtml-user-select: none;
+					//	-moz-user-select: moz-none;
+					//	-ms-user-select: none;
+					//	user-select: none;
+					
+				}
+
+			});
 			
-			// For reference, the CSS syntax is:
-			//
-			//	-webkit-touch-callout: none;
-			//	-webkit-user-select: none;
-			//	-khtml-user-select: none;
-			//	-moz-user-select: moz-none;
-			//	-ms-user-select: none;
-			//	user-select: none;
 		}
 	});
 
