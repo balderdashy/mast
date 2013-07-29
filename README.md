@@ -76,17 +76,11 @@ Add the `mast.dev.js` file to your project and make sure you link to it before y
 <!--SCRIPTS END-->
 ```
 
-###2. Modify JST templates and raise Mast 
-Paste this script into the body of your page:
+###2. Raise Mast 
+Paste this after your script tags:
 
 ```html
 <script type="text/javascript">
-	 // Modify JST templates to eliminate the nasty parts of the file path
-    _.each(JST, function (fn, path) {
-      var id = path.match(/\/([^\/]+)\..+$/)[1];
-      Mast.templates[id] = fn;
-    });
-
     Mast.raise();
 </script>
 ```
@@ -112,7 +106,18 @@ The template is the region's content. You can create a template for your region 
 The `data-id` should be the same as `template` for the region.
 
 >####In a Sails app:
->You don't need to wrap templates in script tags -- just put the region's content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`.)
+>To make things easier, you can set up your Sails app so that you don't have to wrap your templates in `<script>` tags.
+>In `assets/index.html`, paste the following after `<!--SCRIPTS END-->` and before `Mast.raise();`:
+```html
+<script type="text/javascript">
+	 // Modify JST templates to eliminate the nasty parts of the file path
+    _.each(JST, function (fn, path) {
+      var id = path.match(/\/([^\/]+)\..+$/)[1];
+      Mast.templates[id] = fn;
+    });
+</script>
+```
+>Now, you just put your content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`.)
 
 
 <!--
