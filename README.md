@@ -61,21 +61,22 @@
 
 
 
-##Getting Started with Mast
+#Getting Started with Mast
 >As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to be using Sails in order to use Mast.
 
-###Setting up Mast
-####1. Get Mast
+##Setting up Mast
+###1. Get Mast
 Add the `mast.dev.js` file to your project and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
 
->If you're in a Sails app, save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
+>####In a Sails app:
+>Save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
 ```
 <!--SCRIPTS-->
 <script src="/linker/js/mast.dev.js"></script>
 <!--SCRIPTS END-->
 ```
 
-####2. Modify JST templates and raise Mast 
+###2. Modify JST templates and raise Mast 
 Paste this script into the body of your page:
 
 ```html
@@ -89,33 +90,29 @@ Paste this script into the body of your page:
     Mast.raise();
 </script>
 ```
+>####In a Sails app:
+>You can paste this into the `assets/index.html` file after `<!--SCRIPTS END-->`.
 
->In Sails, you can paste this into `assets/index.html` after:
-```
-<!--SCRIPTS-->
-<script src="/linker/js/mast.dev.js"></script>
-<!--SCRIPTS END-->
-```
+##Regions
+Regions are similar to view partials, in the sense that they contain a just a section of what you see in the browser. Regions are usually used for the parts of an application that will be changed out. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching a region's `template`, you can easily work on whichever part of the application you need to. Regions can contain other regions, so you can get as in-depth as you want.
 
-###Regions
-Regions are similar to view partials. The regions contain the parts of your application that can be changed out, and a region can contain other regions. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching the `template` of a region, you can easily work on whichever part of the application you need to.
-
-To insert a region, you add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be the contents of the region. It will look something like this: 
+To insert a region, add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be the contents of the region. It will look something like this: 
 ```
 <region template="PonyPartyRegion"></region>
 ```
 
 
-###Templates
-Templates are the contents of a region. You can create a template using a `<script>` tag that looks like this:
+##Templates
+Templates are the regions' contents. You can create a template for your region using a `<script>` tag that looks like this:
 ```html
 <script data-id="PonyPartyRegion" type="text/template">
   Stuff inside of the region
 </script>
 ```
-The `data-id` should be the same as the `template` of the region.
+The `data-id` should be the same as `template` for the region.
 
->In Sails apps, you don't need to link up templates using script tags -- you just put the region's content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`)
+>####In a Sails app:
+>You don't need to wrap templates in script tags -- just put the region's content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`.)
 
 
 <!--
