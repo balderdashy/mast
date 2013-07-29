@@ -103,7 +103,7 @@ To insert a region, add a `<region>` tag that specifies the name of the template
 
 
 ##Templates
-Templates are the regions' contents. You can create a template for your region using a `<script>` tag that looks like this:
+The template is the region's content. You can create a template for your region using a `<script>` tag that looks like this:
 ```html
 <script data-id="PonyPartyRegion" type="text/template">
   Stuff inside of the region
