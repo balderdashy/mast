@@ -290,13 +290,62 @@ Mast.define('Body', function() {
 });
 ```
 
-To navigate to the News section, for example, you can now use `<a href="#news">News</a>`. Easy!
+To navigate to the News section, for example, you can now use `<a href="#news">News</a>`.
 
 
 ###Adding/Removing Classes
-Mast has some simple shorthand for adding, removing, and toggling classes. We find this handy for prototyping, because we can have our error, loading, and success states in CSS classes and just add and remove them.
+Mast has some simple shorthand for adding, removing, and toggling classes on jQuery events. Here's an example of how that works:
 
+Let's go back to Example 2, where we implemented a list of emails. What if, when the user clicks on an email, you want to make it look different to show that it's been selected? Then, if they click it again, you want it to go back to normal.
 
+You could do that in regular jQuery, but Mast speeds up the process: 
+
+Once you've styled up the `.selected` class for your email div, create your component:
+```javascript
+Mast.define('Email', function() {
+  return {
+
+  };
+});
+```
+Then add your `events`:
+```javascript
+Mast.define('Email', function() {
+  return {
+    events : {
+      // jQuery events go here
+
+    }
+  };
+});
+```
+
+The events can be any [jQuery events](http://api.jquery.com/category/events/). In this case, we'll use a `.click()` event.
+
+In Mast, we lay out events similarly to how we set up the navigation. First, you include a string that has the name of the event, followed by the name of the element that triggers the event. In this case, it would be `'click div'`. Then `:`, and then a string that tells it what to do. The shorthand to toggle a class is `!`, so we would put `'! .selected'`.
+
+Altogether, it looks like:
+```javascript
+Mast.define('Email', function() {
+  return {
+    events : {
+
+      // Toggle .selected class when the email div is clicked
+      'click div'	: '! .selected'
+
+    }
+  };
+});
+```
+
+####Here is a list of the different shorthand you can use:
+| Secret Code      | Action |
+|----------------|-----------|
+| `'+ .class-name'` | Add class |
+| `'- .class-name'` | Remove class|
+| `'! .class-name'` | Toggle class|
+| `'!!! message'`  | Alert |
+| `'>>> message'`  | Log a message to the console |
 
 
 ## Getting rid of those ugly `<script>` tags
