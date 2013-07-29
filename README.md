@@ -286,15 +286,15 @@ This flexibility is crucial so that, regardless how the project is set up, you c
 
 If you're already using Sails on the backend, here is a quick way to get started with some fancier template loading:
 
-1. Save the `mast.dev.js` file in `assets/linker/js`
-2. In `assets/index.html`, link to the Mast file after `<!--SCRIPTS-->`:
+Step 1: Save the `mast.dev.js` file in `assets/linker/js`
+Step 2: In `assets/index.html`, link to the Mast file after `<!--SCRIPTS-->`:
 
 ```html
 <!--SCRIPTS-->
 <script src="/linker/js/mast.dev.js"></script>
 <!--SCRIPTS END-->
 ```
-3. Also in `assets/index.html`, paste the following after `<!--SCRIPTS END-->`:
+Step 3: Also in `assets/index.html`, paste the following after `<!--SCRIPTS END-->`:
 ```html
 <script type="text/javascript">
 	 // Modify JST templates to eliminate the nasty parts of the file path
