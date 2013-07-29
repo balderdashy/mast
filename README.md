@@ -62,30 +62,20 @@
 
 
 #Getting Started with Mast
->As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to be using Sails in order to use Mast.
+>As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use Mast.
 
 ##Setting up Mast
-###1. Get Mast
-Add the `mast.dev.js` file to your project and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
-
->####In a Sails app:
->Save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
-```html
-<!--SCRIPTS-->
-<script src="/linker/js/mast.dev.js"></script>
-<!--SCRIPTS END-->
-```
+###1. Grab the Mast file
+Add the `mast.dev.js` file to your project, and make sure you link to it before you link to any of your components. This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
 
 ###2. Raise Mast 
-Paste this after your script tags:
+Paste this in the head of your document after your scripts:
 
 ```html
 <script type="text/javascript">
     Mast.raise();
 </script>
 ```
->####In a Sails app:
->You can paste this into the `assets/index.html` file after `<!--SCRIPTS END-->`.
 
 ##Regions
 Regions are similar to view partials, in the sense that they contain a just a section of what you see in the browser. Regions are usually used for the parts of an application that will be changed out. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching a region's `template`, you can easily work on whichever part of the application you need to. Regions can contain other regions, so you can get as in-depth as you want.
@@ -97,17 +87,26 @@ To insert a region, add a `<region>` tag that specifies the name of the template
 
 
 ##Templates
-The template is the region's content. You can create a template for your region using a `<script>` tag that looks like this:
+The template is the region's content. You can create a template for your region using a `<script>` tag with a `data-id` that matches the region's `template`. It should look something like this:
 ```html
 <script data-id="PonyPartyRegion" type="text/template">
   Stuff inside of the region
 </script>
 ```
-The `data-id` should be the same as `template` for the region.
 
->####In a Sails app:
->To make things easier, you can set up your Sails app so that you don't have to wrap your templates in `<script>` tags.
->In `assets/index.html`, paste the following after `<!--SCRIPTS END-->` and before `Mast.raise();`:
+
+##Mast in a Sails.js App
+Here is a quick way to get started if you're already using Sails:
+
+1. Save the `mast.dev.js` file in `assets/linker/js`
+2. Go to `assets/index.html` and  link to the Mast file after `<!--SCRIPTS-->`:
+```html
+<!--SCRIPTS-->
+<script src="/linker/js/mast.dev.js"></script>
+<!--SCRIPTS END-->
+```
+
+3. Instead of putting the `Mast.raise();` script in the head, go to `assets/index.html` and paste the following after `<!--SCRIPTS END-->`:
 ```html
 <script type="text/javascript">
 	 // Modify JST templates to eliminate the nasty parts of the file path
@@ -115,9 +114,13 @@ The `data-id` should be the same as `template` for the region.
       var id = path.match(/\/([^\/]+)\..+$/)[1];
       Mast.templates[id] = fn;
     });
-</script>
+
+    Mast.raise();
+ </script>
 ```
->Now, you just put your content into a file in `linker/templates`. As long as the file's name is the same as the specified `template`, it will work. (So in this case, you would make a file called `PonyPartyRegion.html`.)
+This raises mast, and also sets up your templates so that you don't need to wrap them in `<script>` tags.
+
+4. You create regions the same way as before, but the templates are a bit easier to set up. To create a template, just create a file in `linker/templates` that has the same name as your region's `template` (e.g. `PonyPartyRegion.html`).
 
 
 <!--
