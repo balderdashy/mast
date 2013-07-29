@@ -2743,9 +2743,11 @@ Framework.Util = {
 	 *		name		: name of DOM event
 	 *		selector	: optionally, DOM selector(s) for delegation, or `undefined`
 	 *	}
+	 *
+	 * NOTE: this function is cached using _.memoize
 	 */
 
-	parseDOMEvent: function (key) {
+	parseDOMEvent: _.memoize(function (key) {
 
 		var matches = key.match(Framework.Util['/DOMEvent/']);
 		
@@ -2757,7 +2759,7 @@ Framework.Util = {
 			name		: matches[1],
 			selector	: matches[3]
 		};
-	},
+	}),
 
 
 
@@ -3247,43 +3249,46 @@ Framework.Component.prototype.render = function (atIndex) {
 			// is disabled by default
 			var noSelectInteractions = ['click', 'touch', 'touchstart', 'touchend'];
 
-			_.each(self.events, function (handler, eventKey) {
-				
+			// Build subset of just the click/touch event keys
+			var eventKeys = _.keys(self.events || {});
+			var noSelectEventKeys = _.filter(eventKeys, function (eventKey) {
 				var event = Framework.Util.parseDOMEvent(eventKey);
-				
-				if ( _.contains(noSelectInteractions, event.name) ) {
-					
-					var $elements;
-
-					// Use delegate selectors if specified
-					if (event.selector) {
-						$elements = self.$(event.selector);
-					}
-
-					// Otherwise, grab the element for this component
-					else $elements = self.$el;
-
-					// Disable selection
-					$elements.css({
-						'-webkit-touch-callout': 'none',
-						'-webkit-user-select': 'none',
-						'-khtml-user-select': 'none',
-						'-moz-user-select': 'moz-none',
-						'-ms-user-select': 'none',
-						'user-select': 'none'
-					});
-
-					// For reference, the CSS syntax is:
-					//	-webkit-touch-callout: none;
-					//	-webkit-user-select: none;
-					//	-khtml-user-select: none;
-					//	-moz-user-select: moz-none;
-					//	-ms-user-select: none;
-					//	user-select: none;
-					
-				}
-
+				return _.contains(noSelectInteractions, event.name);
 			});
+
+			// Iteratively build a set of affected elements
+			var $affected = $();
+			_.each(noSelectEventKeys, function (eventKey) {
+
+				// Determine matched elements
+				// Use delegate selector if specified
+				// Otherwise, grab the element for this component
+				var event = Framework.Util.parseDOMEvent(eventKey);
+				var $matched =	event.selector ? 
+								self.$(event.selector) :
+								self.$el;
+
+				// Add matched elements to set
+				$affected = $affected.add( $matched );
+			});
+
+
+			// Disable user text selection on the elements
+			$affected.css({
+				'-webkit-touch-callout': 'none',
+				'-webkit-user-select': 'none',
+				'-khtml-user-select': 'none',
+				'-moz-user-select': 'moz-none',
+				'-ms-user-select': 'none',
+				'user-select': 'none'
+			});
+
+			Framework.verbose(
+				self.id + ' :: ' +
+				'Disabled user text selection on elements w/ click/touch events:',
+				noSelectEventKeys,
+				$affected
+			);
 			
 		}
 	});
