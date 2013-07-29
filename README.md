@@ -70,7 +70,7 @@ Add the `mast.dev.js` file to your project and make sure you link to it before y
 
 >####In a Sails app:
 >Save `mast.dev.js` in `linker/js`. Then in `assets/index.html` you can link to it in the `<!--SCRIPTS-->` section like this:
-```
+```html
 <!--SCRIPTS-->
 <script src="/linker/js/mast.dev.js"></script>
 <!--SCRIPTS END-->
@@ -97,7 +97,7 @@ Paste this script into the body of your page:
 Regions are similar to view partials, in the sense that they contain a just a section of what you see in the browser. Regions are usually used for the parts of an application that will be changed out. This makes Mast especially good for putting together single-page apps, and allows you to do so using only HTML/CSS; just by switching a region's `template`, you can easily work on whichever part of the application you need to. Regions can contain other regions, so you can get as in-depth as you want.
 
 To insert a region, add a `<region>` tag that specifies the name of the template you'll use. Then, the contents of that template will be the contents of the region. It will look something like this: 
-```
+```html
 <region template="PonyPartyRegion"></region>
 ```
 
