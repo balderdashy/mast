@@ -224,9 +224,9 @@ So I think we should be feeling pretty good, since we've implemented all of the 
 
 Let's say we're still working on the single-page website from before. It's an event photographer's website, and one of the navigation items now goes to a "Portfolio" section. Maybe you already have a contact form in the "Home" section, but you realize that visitors should also have quick access to it while they're mesmerized by the pretty pictures.
 
-You don't need to copy/paste the form code into the "Portfolio" section; just stick the code into a new template, and add contact form regions to the places where you want it to be.
+You don't need to copy/paste the form code into the "Portfolio" section; just stick the code into a new template, and add regions to the places where you want it to be.
 
-So your "Home" template might look like this:
+So your "Home" template now looks like this:
 ```html
 <script data-id="Home" type="text/template">
   <h1>Home Page Stuff</h1>
