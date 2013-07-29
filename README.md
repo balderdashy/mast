@@ -322,7 +322,7 @@ Mast.define('Email', function() {
 
 The events can be any [jQuery events](http://api.jquery.com/category/events/). In this case, we'll use a `.click()` event.
 
-In Mast, we lay out events similarly to how we set up the navigation. First, you include a string that has the name of the event, followed by the name of the element that triggers the event. In this case, it would be `'click div'`. Then `:`, and then a string that tells it what to do. The shorthand to toggle a class is `!`, so we would put `'! .selected'`.
+In Mast, we lay out events similarly to how we set up the navigation before. First, you include a string that has the name of the event, followed by the name of the element that triggers the event. In this case, it would be `'click div'`. Then `:`, and then a string that tells it what to do. The shorthand to toggle a class is `!`, so we would put `'! .selected'`.
 
 Altogether, it looks like:
 ```javascript
