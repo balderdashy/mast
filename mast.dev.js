@@ -3362,7 +3362,7 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		// Insert the element at the proper place amongst the outlet's children
 		var neighbors = self.$outlet.children();
-		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length >= atIndex) {
+		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length > atIndex) {
 			neighbors.eq(atIndex).before(self.$el);
 		}
 
@@ -4076,7 +4076,7 @@ Framework.Region.prototype.append = function (componentId, properties) {
 
 Framework.Region.prototype.attach = function (component, properties) {
 	this.empty();
-	this.append(component, properties);
+	return this.append(component, properties);
 };
 
 
