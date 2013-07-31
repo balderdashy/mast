@@ -3982,8 +3982,6 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 			});
 		}
 
-		_.bindAll(componentPrototype);
-
 		// Instantiate and render the component inside this region
 		component = new componentPrototype(_.extend({
 			$outlet: this.$el
@@ -3996,6 +3994,8 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 		component = componentId;
 		component.$outlet = this.$el;
 	}
+
+	_.bindAll(component);
 
 	component.render( atIndex );
 
