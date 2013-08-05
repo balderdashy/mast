@@ -2595,18 +2595,18 @@ function Logger (Framework) {
 		case 'debug':	Framework.verbose = noop;
 						break;
 
-		case 'warn':	Framework.verbose = Framework.log = noop;
+		case 'warn':	Framework.verbose = Framework.log = Framework.debug = noop;
 						break;
 
-		case 'error':	Framework.verbose = Framework.log = 
+		case 'error':	Framework.verbose = Framework.log = Framework.debug =
 						Framework.warn = noop;
 						break;
 
-		case 'silent':	Framework.verbose = Framework.log = 
+		case 'silent':	Framework.verbose = Framework.log = Framework.debug =
 						Framework.warn = Framework.error = noop;
 						break;
 
-		default:		throw new Error ('Unrecognized logging level config ' + 
+		default:		throw new Error ('Unrecognized logging level config ' +
 						'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
 
 	}
@@ -3995,8 +3995,6 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 		component.$outlet = this.$el;
 	}
 
-	_.bindAll(component);
-
 	component.render( atIndex );
 
 	// And keep track of it in the list of this region's children
@@ -4546,5 +4544,3 @@ Framework.raise = function (options, cb) {
 
 
 };
-
-
