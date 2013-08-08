@@ -380,7 +380,7 @@ If you're already using Sails on the backend, here is a quick way to get started
 
 + Save the `mast.dev.js` file in `assets/linker/js`
 
-+ In `assets/index.html` paste the following after `<!--SCRIPTS END-->`:
++ In `views/layout.ejs` paste the following after `<!--SCRIPTS END-->`:
 ```html
 <script type="text/javascript">
 	 // Modify JST templates to eliminate the nasty parts of the file path
