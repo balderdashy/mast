@@ -359,7 +359,6 @@ You can hook these templates up to Mast in one of two ways:
 ```javascript
 Mast.templates.header = '<header>The header</header>';
 Mast.templates.footer = '<footer>The footer</footer>';
-});
 ```
 
 + Pass in a collection of templates when you call `Mast.raise()`, e.g.:
