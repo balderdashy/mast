@@ -4368,7 +4368,7 @@ Framework.raise = function (options, cb) {
 
 		// Bind global DOM events as Framework events
 		// (e.g. %window:resize)
-		var triggerResizeEvent = _.throttle(function () {
+		var triggerResizeEvent = _.debounce(function () {
 			Framework.trigger('%window:resize');
 		}, options.throttleWindowResize || 0);
 		$(window).resize(triggerResizeEvent);
