@@ -3328,6 +3328,13 @@ Framework.Component.prototype.render = function (atIndex) {
 		html = html.replace(/\s*$/, '');
 		html = html.replace(/(\r|\n)*/, '');
 
+		// Strip HTML comments, then strip whitespace again
+		// (TODO: optimize this)
+		html = html.replace(/(<!--.+-->)*/, '');
+		html = html.replace(/^\s*/, '');
+		html = html.replace(/\s*$/, '');
+		html = html.replace(/(\r|\n)*/, '');
+
 		// Parse a DOM node or series of DOM nodes from the newly templated HTML
 		var parsedNodes = $.parseHTML(html);
 		var el = parsedNodes[0];
@@ -4357,6 +4364,13 @@ Framework.raise = function (options, cb) {
 		// (and append default templates)
 		collectRegions();
 
+
+		// Bind global DOM events as Framework events
+		// (e.g. %window:resize)
+		$(window).resize(function () {
+			Framework.trigger('%window:resize');
+		});
+		// TODO: add more events and extrapolate this logic to a separate module
 
 
 		// Do the initial routing sequence
