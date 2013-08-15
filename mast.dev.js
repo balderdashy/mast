@@ -4285,6 +4285,7 @@ Framework.raise = function (options, cb) {
 
 	// Apply defaults
 	_.defaults({
+		throttleWindowResize: 200,
 		logLevel: 'debug',
 		logger: undefined,
 		production: false
@@ -4367,9 +4368,10 @@ Framework.raise = function (options, cb) {
 
 		// Bind global DOM events as Framework events
 		// (e.g. %window:resize)
-		$(window).resize(function () {
+		var triggerResizeEvent = _.throttle(function () {
 			Framework.trigger('%window:resize');
-		});
+		}, options.throttleWindowResize || 0);
+		$(window).resize(triggerResizeEvent);
 		// TODO: add more events and extrapolate this logic to a separate module
 
 
