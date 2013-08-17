@@ -3407,12 +3407,12 @@ Framework.Component.prototype.render = function (atIndex) {
 			});
 
 
-			Framework.verbose(
-				self.id + ' :: ' +
-				'Disabled user text selection on elements w/ click/touch events:',
-				clickOrTouchEvents,
-				$affected
-			);			
+			// Framework.verbose(
+			// 	self.id + ' :: ' +
+			// 	'Disabled user text selection on elements w/ click/touch events:',
+			// 	clickOrTouchEvents,
+			// 	$affected
+			// );			
 		}
 	});
 
