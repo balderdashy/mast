@@ -2,24 +2,17 @@
 <html>
 	<head>
 		<title>Framework Example</title>
-
 		<!-- Viewport mobile tag for sensible mobile support -->
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-		
-		<!--  
-			Stylesheets
-			==============================
-
-			You know the drill- just some stylesheets
-		-->
+		<!-- You know the drill- just some stylesheets -->
 		<link href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
-		<link rel="stylesheet" href="linker/styles/layout.css">
-
-		
+		<link rel="stylesheet" href="styles/layout.css">
 	</head>
-
 	<body>
+
+
+
+
 
 		<!--
 			Main content region
@@ -29,6 +22,11 @@
 			to the `Body` template directly in the HTML
 		-->
 		<region template="Body"></region>
+
+		
+
+
+
 
 
 
@@ -52,7 +50,7 @@
 		-->
 		<script data-id="Body" type="text/template">
 			<div>
-				<h1>Mast Example</h1>
+				<h1>Framework Example</h1>
 				<ul>
 					<li destination="#home">Home</li>
 					<li destination="#about">About</li>
@@ -88,13 +86,23 @@
 		</script>
 
 
+
+
+
+
+
 		<!--
 			JS Dependencies
 			========================
 			
 			Get the framework itself, plus any other JavaScript dependencies
 		-->
-		<script src="linker/js/mast.dev.js"></script>
+		<script src="dependencies/framework.dev.js"></script>
+
+
+
+
+
 
 
 		<!--
@@ -110,10 +118,15 @@
 				+ DOM events on the template element or its descendants ( e.g. 'click .button' )
 				+ the `hashchange` event; i.e. changes to the hash/fragment in the URL ( e.g. '#about_us' )
 		-->
-		<script src="linker/js/Body.js"></script>
-		<script src="linker/js/Breed.js"></script>
-		<script src="linker/js/Dog.js"></script>
+		<script src="components/Body.js"></script>
+		<script src="components/Breed.js"></script>
+		<script src="components/Dog.js"></script>
 		
+
+
+
+
+
 
 
 
@@ -135,6 +148,5 @@
 			// Start framework
 			Mast.raise();
 		</script>
-
 	</body>
 </html>
