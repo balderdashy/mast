@@ -9266,8 +9266,9 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		
 		// Apply UI tweaks to component
-		// (disable with `this.tweaks = false`)
-		if ( self.tweaks !== false ) {
+		// -> disable for this component with `this.tweaks = false`
+		// -> or globally with `Framework.tweaks = false`
+		if ( self.tweaks !== false && Framework.tweaks !== false ) {
 			Framework.Util.DOM.tweakComponent(self);
 		}
 	});
