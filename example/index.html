@@ -2,11 +2,8 @@
 <html>
 	<head>
 		<title>Framework Example</title>
-		<!-- Viewport mobile tag for sensible mobile support -->
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<!-- You know the drill- just some stylesheets -->
-		<link href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
 		<link rel="stylesheet" href="styles/layout.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	</head>
 	<body>
 
@@ -119,7 +116,6 @@
 				+ the `hashchange` event; i.e. changes to the hash/fragment in the URL ( e.g. '#about_us' )
 		-->
 		<script src="components/Body.js"></script>
-		<script src="components/Breed.js"></script>
 		<script src="components/Dog.js"></script>
 		
 
@@ -143,10 +139,10 @@
 		-->
 		<script>
 			// Set the log level to `debug` so we can see what's going on
-			Mast.logLevel = 'debug';
+			FRAMEWORK.logLevel = 'debug';
 
 			// Start framework
-			Mast.raise();
+			FRAMEWORK.raise();
 		</script>
 	</body>
 </html>

@@ -1,4 +1,4 @@
-Mast.define('Body', function () {
+FRAMEWORK.define('Body', function () {
 	return {
 
 		// Trigger the %test subscription whenever a <h1>
@@ -54,7 +54,7 @@ Mast.define('Body', function () {
 		},
 
 		model: function () {
-			return new Mast.Model({
+			return new FRAMEWORK.Model({
 				pageIndex: 0,
 				pages: [
 					'Project_1',
