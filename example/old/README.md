@@ -1,2 +1,0 @@
-# example
-### a Sails application
