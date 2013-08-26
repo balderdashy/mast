@@ -1,8 +1,6 @@
 module.exports = function(grunt) {
 
-	'use strict';
-
-	// Order of the source files that we want to concat
+	// Order of the source files that we want to concatenate
 	var srcFiles = [
 		// Dependencies
 		'lib/deps/$.js',
@@ -25,6 +23,8 @@ module.exports = function(grunt) {
 		'lib/raise.js'
 	];
 
+
+	// Man they should totally make this stuff more declarative
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
@@ -47,10 +47,11 @@ module.exports = function(grunt) {
 		}
 	});
 
+	// I really just don't get it...
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
-
+	// It's so close!
 	grunt.registerTask('default', [
 		'build:dev',
 		'build:production'
