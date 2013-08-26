@@ -8948,6 +8948,45 @@ Framework.Util.Events = {
 Framework.Util.DOM = {
 
 
+
+	/**
+	 * Apply a few choice DOM modifications out the gate
+	 * These tweaks target common issues that typically get forgotten.
+	 * If `this.tweaks` is set to `false`, these augmentations will be disabled.
+	 *
+	 * @param {Component} component
+	 */
+
+	tweakComponent: function ( component ) {
+
+		// Build subset of just the click/touch events
+		var clickOrTouchEvents = Framework.Util.Events.parse(
+			component.events,
+			{ only: ['click', 'touch', 'touchstart', 'touchend'] }
+		);
+
+		// If no click/touch events found, bail out
+		if ( clickOrTouchEvents.length < 1 ) return;
+			
+		// Query affected elements from DOM
+		var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, component);
+
+		// Automatically disable user text selection when a click/touch event is bound
+		// (even for delegated event bindings.)
+		Framework.Util.DOM.disableTextSelection($affected);
+
+		// Assign a hand cursor
+		Framework.Util.DOM.useHandCursor($affected);
+
+		Framework.verbose(
+			component.id + ' :: ' +
+			'Disabled user text selection on elements w/ click/touch events:',
+			clickOrTouchEvents,
+			$affected
+		);
+	},
+
+
 	/**
 	 * Modify a set of jQuery matched elements
 	 * to disable text selection using standards CSS
@@ -8960,7 +8999,7 @@ Framework.Util.DOM = {
 	 */
 
 	disableTextSelection: function ($elements) {
-		$elements.css({
+		return $elements.css({
 			'-webkit-touch-callout': 'none',
 			'-webkit-user-select': 'none',
 			'-khtml-user-select': 'none',
@@ -8968,7 +9007,23 @@ Framework.Util.DOM = {
 			'-ms-user-select': 'none',
 			'user-select': 'none'
 		});
-		return $elements;
+	},
+
+
+	/**
+	 * Set `cursor: pointer`
+	 *
+	 * @param {Array} $elements
+	 *		Set of jQuery DOM elements
+	 *
+	 * @returns $elements
+	 */
+
+	useHandCursor: function ($elements) {
+		// TODO: make sure IE8 and early firefox play nice with cursor:pointer
+		return $elements.css({
+			cursor: 'pointer'
+		});
 	}
 
 };
@@ -9210,36 +9265,10 @@ Framework.Component.prototype.render = function (atIndex) {
 		self.afterRender();
 
 		
-		// Automatically disable user text selection when a click/touch event is bound
-		// (even for delegated event bindings.)
-		//
-		// This is ignored if `disableUserSelect` is `false`
-		if (self.disableUserSelect !== false) {
-
-
-			// Build subset of just the click/touch events
-			var clickOrTouchEvents = Framework.Util.Events.parse(
-				self.events,
-				{ only: ['click', 'touch', 'touchstart', 'touchend'] }
-			);
-
-			// If no click/touch events found, bail out
-			if ( clickOrTouchEvents.length < 1 ) return;
-				
-			// Lookup affected elements
-			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, self);
-
-			// Disable user text selection on the elements
-			Framework.Util.DOM.disableTextSelection($affected);
-
-			Framework.verbose(
-				self.id + ' :: ' +
-				'Disabled user text selection on elements w/ click/touch events:',
-				clickOrTouchEvents,
-				$affected
-			);
-
-			
+		// Apply UI tweaks to component
+		// (disable with `this.tweaks = false`)
+		if ( self.tweaks !== false ) {
+			Framework.Util.DOM.tweakComponent(self);
 		}
 	});
 

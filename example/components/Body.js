@@ -10,9 +10,7 @@ FRAMEWORK.define('Body', function () {
 
 		// if anywhere ELSE inside this component's $el is clicked,
 		// log a note to the console
-		'click'		: '>>> Note: The click event of the Body component fired.',
-
-
+		// 'click'		: '>>> Note: The click event of the Body component fired.',
 
 		// When %test subscription is triggered,
 		'%test'		: '!!! You fired the %test trigger!',
@@ -31,6 +29,12 @@ FRAMEWORK.define('Body', function () {
 
 		// Redirect empty URL to '#home' handler (changes URL)
 		'#'			: '#home',
+
+
+		// If `tweaks` is set to false, automatic UI enhancements will be disabled 
+		// for this component ( e.g. automatically setting `cursor:pointer` 
+		// and disabling text selection on elements which have click/touch events)
+		// tweaks: false,
 
 
 		// Increment/decrement % 5
