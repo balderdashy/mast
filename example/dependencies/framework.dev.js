@@ -8866,6 +8866,7 @@ Framework.Util.Events = {
 	 * @param {Object} options
 	 *	{
 	 *		only: return the events explicitly laid out in this list
+	 *				(if `only` is omitted, all events will be returned)
 	 *	}
 	 *
 	 * @returns list of matching event keys
@@ -9222,6 +9223,9 @@ Framework.Component.prototype.render = function (atIndex) {
 				{ only: ['click', 'touch', 'touchstart', 'touchend'] }
 			);
 
+			// If no click/touch events found, bail out
+			if ( clickOrTouchEvents.length < 1 ) return;
+				
 			// Lookup affected elements
 			var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, self);
 
@@ -9234,6 +9238,8 @@ Framework.Component.prototype.render = function (atIndex) {
 				clickOrTouchEvents,
 				$affected
 			);
+
+			
 		}
 	});
 
