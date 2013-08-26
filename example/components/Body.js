@@ -33,10 +33,6 @@ FRAMEWORK.define('Body', function () {
 		'#'			: '#home',
 
 
-
-		// TODO
-		////////////////////////////////////////////
-
 		// Increment/decrement % 5
 		'click .next-page': function () {
 			var newVal = this.model.get('pageIndex');
