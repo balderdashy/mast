@@ -43,12 +43,48 @@
 			Each template HTML file corresponds to a specific UI component, which is then rendered
 			by the framework.
 
-			In this case, we're using JST to precompile our templates into JavaScript functions.
-			This not only makes them render faster, but also allows us to fetch them using a simple 
-			script tag, which is perfect for the purposes of our demo.
+			In this case, we're including the templates inline using special script tags.
+			This is perfect for the purposes of our demo, since it keeps things simple.
+			In a production setting, or with a distributed team, you'll want to use standard
+			best practices for loading client-side templates
+			( e.g. precompile w/ Grunt or use RequireJS )
 		-->
-		<script type="text/javascript" src="jst.js"></script>
+		<script data-id="Body" type="text/template">
+			<div>
+				<h1>Mast Example</h1>
+				<ul>
+					<li destination="#home">Home</li>
+					<li destination="#about">About</li>
+				</ul>
+				<region data-id="content"></region>
+			</div>
+		</script>
 		
+		<script data-id="Home" type="text/template">
+			<h2>Check out all my cool dogs</h2>
+			<region data-id="dogList" template="Breed"></region>
+		</script>
+
+		<script data-id="About" type="text/template">
+			<h2>About</h2>
+			<p>Other stuff here probably</p>
+			<a class="next-page">Next</a>
+		</script>
+
+		<script data-id="Breed" type="text/template">
+		<div class="breed">
+			<h4>Daschund</h4>
+			<region data-id="contents" template="Dog" count="5"></region>
+		</div>
+		</script>
+
+		<script data-id="Dog" type="text/template">
+		<div class="dog">
+			<input type="checkbox"/>
+			<h5>My Dog</h5>
+			<p>Description goes here...</p>
+		</div>
+		</script>
 
 
 		<!--
