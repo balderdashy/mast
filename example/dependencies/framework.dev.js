@@ -8890,7 +8890,6 @@ Framework.Util.Events = {
 				return _.contains(limitEvents, event.name);
 			}
 			
-			// parsedEvents.push(event);
 			return true;
 		});
 
