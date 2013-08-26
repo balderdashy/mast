@@ -6,13 +6,13 @@ module.exports = function(grunt) {
 		'lib/deps/$.js',
 		'lib/deps/_.js',
 		'lib/deps/Backbone.js',
+		'lib/touch.js',
 		'lib/deps/async.js',
 
 		// Core
 		'lib/Framework.js',
 		'lib/Logger.js',
 		'lib/Util.js',
-		'lib/touch.js',
 		'lib/define.js',
 		'lib/Component.js',
 		'lib/Region.js',
@@ -28,9 +28,12 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 
 		concat: {
+
+			// Concatenate the source files
+			// into a single `framework.dev.js` file for the example
 			dist: {
 				src: srcFiles,
-				dest: 'mast.dev.js'
+				dest: 'example/dependencies/framework.dev.js'
 			}
 		},
 
@@ -40,8 +43,8 @@ module.exports = function(grunt) {
 				preserveComments: false
 			},
 			files: {
-				src: 'mast.dev.js',
-				dest: 'mast.min.js'
+				src: 'framework.dev.js',
+				dest: 'framework.min.js'
 			}
 		}
 	});
@@ -52,8 +55,8 @@ module.exports = function(grunt) {
 
 	// It's so close!
 	grunt.registerTask('default', [
-		'build:dev',
-		'build:production'
+		'build:dev'
+		// 'build:production'
 	]);
 
 	grunt.registerTask('build:dev', ['concat']);

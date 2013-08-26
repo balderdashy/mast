@@ -3,26 +3,22 @@
   "author": "Mike McNeil <mike@balderdash.co>",
   "contributors": [
     {
-      "name": "Balderdash Design Co.",
-      "email": "dev@balderdash.co"
-    },
-    {
-      "name": "Mike McNeil",
-      "email": "mike@balderdash.co"
-    },
-    {
       "name": "Gabe Hernandez",
       "email": "gabe@balderdash.co"
+    },
+    {
+      "name": "iOffice Corp."
     }
   ],
-  "version": "0.0.1",
-  "description": "Convention-over-configuration framework for Backbone.js",
-  "homepage": "http://sailsjs.com",
+  "version": "0.5.0",
+  "description": "Convention-over-configuration toolkit for Backbone.js",
+  "homepage": "http://balderdash.co",
   "keywords": [
     "Mast",
     "Backbone",
-    "Realtime",
-    "Socket.io"
+    "Balderdash",
+    "Angular",
+    "Responsive"
   ],
   "main": "lib/export",
   "directories": {

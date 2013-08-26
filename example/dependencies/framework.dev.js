@@ -2548,7 +2548,7 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 	window[Framework.id] = Framework;
 })(
 	// Name your framework
-	'Mast',
+	'FRAMEWORK',
 
 	// Pass dependencies as args to keep global namespace clean
 	$,
@@ -2614,7 +2614,7 @@ function Logger (Framework) {
 }
 
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = window.FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 // Supported "first-class" DOM events
@@ -3037,115 +3037,114 @@ Framework.Util.Events = {
 
 
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 (function() {
 
-  // The `getValue` and `delegateEventSplitter` is copied from
-  // Backbones source, unfortunately these are not available
-  // in any form from Backbone itself
-  var getValue = function(object, prop) {
-    if (!(object && object[prop])) return null;
-    return _.isFunction(object[prop]) ? object[prop]() : object[prop];
-  };
+	// The `getValue` and `delegateEventSplitter` is copied from
+	// Backbones source, unfortunately these are not available
+	// in any form from Backbone itself
+	var getValue = function(object, prop) {
+		if (!(object && object[prop])) return null;
+		return _.isFunction(object[prop]) ? object[prop]() : object[prop];
+	};
 
-  var delegateEventSplitter = /^(\S+)\s*(.*)$/;
+	var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
-  _.extend(Framework.View.prototype, {
+	_.extend(Framework.View.prototype, {
 
-    _touching: false,
+		_touching: false,
 
-    touchPrevents: true,
+		touchPrevents: true,
 
-    touchThreshold: 10,
+		touchThreshold: 10,
 
-    isTouch: 'ontouchstart' in document && !('callPhantom' in window),
+		isTouch: 'ontouchstart' in document && !('callPhantom' in window),
 
-    // Drop in replacement for Backbone.View#delegateEvent
-    // Enables better touch support
-    //
-    // If the users device is touch enabled it replace any `click`
-    // event with listening for touch(start|move|end) in order to
-    // quickly trigger touch taps
-    delegateEvents: function(events) {
-      if (!(events || (events = getValue(this, 'events')))) return;
-      this.undelegateEvents();
-      var suffix = '.delegateEvents' + this.cid;
-      _(events).each(function(method, key) {
-        if (!_.isFunction(method)) method = this[events[key]];
-        if (!method) throw new Error('Method "' + events[key] + '" does not exist');
-        var match = key.match(delegateEventSplitter);
-        var eventName = match[1],
-            selector = match[2];
-        var boundHandler = _.bind(this._touchHandler, this);
-        method = _.bind(method, this);
-        if (this._useTouchHandlers(eventName, selector)) {
-          this.$el.on('touchstart' + suffix, selector, boundHandler);
-          this.$el.on('touchend' + suffix, selector, {
-            method: method
-          },
-            boundHandler);
-        } else {
-          eventName += suffix;
-          if (selector === '') {
-            this.$el.bind(eventName, method);
-          } else {
-            this.$el.on(eventName, selector, method);
-          }
-        }
-      }, this);
-    },
+		// Drop in replacement for Backbone.View#delegateEvent
+		// Enables better touch support
+		//
+		// If the users device is touch enabled it replace any `click`
+		// event with listening for touch(start|move|end) in order to
+		// quickly trigger touch taps
+		delegateEvents: function(events) {
+			if (!(events || (events = getValue(this, 'events')))) return;
+			this.undelegateEvents();
+			var suffix = '.delegateEvents' + this.cid;
+			_(events).each(function(method, key) {
+				if (!_.isFunction(method)) method = this[events[key]];
+				if (!method) throw new Error('Method "' + events[key] + '" does not exist');
+				var match = key.match(delegateEventSplitter);
+				var eventName = match[1],
+					selector = match[2];
+				var boundHandler = _.bind(this._touchHandler, this);
+				method = _.bind(method, this);
+				if (this._useTouchHandlers(eventName, selector)) {
+					this.$el.on('touchstart' + suffix, selector, boundHandler);
+					this.$el.on('touchend' + suffix, selector, {
+							method: method
+						},
+						boundHandler);
+				} else {
+					eventName += suffix;
+					if (selector === '') {
+						this.$el.bind(eventName, method);
+					} else {
+						this.$el.on(eventName, selector, method);
+					}
+				}
+			}, this);
+		},
 
-    // Detect if touch handlers should be used over listening for click
-    // Allows custom detection implementations
-    _useTouchHandlers: function(eventName, selector) {
-      return this.isTouch && eventName === 'click';
-    },
+		// Detect if touch handlers should be used over listening for click
+		// Allows custom detection implementations
+		_useTouchHandlers: function(eventName, selector) {
+			return this.isTouch && eventName === 'click';
+		},
 
-    // At the first touchstart we register touchevents as ongoing
-    // and as soon as a touch move happens we set touching to false,
-    // thus implying that a fastclick will not happen when
-    // touchend occurs. If no touchmove happened
-    // inbetween touchstart and touchend we trigger the event
-    //
-    // The `touchPrevents` toggle decides if Backbone.touch
-    // will stop propagation and prevent default
-    // for *button* and *a* elements
-    _touchHandler: function(e) {
-      if (!('changedTouches' in e.originalEvent)) return;
-      var touch = e.originalEvent.changedTouches[0];
-      var x = touch.clientX;
-      var y = touch.clientY;
-      switch (e.type) {
-        case 'touchstart':
-          this._touching = [x, y];
-          break;
-        case 'touchend':
-          var oldX = this._touching[0];
-          var oldY = this._touching[1];
-          var threshold = this.touchThreshold;
-          if (x < (oldX + threshold) && x > (oldX - threshold) &&
-            y < (oldY + threshold) && y > (oldY - threshold)) {
-            this._touching = false;
-            if (this.touchPrevents) {
-              var tagName = e.currentTarget.tagName;
-              if (tagName === 'BUTTON' ||
-                tagName === 'A') {
-                e.preventDefault();
-                e.stopPropagation();
-              }
-            }
-            e.data.method(e);
-          }
-          break;
-      }
-    }
-  });
+		// At the first touchstart we register touchevents as ongoing
+		// and as soon as a touch move happens we set touching to false,
+		// thus implying that a fastclick will not happen when
+		// touchend occurs. If no touchmove happened
+		// inbetween touchstart and touchend we trigger the event
+		//
+		// The `touchPrevents` toggle decides if Backbone.touch
+		// will stop propagation and prevent default
+		// for *button* and *a* elements
+		_touchHandler: function(e) {
+			if (!('changedTouches' in e.originalEvent)) return;
+			var touch = e.originalEvent.changedTouches[0];
+			var x = touch.clientX;
+			var y = touch.clientY;
+			switch (e.type) {
+				case 'touchstart':
+					this._touching = [x, y];
+					break;
+				case 'touchend':
+					var oldX = this._touching[0];
+					var oldY = this._touching[1];
+					var threshold = this.touchThreshold;
+					if (x < (oldX + threshold) && x > (oldX - threshold) &&
+						y < (oldY + threshold) && y > (oldY - threshold)) {
+						this._touching = false;
+						if (this.touchPrevents) {
+							var tagName = e.currentTarget.tagName;
+							if (tagName === 'BUTTON' ||
+								tagName === 'A') {
+								e.preventDefault();
+								e.stopPropagation();
+							}
+						}
+						e.data.method(e);
+					}
+					break;
+			}
+		}
+	});
 })();
-
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 // Optional method to require app components
@@ -3207,7 +3206,7 @@ Framework._buildComponentDefinitions = function () {
 };
 
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = window.FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -3796,7 +3795,7 @@ _.extend(Framework.Component.prototype, {
 
 	/**
 	 * Check the specified definition for obvious mistakes,
-	 * especially likely deprecation issues from Mast 1.x
+	 * especially likely deprecation issues from FRAMEWORK 1.x
 	 */
 
 	_validateDefinition: function (properties) {
@@ -3916,7 +3915,7 @@ function _disableLocalEventDelegator () {
 	);
 }
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = window.FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 Framework.Region = constructor;
@@ -4182,8 +4181,12 @@ Framework.Region.fromElement = function (el, parent) {
 };
 
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
+
+
+// TODO:	make this actually useful
+//			(right now, Framework.Data is basically just an empty object)
 
 var Datastore = function () {};
 
@@ -4199,7 +4202,7 @@ Datastore.prototype.loadFromLocalStorage = function () {
 Framework.Data = new Datastore();
 _.extend(Framework.Data, Framework.Events);
 // TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 	
@@ -4219,12 +4222,7 @@ router.route(/(.*)/, 'route', function (route) {
 // Expose `navigate()` method
 Framework.navigate = Framework.history.navigate;
 // TODO: resolve how loading will work
-var Framework = Mast;
-////////////////////////////////////////////////////////////////////////////
-
-
-// TODO: resolve how loading will work
-var Framework = Mast;
+var Framework = FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 // Fire callback if/when Framework core is ready
@@ -4248,7 +4246,7 @@ Framework.ready = function (cb) {
 	});
 };
 // TODO: resolve how loading will work
-var Framework = window.Mast;
+var Framework = window.FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
 
 
@@ -4256,21 +4254,11 @@ var Framework = window.Mast;
  * This is the starting point to your application.  You should grab templates and components
  * before calling Framework.raise() using something like Require.js.
  *
- * @param  {Object}   options
- * @param  {Function} cb
- *
- * options example:
- *  options = {
- *    data: {
- *      authenticated: false
- *    },
- *    templates: {
- *      componentName: templateHTML
- *    },
- *    components: {
- *      componentName: ComponentDefinition
- *    }
- *  }
+ * @param {Object} options
+		data: { authenticated: false },
+		templates: { componentName: HTMLOrPrecompiledFn },
+		components: { componentName: ComponentDefinition }
+ * @param {Function} cb
  */
 
 Framework.raise = function (options, cb) {
@@ -4285,15 +4273,14 @@ Framework.raise = function (options, cb) {
 	}
 
 	// Apply defaults
-	_.defaults({
+	options = _.defaults({
 		throttleWindowResize: 200,
 		logLevel: 'debug',
 		logger: undefined,
 		production: false
-	}, Framework);
+	}, Framework) || {};
 
 	// Apply overrides from options
-	options = options || {};
 	_.extend(Framework, options);
 
 	// Initialize logger
