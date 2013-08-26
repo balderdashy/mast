@@ -18,7 +18,6 @@ module.exports = function(grunt) {
 		'lib/Region.js',
 		'lib/Data.js',
 		'lib/Router.js',
-		'lib/Comet.js',
 		'lib/ready.js',
 		'lib/raise.js'
 	];
