@@ -1,33 +1,15 @@
-# FRAMEWORK 2.x
+# FRAMEWORK
 
-> Warning ::
-> FRAMEWORK is an internal tool that we use at Balderdash.  We made it open-source, because... well, we like open-source software :)
-> It *is* based off of Backbone, and it *does* happen to be a great accompaniment to Sails, but the last thing I want
-> is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
-
-> It's very important to future-proof your API/infrastructure by building an SOA.  A clean breadboard for your business logic
-> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refrigerators, cars, wearables-- these things
-> all speak APIs, but unfortunately they don't (and they won't for many years) all speak HTML 5.
-> So please don't make decisions on a DOM framework based on your backend, or vice versa!
-
-> OK.  Enough of that.
-
-> I think FRAMEWORK is fantastic, and it has afforded great productivity gains for my team and our customers.
-> We don't yet have the resouces to provide publicly available documentation while still maintaining a professional level
-> of support for our customers already using FRAMEWORK. 
-
-> So all I can say for now is "use FRAMEWORK at your own risk."
-> If you feel comfortable reading Backbone's source, you're probably good to go.
-
-> Stay tuned!
-
+> Warning :: The version of FRAMEWORK in this repository is under active development and may or may not be stable.
 
 ## What is this..?!
 
-FRAMEWORK is a browser UI framework built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.  It also has some nice features for building realtime functionality (aka Comet).
+FRAMEWORK is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.  It also has some nice features for building realtime functionality (aka Comet).
+
+FRAMEWORK brings some of the more important conveniences from frameworks like Knockout and Angular and applies them to Backbone, with an eye towards practical, efficient development for medium to large teams (4+ developers)
 
 
-#Getting Started with FRAMEWORK
+## Getting Started with FRAMEWORK
 >As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use FRAMEWORK.
 
 ##Setting up FRAMEWORK
@@ -420,6 +402,28 @@ When you change the model, or change the template, for a component, it just work
 
 FRAMEWORK also enhances jQuery's DOM events by adding "pressEnter", "pressEscape", and "clickoutside", as well as providing access to global events, like $(window).scroll, from the events hash (no more worrying about whether the element you're binding to has focus or not!).
 
+
+
+> FRAMEWORK is an internal tool that we made open-source, because... well, we like open-source software :)
+>
+> It *is* based off of Backbone, and it *does* happen to be a great accompaniment to Sails, but the last thing I want
+> is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
+
+> It's very important to future-proof your API/infrastructure by building an SOA.  A clean breadboard for your business logic
+> powered by a fast, powerful data warehouse.  Native mobile apps, web apps, refrigerators, cars, wearables-- these things
+> all speak APIs, but unfortunately they don't (and they won't for many years) all speak HTML 5.
+> So please don't make decisions on a DOM framework based on your backend, or vice versa!
+
+> OK.  Enough of that.
+
+> I think FRAMEWORK is fantastic, and it has afforded great productivity gains for my team and our customers.
+> We don't yet have the resouces to provide publicly available documentation while still maintaining a professional level
+> of support for our customers already using FRAMEWORK. 
+
+> So all I can say for now is "use FRAMEWORK at your own risk."
+> If you feel comfortable reading Backbone's source, you're probably good to go.
+
+> Stay tuned!
 
 
 -->
