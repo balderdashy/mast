@@ -1,2 +1,3 @@
-# basic
-### a Sails application
+# Framework Example
+
+> This is an example project.

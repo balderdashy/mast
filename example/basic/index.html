@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Framework Example</title>
+
+		<!-- Viewport mobile tag for sensible mobile support -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+		
+		<!--  
+			Stylesheets
+			==============================
+
+			You know the drill- just some stylesheets
+		-->
+		<link href='http://sailsjs.org/styles/fonts.css' rel='stylesheet'/>
+		<link rel="stylesheet" href="linker/styles/layout.css">
+
+		
+	</head>
+
+	<body>
+
+		<!--
+			Main content region
+			========================
+
+			Notice that we default the region's contents 
+			to the `Body` template directly in the HTML
+		-->
+		<region template="Body"></region>
+
+
+
+		<!--
+			HTML Templates
+			========================
+
+			HTML templates are important prerequisites of modern, rich client applications.
+			To work their magic, frameworks like Backbone, Angular, Ember, and *this one* expect 
+			you to load these bits of HTML client-side.
+
+			Each template HTML file corresponds to a specific UI component, which is then rendered
+			by the framework.
+
+			In this case, we're using JST to precompile our templates into JavaScript functions.
+			This not only makes them render faster, but also allows us to fetch them using a simple 
+			script tag, which is perfect for the purposes of our demo.
+		-->
+		<script type="text/javascript" src="jst.js"></script>
+		
+
+
+		<!--
+			JS Dependencies
+			========================
+			
+			Get the framework itself, plus any other JavaScript dependencies
+		-->
+		<script src="linker/js/mast.dev.js"></script>
+
+
+		<!--
+			Components
+			========================
+
+			Components are JavaScript modules which add interactivity via simple, declarative-wherever-possible bindings.
+			Each component is tied to a specific same-named template in the DOM
+			( e.g. the component `Body.js` matches the template with `data-id="Body"` )
+
+			Components can control any regions located inside of their template, as well as listening for the following:
+				+ global app events ( e.g. '%logout' )
+				+ DOM events on the template element or its descendants ( e.g. 'click .button' )
+				+ the `hashchange` event; i.e. changes to the hash/fragment in the URL ( e.g. '#about_us' )
+		-->
+		<script src="linker/js/Body.js"></script>
+		<script src="linker/js/Breed.js"></script>
+		<script src="linker/js/Dog.js"></script>
+		
+
+
+
+		<!--
+			Start Up Framework
+			========================
+
+			This section will be unnecessary soon, since the framework will be started automatically by default
+			(like jQuery)
+
+			If you need to wait to start up the framework, call Framework.pause() as soon as possible.  
+			To allow the framework to finish loading, call Framework.resume( [cb] ).
+			(roughly equivalent to http://api.jquery.com/jQuery.holdReady/)
+		-->
+		<script>
+			// Set the log level to `debug` so we can see what's going on
+			Mast.logLevel = 'debug';
+
+			// Start framework
+			Mast.raise();
+		</script>
+
+	</body>
+</html>

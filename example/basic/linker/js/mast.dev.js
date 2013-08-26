@@ -2595,18 +2595,18 @@ function Logger (Framework) {
 		case 'debug':	Framework.verbose = noop;
 						break;
 
-		case 'warn':	Framework.verbose = Framework.log = noop;
+		case 'warn':	Framework.verbose = Framework.log = Framework.debug = noop;
 						break;
 
-		case 'error':	Framework.verbose = Framework.log = 
+		case 'error':	Framework.verbose = Framework.log = Framework.debug =
 						Framework.warn = noop;
 						break;
 
-		case 'silent':	Framework.verbose = Framework.log = 
+		case 'silent':	Framework.verbose = Framework.log = Framework.debug =
 						Framework.warn = Framework.error = noop;
 						break;
 
-		default:		throw new Error ('Unrecognized logging level config ' + 
+		default:		throw new Error ('Unrecognized logging level config ' +
 						'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
 
 	}
@@ -2975,12 +2975,13 @@ Framework.Util.Events = {
 			
 			// Parse event string into semantic representation
 			var event = Framework.Util.parseDOMEvent(eventKey);
-			parsedEvents.push(event);
 			
 			// Optional filter
 			if (limitEvents) {
 				return _.contains(limitEvents, event.name);
 			}
+			
+			parsedEvents.push(event);
 			return true;
 		});
 
@@ -3328,6 +3329,13 @@ Framework.Component.prototype.render = function (atIndex) {
 		html = html.replace(/\s*$/, '');
 		html = html.replace(/(\r|\n)*/, '');
 
+		// Strip HTML comments, then strip whitespace again
+		// (TODO: optimize this)
+		html = html.replace(/(<!--.+-->)*/, '');
+		html = html.replace(/^\s*/, '');
+		html = html.replace(/\s*$/, '');
+		html = html.replace(/(\r|\n)*/, '');
+
 		// Parse a DOM node or series of DOM nodes from the newly templated HTML
 		var parsedNodes = $.parseHTML(html);
 		var el = parsedNodes[0];
@@ -3362,7 +3370,7 @@ Framework.Component.prototype.render = function (atIndex) {
 
 		// Insert the element at the proper place amongst the outlet's children
 		var neighbors = self.$outlet.children();
-		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length >= atIndex) {
+		if (_.isFinite(atIndex) && neighbors.length > 0 && neighbors.length > atIndex) {
 			neighbors.eq(atIndex).before(self.$el);
 		}
 
@@ -3400,12 +3408,12 @@ Framework.Component.prototype.render = function (atIndex) {
 			});
 
 
-			Framework.verbose(
-				self.id + ' :: ' +
-				'Disabled user text selection on elements w/ click/touch events:',
-				clickOrTouchEvents,
-				$affected
-			);			
+			// Framework.verbose(
+			// 	self.id + ' :: ' +
+			// 	'Disabled user text selection on elements w/ click/touch events:',
+			// 	clickOrTouchEvents,
+			// 	$affected
+			// );			
 		}
 	});
 
@@ -3538,8 +3546,8 @@ _.extend(Framework.Component.prototype, {
 
 
 	// These seem to be required by Backbone core
-	listenTo: _disableLocalEventDelegator,
-	listenToOnce: _disableLocalEventDelegator
+	// listenTo: _disableLocalEventDelegator,
+	// listenToOnce: _disableLocalEventDelegator
 	// stopListening: _disableLocalEventDelegator
 
 });
@@ -3572,9 +3580,9 @@ _.extend(Framework.Component.prototype, {
 		if (this.collection) {
 
 			// Listen to events
-			this._ev.listenTo(this.collection, 'add', this.afterAdd);
-			this._ev.listenTo(this.collection, 'remove', this.afterRemove);
-			this._ev.listenTo(this.collection, 'reset', this.afterReset);
+			this.listenTo(this.collection, 'add', this.afterAdd);
+			this.listenTo(this.collection, 'remove', this.afterRemove);
+			this.listenTo(this.collection, 'reset', this.afterReset);
 		}
 
 		if (this.model) {
@@ -3583,11 +3591,11 @@ _.extend(Framework.Component.prototype, {
 			// e.g.
 			// .afterChange(model, options)
 			//
-			this._ev.listenTo(this.model, 'change', function (model, options) {
+			this.listenTo(this.model, 'change', function (model, options) {
 				if (_.isFunction(this.afterChange)) {
 					this.afterChange(model, options);
 				}
-			}, this);
+			});
 
 			// Listen for specific attribute changes
 			// e.g.
@@ -4076,7 +4084,7 @@ Framework.Region.prototype.append = function (componentId, properties) {
 
 Framework.Region.prototype.attach = function (component, properties) {
 	this.empty();
-	this.append(component, properties);
+	return this.append(component, properties);
 };
 
 
@@ -4278,6 +4286,7 @@ Framework.raise = function (options, cb) {
 
 	// Apply defaults
 	_.defaults({
+		throttleWindowResize: 200,
 		logLevel: 'debug',
 		logger: undefined,
 		production: false
@@ -4357,6 +4366,14 @@ Framework.raise = function (options, cb) {
 		// (and append default templates)
 		collectRegions();
 
+
+		// Bind global DOM events as Framework events
+		// (e.g. %window:resize)
+		var triggerResizeEvent = _.debounce(function () {
+			Framework.trigger('%window:resize');
+		}, options.throttleWindowResize || 0);
+		$(window).resize(triggerResizeEvent);
+		// TODO: add more events and extrapolate this logic to a separate module
 
 
 		// Do the initial routing sequence
@@ -4544,5 +4561,3 @@ Framework.raise = function (options, cb) {
 
 
 };
-
-
