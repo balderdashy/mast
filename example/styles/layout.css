@@ -16,7 +16,7 @@
 
 
 /* Selector to pick out clickable/touchable things */
-[data-framework-clickable="true"] {
+[data-framework-events*="click"] {
 
 
 	/* Disable text selection */

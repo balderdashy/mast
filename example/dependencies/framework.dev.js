@@ -8569,28 +8569,21 @@ var DOMEvents = [
 	'touchmove',
 	'touchcancel',
 
-	// Manufactured touch event
-	'touch'
-];
+	// Manufactured events
+	'touch',
 
-
-
-// Special Framework events
-// (not implemented yet)
-var FrameworkEvents = [
-
-	// e.g. 'window resize', 'window scroll', 'window mousemove'...
-	'window .+',
-
+	// TODO:
 	'rightclick',
-
 	'clickoutside'
 ];
 
 
+
+
 /*
+// TODO
 // Handle global window events
-// (which are not covered by backbone natively)
+// (which are not covered by backbone event delegator natively)
 var matchedSpecialDOMEvent = eventName.match(/window (.+)/);
 if (matchedSpecialDOMEvent && matchedSpecialDOMEvent[1]) {
 	$(window).unbind(matchedSpecialDOMEvent[1], handler);
@@ -8955,14 +8948,15 @@ Framework.Util.DOM = {
 	/**
 	 * Expose the "DOMmy-eventedness" of elements so that it's selectable via CSS
 	 * You can use this to apply a few choice DOM modifications out the gate--
-	 * (tweaks targeting common issues that typically get forgotten.)
-	 *
-	 * If `this.tweaks` is set to `false`, these augmentations will be disabled.
+	 * (e.g. tweaks targeting common issues that typically get forgotten, like disabling text selection)
 	 *
 	 * @param {Component} component
 	 */
 
-	tweakComponent: function ( component ) {
+	flagComponent: function ( component ) {
+
+		// TODO: provide access to bound global events (%) and routes (#) as well
+		// TODO: flag all DOM events, not just click and touch
 
 		// Build subset of just the click/touch events
 		var clickOrTouchEvents = Framework.Util.Events.parse(
@@ -8976,9 +8970,12 @@ Framework.Util.DOM = {
 		// Query affected elements from DOM
 		var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, component);
 
+		// NOTE: For now, this is always just 'click'
+		var boundEventsString = 'click';
+
 		// Set `data-FRAMEWORK-clickable` custom attribute
 		// (ui logic should be extended in CSS)
-		$affected.attr('data-' + Framework.id + '-clickable', 'true');
+		$affected.attr('data-' + Framework.id + '-events', boundEventsString);
 
 		Framework.verbose(
 			component.id + ' :: ' +
@@ -8987,53 +8984,6 @@ Framework.Util.DOM = {
 			$affected
 		);
 	}
-
-	// Automatically disable user text selection when a click/touch event is bound
-	// (even for delegated event bindings.)
-	// Framework.Util.DOM.disableTextSelection($affected);
-
-	// Assign a hand cursor
-	// Framework.Util.DOM.useHandCursor($affected);
-
-	// /**
-	//  * Modify a set of jQuery matched elements
-	//  * to disable text selection using standards CSS
-	//  * + vendor prefixes
-	//  *
-	//  * @param {Array} $elements
-	//  *		Set of jQuery DOM elements
-	//  *
-	//  * @returns $elements
-	//  */
-
-	// disableTextSelection: function ($elements) {		
-	// 	return $elements.css({
-	// 		'-webkit-touch-callout': 'none',
-	// 		'-webkit-user-select': 'none',
-	// 		'-khtml-user-select': 'none',
-	// 		'-moz-user-select': 'moz-none',
-	// 		'-ms-user-select': 'none',
-	// 		'user-select': 'none'
-	// 	});
-		
-	// },
-
-
-	// /**
-	//  * Set `cursor: pointer`
-	//  *
-	//  * @param {Array} $elements
-	//  *		Set of jQuery DOM elements
-	//  *
-	//  * @returns $elements
-	//  */
-
-	// useHandCursor: function ($elements) {
-	// 	// TODO: make sure IE8 and early firefox play nice with cursor:pointer
-	// 	return $elements.css({
-	// 		cursor: 'pointer'
-	// 	});
-	// }
 
 };
 
@@ -9274,11 +9224,17 @@ Framework.Component.prototype.render = function (atIndex) {
 		self.afterRender();
 
 		
-		// Apply UI tweaks to component
-		// -> disable for this component with `this.tweaks = false`
-		// -> or globally with `Framework.tweaks = false`
-		if ( self.tweaks !== false && Framework.tweaks !== false ) {
-			Framework.Util.DOM.tweakComponent(self);
+		// Add data attributes to this component's $el, providing access
+		// to whether the element has various DOM bindings from stylesheets.
+		// (handy for disabling text selection accordingly, etc.)
+		//
+		// -> disable for this component with `this.attrFlags = false`
+		// -> or globally with `Framework.attrFlags = false`
+		//
+		// TODO: make it work with delegated DOM event bindings
+		//
+		if ( self.attrFlags !== false && Framework.attrFlags !== false ) {
+			Framework.Util.DOM.flagComponent(self);
 		}
 	});
 
