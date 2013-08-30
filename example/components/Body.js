@@ -9,11 +9,12 @@ FRAMEWORK.define('Body', function () {
 		'click h1'	: '%test.',
 
 		// if anywhere ELSE inside this component's $el is clicked,
-		// log a note to the console
+		// ( this is an `ELSE` case because everywhere else we caught bubbling with e.stopPropagation() )
 		// 'click'		: '>>> Note: The click event of the Body component fired.',
 
 		// When %test subscription is triggered,
-		'%test'		: '!!! You fired the %test trigger!',
+		// log a note to the console
+		'%test'		: '>>> You fired the %test trigger!',
 
 
 		// Route navigation menu to change the URL appropriately

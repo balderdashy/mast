@@ -8490,11 +8490,14 @@ function Logger (Framework) {
 				Framework.log       = noop;
 				Framework.debug     = noop;
 				Framework.verbose   = noop;
-		} else {
-			Framework.error		= console && console.error && console.error.bind(console);
-			Framework.warn		= console && console.warn && console.warn.bind(console);
-			Framework.log			= console && console.log && console.log.bind(console);
-			Framework.verbose	= console && console.debug && console.debug.bind(console);
+		}
+
+		// We are in a friendly browser like Chrome, Firefox, or IE10
+		else {
+			Framework.error		= console.error && console.error.bind(console);
+			Framework.warn		= console.warn && console.warn.bind(console);
+			Framework.log		= console.debug && console.debug.bind(console);
+			Framework.verbose	= console.log && console.log.bind(console);
 			// Support for `debug` for backwards compatibility
 			Framework.debug = Framework.log;
 
@@ -8503,20 +8506,25 @@ function Logger (Framework) {
 					Framework.logLevel = 'silent';
 			}
 
-
 			// Use log level config if provided
+			alert(Framework.logLevel);
 			switch ( Framework.logLevel ) {
 				case 'verbose': break;
+
 				case 'debug':   Framework.verbose = noop;
-												break;
+								break;
+
 				case 'warn':    Framework.verbose = Framework.log = noop;
-												break;
+								break;
+
 				case 'error':   Framework.verbose = Framework.log =
-												Framework.warn = noop;
-												break;
+								Framework.warn = noop;
+								break;
+
 				case 'silent':  Framework.verbose = Framework.log =
-												Framework.warn = Framework.error = noop;
-												break;
+								Framework.warn = Framework.error = noop;
+								break;
+
 				default:        throw new Error ('Unrecognized logging level config ' +
 												'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
 			}
@@ -10101,7 +10109,7 @@ Framework.raise = function (options, cb) {
 	// Apply defaults
 	_.defaults(Framework, {
 		throttleWindowResize: 200,
-		logLevel: 'debug',
+		logLevel: 'warn',
 		logger: undefined,
 		production: false
 	});
