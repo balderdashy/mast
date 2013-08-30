@@ -8507,7 +8507,6 @@ function Logger (Framework) {
 			}
 
 			// Use log level config if provided
-			alert(Framework.logLevel);
 			switch ( Framework.logLevel ) {
 				case 'verbose': break;
 
