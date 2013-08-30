@@ -8953,8 +8953,10 @@ Framework.Util.DOM = {
 
 
 	/**
-	 * Apply a few choice DOM modifications out the gate
-	 * These tweaks target common issues that typically get forgotten.
+	 * Expose the "DOMmy-eventedness" of elements so that it's selectable via CSS
+	 * You can use this to apply a few choice DOM modifications out the gate--
+	 * (tweaks targeting common issues that typically get forgotten.)
+	 *
 	 * If `this.tweaks` is set to `false`, these augmentations will be disabled.
 	 *
 	 * @param {Component} component
@@ -8974,12 +8976,9 @@ Framework.Util.DOM = {
 		// Query affected elements from DOM
 		var $affected = Framework.Util.Events.getElements(clickOrTouchEvents, component);
 
-		// Automatically disable user text selection when a click/touch event is bound
-		// (even for delegated event bindings.)
-		Framework.Util.DOM.disableTextSelection($affected);
-
-		// Assign a hand cursor
-		Framework.Util.DOM.useHandCursor($affected);
+		// Set `data-FRAMEWORK-clickable` custom attribute
+		// (ui logic should be extended in CSS)
+		$affected.attr('data-' + Framework.id + '-clickable', 'true');
 
 		Framework.verbose(
 			component.id + ' :: ' +
@@ -8987,47 +8986,54 @@ Framework.Util.DOM = {
 			clickOrTouchEvents,
 			$affected
 		);
-	},
-
-
-	/**
-	 * Modify a set of jQuery matched elements
-	 * to disable text selection using standards CSS
-	 * + vendor prefixes
-	 *
-	 * @param {Array} $elements
-	 *		Set of jQuery DOM elements
-	 *
-	 * @returns $elements
-	 */
-
-	disableTextSelection: function ($elements) {
-		return $elements.css({
-			'-webkit-touch-callout': 'none',
-			'-webkit-user-select': 'none',
-			'-khtml-user-select': 'none',
-			'-moz-user-select': 'moz-none',
-			'-ms-user-select': 'none',
-			'user-select': 'none'
-		});
-	},
-
-
-	/**
-	 * Set `cursor: pointer`
-	 *
-	 * @param {Array} $elements
-	 *		Set of jQuery DOM elements
-	 *
-	 * @returns $elements
-	 */
-
-	useHandCursor: function ($elements) {
-		// TODO: make sure IE8 and early firefox play nice with cursor:pointer
-		return $elements.css({
-			cursor: 'pointer'
-		});
 	}
+
+	// Automatically disable user text selection when a click/touch event is bound
+	// (even for delegated event bindings.)
+	// Framework.Util.DOM.disableTextSelection($affected);
+
+	// Assign a hand cursor
+	// Framework.Util.DOM.useHandCursor($affected);
+
+	// /**
+	//  * Modify a set of jQuery matched elements
+	//  * to disable text selection using standards CSS
+	//  * + vendor prefixes
+	//  *
+	//  * @param {Array} $elements
+	//  *		Set of jQuery DOM elements
+	//  *
+	//  * @returns $elements
+	//  */
+
+	// disableTextSelection: function ($elements) {		
+	// 	return $elements.css({
+	// 		'-webkit-touch-callout': 'none',
+	// 		'-webkit-user-select': 'none',
+	// 		'-khtml-user-select': 'none',
+	// 		'-moz-user-select': 'moz-none',
+	// 		'-ms-user-select': 'none',
+	// 		'user-select': 'none'
+	// 	});
+		
+	// },
+
+
+	// /**
+	//  * Set `cursor: pointer`
+	//  *
+	//  * @param {Array} $elements
+	//  *		Set of jQuery DOM elements
+	//  *
+	//  * @returns $elements
+	//  */
+
+	// useHandCursor: function ($elements) {
+	// 	// TODO: make sure IE8 and early firefox play nice with cursor:pointer
+	// 	return $elements.css({
+	// 		cursor: 'pointer'
+	// 	});
+	// }
 
 };
 
