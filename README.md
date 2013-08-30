@@ -1,6 +1,6 @@
 # FRAMEWORK
 
-Please visit the [Mast wiki](https://github.com/balderdashy/mast/wiki) for more fully fledged writting of this framework and quick references with API documentation.
+Please visit the [Mast wiki](https://github.com/balderdashy/mast/wiki) for more fully fledged writing of this framework and quick references with API documentation.
 
 > Warning :: The version of FRAMEWORK in this repository is under active development and may or may not be stable.
 
