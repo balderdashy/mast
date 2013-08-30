@@ -1,5 +1,7 @@
 # FRAMEWORK
 
+Please visit the [Mast wiki](https://github.com/balderdashy/mast/wiki) for more fully fledged writting of this framework and quick references with API documentation.
+
 > Warning :: The version of FRAMEWORK in this repository is under active development and may or may not be stable.
 
 ## What is this..?!
@@ -16,7 +18,7 @@ FRAMEWORK brings some of the more important conveniences from frameworks like Kn
 ###1. Grab the FRAMEWORK file
 Add the `FRAMEWORK.dev.js` file to your project, and make sure you link to it before you reference any of your components. This file contains all of FRAMEWORK's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
 
-###2. Raise FRAMEWORK 
+###2. Raise FRAMEWORK
 
 In order for FRAMEWORK to work its magic on your page, you need to `raise` it.  Paste this after all your other scripts:
 
@@ -52,9 +54,9 @@ Regions are similar to view partials, in the sense that they let you reference y
 In other words, a region is just a container where you can summon one or more of your templates.
 
 
-The contents of a region can be modified/replaced using JavaScript.  This is important for doing cool stuff later.  But the best thing about regions is that you can use them to put together single-page apps WITHOUT JavaScript; using only HTML/CSS.  
+The contents of a region can be modified/replaced using JavaScript.  This is important for doing cool stuff later.  But the best thing about regions is that you can use them to put together single-page apps WITHOUT JavaScript; using only HTML/CSS.
 
-Regions give you a canvas to work on whichever template you want, in the proper context. Just by changing some HTML, you can bring different templates (or multiple templates) into your region, allowing you to build your CSS/HTML as if everything was interactive, long before it actually is.  And since regions can contain other regions, you can get as in-depth as you need to.  
+Regions give you a canvas to work on whichever template you want, in the proper context. Just by changing some HTML, you can bring different templates (or multiple templates) into your region, allowing you to build your CSS/HTML as if everything was interactive, long before it actually is.  And since regions can contain other regions, you can get as in-depth as you need to.
 
 
 
@@ -72,8 +74,8 @@ Let's say we're implementing a simple single-page website with a header and foot
   <ul>
     <li>Home</li>
     <li>About</li>
-    <li>Contact</li>	
-  </ul>	
+    <li>Contact</li>
+  </ul>
 </header>
 
 <section>
@@ -93,8 +95,8 @@ So we could implement the Home page, but how are we going to do the others?  Her
   <ul>
     <li>Home</li>
     <li>About</li>
-    <li>Contact</li>	
-  </ul>	
+    <li>Contact</li>
+  </ul>
 </header>
 
 <region template="Home"></region>
@@ -173,7 +175,7 @@ So your "Home" template now looks like this:
 <script data-id="Home" type="text/template">
   <h1>Home Page Stuff</h1>
   <p>Blah blah blah</p>
-  
+
   //Your contact form will show up here.
   <region template="Contact"></region>
 </script>
@@ -185,7 +187,7 @@ And the "Portfolio" template like this:
   <img src="purdy_picture_1"/>
   <img src="purdy_picture_2"/>
   <img src="purdy_picture_3"/>
-  
+
   //Your contact form will show up here, too!
   <region template="Contact"></region>
 </script>
@@ -201,8 +203,8 @@ To create a component, make a JavaScript file in your app, and give it the same 
 FRAMEWORK.define('NameOfTemplate', function() {
   return {
     //DO COOL STUFF IN HERE!
-  	
-  	
+
+
   };
 });
 ```
@@ -223,12 +225,12 @@ It's pretty simple when you see it. Here is how we would set up navigation for o
 ```javascript
 FRAMEWORK.define('Body', function() {
   return {
-    
+
     '#'			: 'content@Home',
     '#about'	: 'content@About',
     '#news'		: 'content@News'
-    
-  };	
+
+  };
 });
 ```
 
@@ -240,7 +242,7 @@ FRAMEWORK has some simple shorthand for adding, removing, and toggling classes o
 
 Let's go back to Example 2, where we implemented a list of emails. What if, when the user clicks on an email, you want to make it look different to show that it's been selected? Then, if they click it again, you want it to go back to normal.
 
-You could do that in regular jQuery, but FRAMEWORK speeds up the process: 
+You could do that in regular jQuery, but FRAMEWORK speeds up the process:
 
 Once you've styled up the `.selected` class for your email div, create your component:
 ```javascript
@@ -369,7 +371,7 @@ This makes the templates a bit easier to set up. Now when you create a file in `
 
 + DOM
   + The DOM itself maintains temporal state.  It can only be counted on remaining untouched until something rerenders it.
-  
+
 + Context
   + Application state is maintained globally.  You can count on it sticking around until you refresh the page.  This is a great place to store things like the items currently loaded in various listviews, etc.  It is a free range key-value store, and you can come up with your own conventions for storing and accessing data inside of it.  While it may correspond with view state on the page, it doesn't necessarily have to.
 
@@ -385,7 +387,7 @@ This makes the templates a bit easier to set up. Now when you create a file in `
 
 ### What is FRAMEWORK?
 
-Productivity-enhancing front-end library based on Backbone.js.  FRAMEWORK takes standard conventions you use in every Backbone project and formalizes them.  
+Productivity-enhancing front-end library based on Backbone.js.  FRAMEWORK takes standard conventions you use in every Backbone project and formalizes them.
 
 There are 1,000 ways to build a jQuery script.  There are 100 ways to build a Backbone app.  FRAMEWORK takes it to the next level, providing standard conventions for DOM development.  It was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers.
 
@@ -397,7 +399,7 @@ With FRAMEWORK, building the front-end for your app is *faster*, *"funner"* and 
 ## How It Works
 At its core, FRAMEWORK is made up of Components, Models, and Collections.  Components are very closely related to Backbone Views, and Models and Collections are exactly like their Backbone equivalents.
 
-FRAMEWORK introduces the concept of a Component, which is a minimal logical UI element which completely abstracts DOM templating. 
+FRAMEWORK introduces the concept of a Component, which is a minimal logical UI element which completely abstracts DOM templating.
 When you change the model, or change the template, for a component, it just works- the screen automatically gets updated.
 
 FRAMEWORK also enhances jQuery's DOM events by adding "pressEnter", "pressEscape", and "clickoutside", as well as providing access to global events, like $(window).scroll, from the events hash (no more worrying about whether the element you're binding to has focus or not!).
@@ -418,7 +420,7 @@ FRAMEWORK also enhances jQuery's DOM events by adding "pressEnter", "pressEscape
 
 > I think FRAMEWORK is fantastic, and it has afforded great productivity gains for my team and our customers.
 > We don't yet have the resouces to provide publicly available documentation while still maintaining a professional level
-> of support for our customers already using FRAMEWORK. 
+> of support for our customers already using FRAMEWORK.
 
 > So all I can say for now is "use FRAMEWORK at your own risk."
 > If you feel comfortable reading Backbone's source, you're probably good to go.
