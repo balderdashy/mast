@@ -9349,18 +9349,6 @@ _.extend(Framework.Component.prototype, {
  
 _.extend(Framework.Component.prototype, {
 
-	// Provide access to banned methods in `_ev` sub-object for private use
-	_ev: {
-		on: Framework.Component.prototype.on,
-		off: Framework.Component.prototype.off,
-		trigger: Framework.Component.prototype.trigger,
-		once: Framework.Component.prototype.once,
-		bind: Framework.Component.prototype.bind,
-		listenTo: Framework.Component.prototype.listenTo,
-		listenToOnce: Framework.Component.prototype.listenToOnce,
-		stopListening: Framework.Component.prototype.stopListening
-	},
-
 	// Non-global event delegation is disabled at the user level
 	on: _disableLocalEventDelegator,
 	off: _disableLocalEventDelegator,
@@ -9368,8 +9356,7 @@ _.extend(Framework.Component.prototype, {
 	once: _disableLocalEventDelegator,
 	bind: _disableLocalEventDelegator,
 
-
-	// These seem to be required by Backbone core
+	// You can still use these
 	// listenTo: _disableLocalEventDelegator,
 	// listenToOnce: _disableLocalEventDelegator
 	// stopListening: _disableLocalEventDelegator
@@ -9445,7 +9432,7 @@ _.extend(Framework.Component.prototype, {
 		//
 
 		// First argument is event name, subsequent args are other params to trigger()
-		this._ev.listenTo(Framework, 'all', function (eRoute) {
+		this.listenTo(Framework, 'all', function bindGlobalTriggers (eRoute) {
 
 			// Trim off all but the first argument to pass through to handler
 			var args = Array.prototype.slice.call(arguments);
@@ -9459,7 +9446,6 @@ _.extend(Framework.Component.prototype, {
 				// Grab regex and param parsing logic from Backbone core
 				var extractParams = Backbone.Router.prototype._extractParameters,
 					calculateRegex = Backbone.Router.prototype._routeToRegExp;
-
 
 				// Trim trailing
 				matchPattern = matchPattern.replace(/\/*$/g, '');
