@@ -1,3 +1,10 @@
+/**
+ * Body
+ *
+ * The UI logic controlling the template with `data-id="Body"`
+ * Body is the top-level component for the application
+ */
+
 FRAMEWORK.define('Body', function () {
 	return {
 
@@ -14,7 +21,7 @@ FRAMEWORK.define('Body', function () {
 
 		// When %test subscription is triggered,
 		// log a note to the console
-		'%test'		: '>>> You fired the %test trigger!',
+		'%test'		: '>>> An instance of the `Body` component received trigger: `%test`',
 
 
 		// Route navigation menu to change the URL appropriately

@@ -8587,20 +8587,6 @@ var DOMEvents = [
 
 
 
-/*
-// TODO
-// Handle global window events
-// (which are not covered by backbone event delegator natively)
-var matchedSpecialDOMEvent = eventName.match(/window (.+)/);
-if (matchedSpecialDOMEvent && matchedSpecialDOMEvent[1]) {
-	$(window).unbind(matchedSpecialDOMEvent[1], handler);
-	$(window).bind(matchedSpecialDOMEvent[1], handler);
-}
-*/
-
-
-
-
 
 Framework.Util = {
 
@@ -9063,6 +9049,7 @@ var Framework = window.FRAMEWORK;
 
 Framework.Component = Framework.View.extend();
 
+
 /**
  * Safely zap every trace about this component from memory.
  */
@@ -9086,12 +9073,21 @@ Framework.Component.prototype.close = function ( ) {
 
 	this.beforeClose(function () {
 
+		// > NOTE: `this._closing=false` can and probably should be removed, 
+		// > since mutex is unnecessary now that the component is up for garbage collection
+		// > Waiting to do this until it can be tested further
+
 		// Unlock close()
 		this._closing = false;
+
+		// Stop listening to all global triggers (%|#)
+
 
 		// Close all child components
 		self._emptyAllRegions();
 
+		// Call native `Backbone.View.prototype.remove()`
+		// to undelegate events, etc.
 		self.remove();
 
 	});
@@ -9419,7 +9415,7 @@ _.extend(Framework.Component.prototype, {
 			// e.g.
 			// .afterChange(model, options)
 			//
-			this.listenTo(this.model, 'change', function (model, options) {
+			this.listenTo(this.model, 'change', function modelChanged (model, options) {
 				if (_.isFunction(this.afterChange)) {
 					this.afterChange(model, options);
 				}
@@ -9430,12 +9426,12 @@ _.extend(Framework.Component.prototype, {
 			// .afterChange.color(model, value, options)
 			//
 			if (_.isObject(this.afterChange)) {
-				_.each(this.afterChange, function(handler, attrName) {
+				_.each(this.afterChange, function (handler, attrName) {
 
 					// Call handler with newVal to keep arguments straightforward
-					this.model.on('change:' + attrName, function (model, newVal) {
-						handler.call(this,newVal);
-					}, this);
+					this.listenTo(this.model, 'change:' + attrName, function attrChanged (model, newVal) {
+						handler.call(self, newVal);
+					});
 
 				}, this);
 			}

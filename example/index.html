@@ -114,9 +114,16 @@
 				+ global app events ( e.g. '%logout' )
 				+ DOM events on the template element or its descendants ( e.g. 'click .button' )
 				+ the `hashchange` event; i.e. changes to the hash/fragment in the URL ( e.g. '#about_us' )
+
+			Components can be loaded however you like, as long as they end up in Framework.components before you call 
+			`Framework.raise()`.  
+
+			That said, the easiest way to load components is using Framework.define('ComponentName', definition),
+			which is what we do in the example files below: (this allows us to include the script tags in any order)
 		-->
 		<script src="components/Body.js"></script>
 		<script src="components/Dog.js"></script>
+		<script src="components/Home.js"></script>
 		
 
 
