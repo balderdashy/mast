@@ -16,12 +16,13 @@ FRAMEWORK.define('Body', function () {
 		'click h1'	: '%test.',
 
 		// if anywhere ELSE inside this component's $el is clicked,
-		// ( this is an `ELSE` case because everywhere else we caught bubbling with e.stopPropagation() )
-		// 'click'		: '>>> Note: The click event of the Body component fired.',
+		// ( because in every other click event, we caught bubbling with e.stopPropagation(),
+		// or the `.` shorthand suffix )
+		'click'		: '>>> Note: The top-level click event of the Body component fired',
 
 		// When %test subscription is triggered,
 		// log a note to the console
-		'%test'		: '>>> An instance of the `Body` component received trigger: `%test`',
+		'%test'		: '>>> Note: An instance of the `Body` component received trigger: `%test`',
 
 
 		// Route navigation menu to change the URL appropriately
@@ -36,43 +37,7 @@ FRAMEWORK.define('Body', function () {
 		'#home'		: 'content@Home',
 
 		// Redirect empty URL to '#home' handler (changes URL)
-		'#'			: '#home',
-
-
-		// If `tweaks` is set to false, automatic UI enhancements will be disabled 
-		// for this component ( e.g. automatically setting `cursor:pointer` 
-		// and disabling text selection on elements which have click/touch events)
-		// tweaks: false,
-
-
-		// Increment/decrement % 5
-		'click .next-page': function () {
-			var newVal = this.model.get('pageIndex');
-			newVal++;
-			newVal %= 5;
-			this.model.set('pageIndex', newVal);
-		},
-
-		// Bindings
-		afterChange: {
-			pageIndex: function (newVal) {
-				var page = this.model.get('pages')[newVal];
-				this.content.attach(page);
-			}
-		},
-
-		model: function () {
-			return new FRAMEWORK.Model({
-				pageIndex: 0,
-				pages: [
-					'Project_1',
-					'Project_2',
-					'Project_3',
-					'Project_4',
-					'Project_5'
-				]
-			});
-		}
+		'#'			: '#home'
 	};
 });
 
