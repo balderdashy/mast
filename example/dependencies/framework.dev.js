@@ -8470,6 +8470,8 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 
 function Logger (Framework) {
 
+	console.log('Log level is :: ', Framework.logLevel);
+
 	var noop = function () {};
 
 	// If log is specified, use it, otherwise use the console
@@ -8498,8 +8500,6 @@ function Logger (Framework) {
 			Framework.warn		= console.warn && console.warn.bind(console);
 			Framework.log		= console.debug && console.debug.bind(console);
 			Framework.verbose	= console.log && console.log.bind(console);
-			// Support for `debug` for backwards compatibility
-			Framework.debug = Framework.log;
 
 			// Turn off all logs in production
 			if (Framework.production) {
@@ -8527,6 +8527,9 @@ function Logger (Framework) {
 				default:        throw new Error ('Unrecognized logging level config ' +
 												'(' + Framework.id + '.logLevel = "' + Framework.logLevel + '")');
 			}
+
+			// Support for `debug` for backwards compatibility
+			Framework.debug = Framework.log;
 		}
 	}
 }
