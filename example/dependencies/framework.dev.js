@@ -8470,8 +8470,6 @@ return(!i||i!==r&&!b.contains(r,i))&&(e.type=o.origType,n=o.handler.apply(this,a
 
 function Logger (Framework) {
 
-	console.log('Log level is :: ', Framework.logLevel);
-
 	var noop = function () {};
 
 	// If log is specified, use it, otherwise use the console
@@ -8530,6 +8528,9 @@ function Logger (Framework) {
 
 			// Support for `debug` for backwards compatibility
 			Framework.debug = Framework.log;
+
+			// Verbose spits out log level
+			Framework.verbose('Log level set to :: ', Framework.logLevel);
 		}
 	}
 }
