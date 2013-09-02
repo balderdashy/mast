@@ -8496,8 +8496,6 @@ function Logger (Framework) {
 
 	function setupLogger (logLevel) {
 
-		console.log('Setting up logger!', logLevel);
-
 		var noop = function () {};
 
 		// If log is specified, use it, otherwise use the console
