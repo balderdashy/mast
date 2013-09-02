@@ -9550,9 +9550,12 @@ _.extend(Framework.Component.prototype, {
 		var $regions = this.$('region');
 		$regions.each(function (i, el) {
 
-			// Provide backwards compatibility for old `default` notation
-			var template = $(el).attr('default');
-			$(el).attr('template', template);
+			// Provide backwards compatibility for 
+			// `default`, `contents` and `template` notation
+			var componentId = $(el).attr('default');
+			componentId = componentId || $(el).attr('contents');
+			componentId = componentId || $(el).attr('template');
+			$(el).attr('contents', componentId);
 
 			// Generate a region instance from the element
 			// (modifying the DOM as necessary)
@@ -9779,8 +9782,16 @@ function constructor (properties) {
 
 	// If neither an id nor a `template` was specified,
 	// we'll throw an error, since there's no way to get a hold of the region
-	if (!this.id && !this.$el.attr('default') && !this.$el.attr('template')) {
-		throw new Error(this.parent.id + ' :: Either `data-id`, `template`, or both must be specified on regions. \ne.g. <region data-id="foo" template="SomeComponent"></region>');
+	if (!this.id && 
+		!(	this.$el.attr('default') || 
+			this.$el.attr('template') ||
+			this.$el.attr('contents') )
+		) {
+		throw new Error(
+			this.parent.id + ' :: Either `data-id`, `contents`, or both ' + 
+			'must be specified on regions. \n' +
+			'e.g. <region data-id="foo" template="SomeComponent"></region>'
+		);
 	}
 
 
@@ -9953,8 +9964,8 @@ Framework.Region.fromElement = function (el, parent) {
 	});
 
 	// If this region has a default component/template set, 
-	// grab the id  --  e.g. <region template="Foo" />
-	var componentId = $(el).attr('template');
+	// grab the id  --  e.g. <region contents="Foo" />
+	var componentId = $(el).attr('contents');
 
 
 	// If `count` is set, render sub-component specified number of times.
@@ -10381,15 +10392,16 @@ Framework.raise = function (options, cb) {
 	// Collect any regions with the default component set from the DOM
 	function collectRegions () {
 
-		// Provide backwards compatibility for old `default` notation
-		$('region[default]').each(function () {
-			var template = $(this).attr('default');
-			$(this).attr('template', template);
+		// Provide backwards compatibility for legacy notation
+		$('region[default],region[template]').each(function () {
+			$e = $(this);
+			var componentId = $e.attr('default') || $e.attr('template');
+			$e.attr('contents', componentId);
 		});
 
 		// Now instantiate the appropriate default component in each
 		// region with a specified template/component
-		$('region[template]').each(function(i,el) {
+		$('region[contents]').each(function(i,el) {
 			Framework.Region.fromElement(el);
 		});
 	}
