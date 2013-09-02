@@ -8946,7 +8946,7 @@ Framework.Util.DOM = {
 	 * @param {Component} component
 	 */
 
-	flagComponent: function ( component ) {
+	flagBoundEvents: function ( component ) {
 
 		// TODO: provide access to bound global events (%) and routes (#) as well
 		// TODO: flag all DOM events, not just click and touch
@@ -9237,7 +9237,7 @@ Framework.Component.prototype.render = function (atIndex) {
 		// TODO: make it work with delegated DOM event bindings
 		//
 		if ( self.attrFlags !== false && Framework.attrFlags !== false ) {
-			Framework.Util.DOM.flagComponent(self);
+			Framework.Util.DOM.flagBoundEvents(self);
 		}
 	});
 
