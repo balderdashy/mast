@@ -46,12 +46,22 @@ module.exports = function(grunt) {
 				src: 'framework.dev.js',
 				dest: 'framework.min.js'
 			}
+		},
+
+		watchify: {
+			options: {
+				debug: true
+			},
+			dev: {
+        src: './lib/src/build.js',
+        dest: './lib/mast.js'
+      }
 		}
 	});
 
-	// I really just don't get it...
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-watchify');
 
 	// It's so close!
 	grunt.registerTask('default', [
@@ -59,6 +69,6 @@ module.exports = function(grunt) {
 		// 'build:production'
 	]);
 
-	grunt.registerTask('build:dev', ['concat']);
+	grunt.registerTask('build:dev', ['watchify']);
 	grunt.registerTask('build:production', ['concat', 'uglify']);
 };
