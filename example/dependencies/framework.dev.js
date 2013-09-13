@@ -9547,7 +9547,7 @@ _.extend(Framework.Component.prototype, {
 		this._emptyAllRegions();
 
 		// Detect child regions in template
-		var $regions = this.$('region');
+		var $regions = this.$('region, [data-region]');
 		$regions.each(function (i, el) {
 
 			// Provide backwards compatibility for 
@@ -9760,6 +9760,7 @@ function _disableLocalEventDelegator () {
 		'\'click .whatever\': \'%' + this.id + ':foo\''
 	);
 }
+
 // TODO: resolve how loading will work
 var Framework = window.FRAMEWORK;
 ////////////////////////////////////////////////////////////////////////////
@@ -10393,7 +10394,7 @@ Framework.raise = function (options, cb) {
 	function collectRegions () {
 
 		// Provide backwards compatibility for legacy notation
-		$('region[default],region[template]').each(function () {
+		$('region[default],[data-region][default],region[template],[data-region][template]').each(function () {
 			$e = $(this);
 			var componentId = $e.attr('default') || $e.attr('template');
 			$e.attr('contents', componentId);
@@ -10401,7 +10402,7 @@ Framework.raise = function (options, cb) {
 
 		// Now instantiate the appropriate default component in each
 		// region with a specified template/component
-		$('region[contents]').each(function(i,el) {
+		$('region[contents],[data-region][contents]').each(function(i,el) {
 			Framework.Region.fromElement(el);
 		});
 	}
