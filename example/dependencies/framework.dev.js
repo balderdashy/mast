@@ -9857,6 +9857,9 @@ Framework.Region.prototype.insert = function ( atIndex, componentId, properties 
 		component.$outlet = this.$el;
 	}
 
+	// Save reference to parentRegion
+	component.parentRegion = this;
+
 	component.render( atIndex );
 
 	// And keep track of it in the list of this region's children
