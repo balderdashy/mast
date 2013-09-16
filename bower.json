@@ -1,0 +1,22 @@
+{
+  "name": "mast",
+  "version": "1.0.0",
+  "homepage": "https://github.com/balderdashy/mast@rewrite",
+  "authors": [
+    "Mike McNeil <mike@balderdash.co>", "Gabe Hernandez <gabe@balderdash.co>"
+  ],
+  "description": "An extension to Backbone that has a more opinionated approach to developing your client side apps.",
+  "main": "lib/mast.js",
+  "keywords": [
+    "Backbone",
+    "Mast"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
