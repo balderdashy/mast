@@ -6,7 +6,7 @@ Please visit the [wiki](https://github.com/balderdashy/mast/wiki) for examples a
 
 ## What is this..?!
 
-FRAMEWORK is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.  It also has some nice features for building realtime functionality (aka Comet).
+FRAMEWORK is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.
 
 FRAMEWORK brings some of the more important conveniences from frameworks like Knockout and Angular and applies them to Backbone, with an eye towards practical, efficient development for medium to large teams (4+ developers)
 
