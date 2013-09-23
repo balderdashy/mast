@@ -9699,11 +9699,6 @@ _.extend(Framework.Component.prototype, {
 			}
 
 
-			// Check that this.collection is actually an instance of Backbone.Collection
-			// and that this.model is actually an instance of Backbone.Model
-			validateBackboneInstance('model');
-			validateBackboneInstance('collection');
-
 			function validateBackboneInstance (type) {
 
 				var Type = type[0].toUpperCase() + type.slice(1);
@@ -9729,6 +9724,12 @@ _.extend(Framework.Component.prototype, {
 					delete properties[type];
 				}
 			}
+			
+			// Check that this.collection is actually an instance of Backbone.Collection
+			// and that this.model is actually an instance of Backbone.Model
+			validateBackboneInstance('model');
+			validateBackboneInstance('collection');
+
 
 
 			// Clone properties to avoid inadvertent modifications
