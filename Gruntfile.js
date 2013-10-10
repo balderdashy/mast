@@ -27,38 +27,45 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-		concat: {
-
-			// Concatenate the source files
-			// into a single `framework.dev.js` file for the example
-			dist: {
-				src: srcFiles,
-				dest: 'example/dependencies/framework.dev.js'
-			}
-		},
-
 		uglify: {
 			options: {
 				report: 'min',
 				preserveComments: false
 			},
 			files: {
-				src: 'framework.dev.js',
-				dest: 'framework.min.js'
+				src: './dist/mast.min.js',
+				dest: './dist/mast.min.js',
+			}
+		},
+
+		watchify: {
+			dev: {
+				options: {
+					debug: true
+				},
+				src: './lib/src/build.js',
+				dest: './dist/mast.dev.js'
+			},
+
+			prod: {
+				options: {
+					debug: false
+				},
+				src: './lib/src/build.js',
+				dest: './dist/mast.min.js'
 			}
 		}
 	});
 
-	// I really just don't get it...
-	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-watchify');
 
 	// It's so close!
 	grunt.registerTask('default', [
-		'build:dev'
-		// 'build:production'
+		'build:dev',
+		'build:prod'
 	]);
 
-	grunt.registerTask('build:dev', ['concat']);
-	grunt.registerTask('build:production', ['concat', 'uglify']);
+	grunt.registerTask('build:dev', ['watchify:dev']);
+	grunt.registerTask('build:prod', ['watchify:prod', 'uglify']);
 };

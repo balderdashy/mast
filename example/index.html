@@ -7,39 +7,28 @@
 	</head>
 	<body>
 
-
-
-
-
 		<!--
 			Main content region
 			========================
 
-			Notice that we default the region's contents 
+			Notice that we default the region's contents
 			to the `Body` template directly in the HTML
 		-->
 		<region template="Body"></region>
 		<!-- /content -->
-
-		
-
-
-
-
-
 
 		<!--
 			HTML Templates
 			========================
 
 			HTML templates are important prerequisites of modern, rich client applications.
-			To work their magic, frameworks like Backbone, Angular, Ember, and *this one* expect 
+			To work their magic, frameworks like Backbone, Angular, Ember, and *this one* expect
 			you to load these bits of HTML client-side.
 
 			Each template HTML file corresponds to a specific UI component, which is then rendered
 			by the framework.
 
-			In this case, we're including the templates inline using special script tags.  This is 
+			In this case, we're including the templates inline using special script tags.  This is
 			perfect for the purposes of our demo, since it keeps things simple.
 
 			However, in a production setting or with a distributed team, you'll want to use standard
@@ -53,10 +42,10 @@
 					<li destination="#home">Home</li>
 					<li destination="#about">About</li>
 				</ul>
-				<region data-id="content"></region>
+				<region data-id="content" template="Home"></region>
 			</div>
 		</script>
-		
+
 		<script data-id="Home" type="text/template">
 			<h2>Check out all my cool dogs</h2>
 			<region data-id="dogList" template="Breed"></region>
@@ -84,22 +73,27 @@
 		</script>
 		<!-- /templates -->
 
-
-
-
-
-
 		<!--
 			JS Dependencies
 			========================
-			
+
 			Get the framework itself, plus any other JavaScript dependencies
 		-->
-		<script src="dependencies/framework.dev.js"></script>
+		<!--
+			Start Up Framework
+			========================
+
+			This section will be unnecessary soon, since the framework will be started automatically by default
+			(like jQuery)
+
+			If you need to wait to start up the framework, call Framework.pause() as soon as possible.
+			To allow the framework to finish loading, call Framework.resume( [cb] ).
+			(roughly equivalent to http://api.jquery.com/jQuery.holdReady/)
+		-->
+		<script src='../lib/deps/jquery.js'></script>
+		<script src='../lib/deps/lodash.js'></script>
+		<script src='../lib/deps/backbone.js'></script>
 		<!-- /dependencies -->
-
-
-
 
 		<!--
 			Data
@@ -108,6 +102,7 @@
 			Load data (Backbone models and collections) for our app
 		-->
 		<script src="data.js"></script>
+		<script src='../dist/mast.min.js'></script>
 
 
 		<!--
@@ -123,8 +118,8 @@
 				+ DOM events on the template element or its descendants ( e.g. 'click .button' )
 				+ the `hashchange` event; i.e. changes to the hash/fragment in the URL ( e.g. '#about_us' )
 
-			Components can be loaded however you like, as long as they end up in Framework.components before you call 
-			`Framework.raise()`.  
+			Components can be loaded however you like, as long as they end up in Framework.components before you call
+			`Framework.raise()`.
 
 			That said, the easiest way to load components is using Framework.define('ComponentName', definition),
 			which is what we do in the example files below: (this allows us to include the script tags in any order)
@@ -134,27 +129,10 @@
 		<script src="components/Home.js"></script>
 		<!-- /components -->
 
-
-
-
-
-
-
-
-		<!--
-			Start Up Framework
-			========================
-
-			This section will be unnecessary soon, since the framework will be started automatically by default
-			(like jQuery)
-
-			If you need to wait to start up the framework, call Framework.pause() as soon as possible.  
-			To allow the framework to finish loading, call Framework.resume( [cb] ).
-			(roughly equivalent to http://api.jquery.com/jQuery.holdReady/)
-		-->
 		<script>
-		// FRAMEWORK.logLevel = 'verbose';
-		FRAMEWORK.raise();
+			FRAMEWORK.logLevel = 'warn';
+			FRAMEWORK.raise();
 		</script>
+
 	</body>
 </html>
