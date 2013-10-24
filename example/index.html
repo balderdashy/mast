@@ -53,8 +53,12 @@
 
 		<script data-id="About" type="text/template">
 			<h2>About</h2>
-			<p>Other stuff here probably</p>
-			<a class="next-page">Next</a>
+
+			<input id="dogInput" type="text" placeholder="Add a new dog to the list" style="width: 200px" />
+			<button class="add-dog">add +</button>
+
+			<p>Testing out collection binding</p>
+			<ul data-region data-id="dogList"></ul>
 		</script>
 
 		<script data-id="Breed" type="text/template">
@@ -70,6 +74,10 @@
 			<h5>My Dog</h5>
 			<p>Description goes here...</p>
 		</div>
+		</script>
+
+		<script data-id="DogItem" type="text/template">
+			<li><%= name %></li>
 		</script>
 		<!-- /templates -->
 
@@ -102,7 +110,7 @@
 			Load data (Backbone models and collections) for our app
 		-->
 		<script src="data.js"></script>
-		<script src='../dist/mast.dev.js'></script>
+		<script src='../dist/mast.min.js'></script>
 
 
 		<!--
@@ -127,6 +135,7 @@
 		<script src="components/Body.js"></script>
 		<script src="components/Dog.js"></script>
 		<script src="components/Home.js"></script>
+		<script src="components/About.js"></script>
 		<!-- /components -->
 
 		<script>
