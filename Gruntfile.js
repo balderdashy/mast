@@ -53,6 +53,15 @@ module.exports = function(grunt) {
 				},
 				src: './lib/src/build.js',
 				dest: './dist/mast.min.js'
+			},
+
+			devEnv: {
+				options: {
+					keepalive: true,
+					debug: true
+				},
+				src: './lib/src/build.js',
+				dest: './lib/mast.js'
 			}
 		}
 	});
@@ -60,12 +69,18 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-watchify');
 
-	// It's so close!
+	// Build both development and production versions of mast.
 	grunt.registerTask('default', [
 		'build:dev',
 		'build:prod'
 	]);
 
+	// Run a development enviroment.
+	grunt.registerTask('develop', [
+		'env:dev'
+	]);
+
 	grunt.registerTask('build:dev', ['watchify:dev']);
 	grunt.registerTask('build:prod', ['watchify:prod', 'uglify']);
+	grunt.registerTask('env:dev', ['watchify:devEnv']);
 };
