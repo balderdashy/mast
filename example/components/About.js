@@ -5,7 +5,7 @@
  * We are using collection binding methods here.
  */
 
-FRAMEWORK.define('About', function () {
+TEST.define('About', function () {
 	return {
 
 

@@ -4,7 +4,7 @@
  * wherever that template is rendered in the DOM.
  */
 
-FRAMEWORK.define('Example', function () {
+TEST.define('Example', function () {
 	return {
 
 	};

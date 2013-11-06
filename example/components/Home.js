@@ -5,7 +5,7 @@
  * Represents the home page of the example application.
  */
 
-FRAMEWORK.define('Home', function () {
+TEST.define('Home', function () {
 	return {
 
 		'%test'		: '>>> An instance of the `Home` component received trigger: `%test`',

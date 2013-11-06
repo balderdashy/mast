@@ -5,7 +5,7 @@
  * Body is the top-level component for the application
  */
 
-FRAMEWORK.define('Body', function () {
+TEST.define('Body', function () {
 	return {
 
 		events: {

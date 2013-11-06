@@ -5,7 +5,7 @@
  * Represents an individual Dog entry.
  */
 
-FRAMEWORK.define('Dog', function () {
+TEST.define('Dog', function () {
 	return {
 
 		events: {

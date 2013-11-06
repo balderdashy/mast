@@ -43,7 +43,7 @@ module.exports = function(grunt) {
 				options: {
 					debug: true
 				},
-				src: './lib/src/build.js',
+				src: './lib/src/index.js',
 				dest: './dist/mast.dev.js'
 			},
 
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
 				options: {
 					debug: false
 				},
-				src: './lib/src/build.js',
+				src: './lib/src/index.js',
 				dest: './dist/mast.min.js'
 			},
 
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
 					keepalive: true,
 					debug: true
 				},
-				src: './lib/src/build.js',
+				src: './lib/src/index.js',
 				dest: './lib/mast.js'
 			}
 		}

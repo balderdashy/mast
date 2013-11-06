@@ -111,6 +111,10 @@
 		-->
 		<script src="data.js"></script>
 		<script src='../lib/mast.js'></script>
+		<script>
+			new Framework({frameworkId: 'TEST'});
+		</script>
+
 
 
 		<!--
@@ -139,8 +143,7 @@
 		<!-- /components -->
 
 		<script>
-			FRAMEWORK.logLevel = 'warn';
-			FRAMEWORK.raise();
+			TEST.raise();
 		</script>
 
 	</body>
