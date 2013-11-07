@@ -37,7 +37,7 @@
 		-->
 		<script data-id="Body" type="text/template">
 			<div>
-				<h1>Framework Example</h1>
+				<h1><span class="page-title"><%= title %></span></h1>
 				<ul>
 					<li destination="#home">Home</li>
 					<li destination="#about">About</li>
@@ -47,18 +47,26 @@
 		</script>
 
 		<script data-id="Home" type="text/template">
-			<h2>Check out all my cool dogs</h2>
+			<h2>Check out all my cool dogs in the <span class="page-title"><%= title %></span></h2>
 			<region data-id="dogList" template="Breed"></region>
+
+			<h2>Change title test</h2>
+			<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
+			<button class="change-title">change</button>
 		</script>
 
 		<script data-id="About" type="text/template">
-			<h2>About</h2>
+			<h2>Add a list of dogs in the <span class="page-title"><%= title %></span></h2>
 
 			<input id="dogInput" type="text" placeholder="Add a new dog to the list" style="width: 200px" />
 			<button class="add-dog">add +</button>
 
 			<p>Testing out collection binding</p>
 			<ul data-region data-id="dogList"></ul>
+
+			<h2>Change title test</h2>
+			<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
+			<button class="change-title">change</button>
 		</script>
 
 		<script data-id="Breed" type="text/template">

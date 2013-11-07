@@ -8,6 +8,11 @@
 TEST.define('Body', function () {
 	return {
 
+		beforeRender: function(cb) {
+			this.model = new Backbone.Model({title: 'Example page'});
+			cb();
+		},
+
 		events: {
 			// Trigger the %test subscription whenever a <h1>
 			// inside this component's $el is clicked
@@ -28,6 +33,12 @@ TEST.define('Body', function () {
 			//			the URL target.
 			'click [destination="#about"]': '#about',
 			'click [destination="#home"]': '#home'
+		},
+
+		afterChange: {
+			title: function(newVal) {
+				this.$('.page-title').text(newVal);
+			}
 		},
 
 		// When %test subscription is triggered,

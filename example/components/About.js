@@ -32,7 +32,8 @@ TEST.define('About', function () {
 		 * Event listeners
 		 */
 		events: {
-			'click .add-dog': 'addDog'
+			'click .add-dog': 'addDog',
+			'click .change-title': 'changeTitle'
 		},
 
 
@@ -46,6 +47,15 @@ TEST.define('About', function () {
 				this.collection.add({name: dogName});
 
 			this.$('#dogInput').val('');
+		},
+
+		changeTitle: function() {
+			var title = this.$('#changeTitle').val().trim();
+
+			if (title)
+				this.model.set('title', title);
+
+			this.$('#changeTitle').val('');
 		},
 
 		// Render the dog items by appending a DogItem component to the dog list region.
@@ -63,6 +73,12 @@ TEST.define('About', function () {
 		 */
 		afterAdd: function(model, collection, options) {
 			this.dogList.append('DogItem', {model: model});
+		},
+
+		afterChange: {
+			title: function(newVal) {
+				this.$('.page-title').text(newVal);
+			}
 		}
 	};
 });
