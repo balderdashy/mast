@@ -19,6 +19,11 @@ TEST.define('About', function () {
 				{name: 'Buddy'}
 			]);
 
+			// Since the about component assigns a model, it does not share a model with its parent.
+			this.model = new Backbone.Model({
+				title: 'About Page'
+			});
+
 			// Be sure to call callback at the end of beforeRender
 			cb();
 		},
