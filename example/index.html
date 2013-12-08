@@ -82,11 +82,10 @@
 
 		<script data-id="Dog" type="text/template">
 		<div	class="dog"
-				bind-class-checked="@done"
-				bind-class-disabled="@canceled">
+				bind-class-highlighted="@selected">
 			<input type="checkbox"/>
-			<h5>My Dog</h5>
-			<p>Description goes here...</p>
+			<h5 bind-text="@name">Default dog name</h5>
+			<p bind-text="@description">Description goes here...</p>
 		</div>
 		</script>
 
