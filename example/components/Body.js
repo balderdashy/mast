@@ -39,8 +39,8 @@ TEST.define('Body', function () {
 
 
 		// Change `content` region according to URL
-		'#about'	: 'content@About',
-		'#home'		: 'content@Home',
+		'#about'	: 'content<-About',
+		'#home'		: 'content<-Home',
 
 		// Redirect empty URL to '#home' handler (changes URL)
 		'#'			: '#home'

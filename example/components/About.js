@@ -29,7 +29,14 @@ TEST.define('About', function () {
 		},
 
 		afterRender: function() {
-			this.renderDogs();
+			// Don't need to do this anymore:
+			// this.renderDogs();
+
+			// Instead, just use:
+			this.renderCollection(this.collection, {
+				itemTemplate: 'DogItem',
+				intoRegion: this.dogList
+			});
 		},
 
 
@@ -63,24 +70,32 @@ TEST.define('About', function () {
 			this.$('#changeTitle').val('');
 		},
 
+
+		// Don't have to do this anymore: (b/c of renderCollection)
+		//
 		// Render the dog items by appending a DogItem component to the dog list region.
 		// Each DogItem component gets instantiated with a passed in dog model.
-		renderDogs: function() {
-			this.collection.each(function(dog) {
-				this.dogList.append('DogItem', {model: dog});
-			}, this);
-		},
+		// renderDogs: function() {
+
+		// 	//
+		// 	// this.collection.each(function(dog) {
+		// 	// 	this.dogList.append('DogItem', {model: dog});
+		// 	// }, this);
+
+		// },
 
 
 
 		/**
 		 * Collection bindings
 		 */
-		afterAdd: function(model, collection, options) {
-			this.dogList.append('DogItem', {model: model});
-		},
+		// not necessary any more: (b/c of renderCollection)
+		//
+		// afterAdd: function(model, collection, options) {
+		// 	this.dogList.append('DogItem', {model: model});
+		// },
 
-		// not necessary any more:
+		// not necessary any more: (b/c of HTML data bindings)
 		//
 		// afterChange: {
 		// 	title: function(newVal) {
