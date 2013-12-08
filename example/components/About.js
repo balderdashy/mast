@@ -61,14 +61,21 @@ TEST.define('About', function () {
 			this.$('#dogInput').val('');
 		},
 
-		changeTitle: function() {
-			var title = this.$('#changeTitle').val().trim();
 
-			if (title)
-				this.model.set('title', title);
+		// New `set` shorthand for models
+		changeTitle: '@title=foo'
 
-			this.$('#changeTitle').val('');
-		},
+		// Similar to the original (below) except our shorthand is just setting a static value--
+		// it won't accept user input, or clear the input field, or trim the input string)
+		//
+		//function() {
+		// 	var title = this.$('#changeTitle').val().trim();
+
+		// 	if (title)
+		// 		this.model.set('title', title);
+
+		// 	this.$('#changeTitle').val('');
+		// },
 
 
 		// Don't have to do this anymore: (b/c of renderCollection)
