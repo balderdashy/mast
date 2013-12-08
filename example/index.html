@@ -37,7 +37,7 @@
 		-->
 		<script data-id="Body" type="text/template">
 			<div>
-				<h1><span class="page-title"><%= title %></span></h1>
+				<h1><span bind-text="@title" class="page-title"/></h1>
 				<ul>
 					<li destination="#home">Home</li>
 					<li destination="#about">About</li>
@@ -47,26 +47,30 @@
 		</script>
 
 		<script data-id="Home" type="text/template">
-			<h2>Check out all my cool dogs in the <span class="page-title"><%= title %></span></h2>
-			<region data-id="dogList" template="Breed"></region>
+			<div>
+				<h2>Check out all my cool dogs in the <span class="page-title" bind-text="@title"></span></h2>
+				<region data-id="dogList" template="Breed"></region>
 
-			<h2>Change title test</h2>
-			<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
-			<button class="change-title">change</button>
+				<h2>Change title</h2>
+				<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
+				<button class="change-title">change</button>
+			</div>
 		</script>
 
 		<script data-id="About" type="text/template">
-			<h2>Add a list of dogs in the <span class="page-title"><%= title %></span></h2>
+			<div>
+				<h2>Add a list of dogs in the <span class="page-title" bind-text="@title"></span></h2>
 
-			<input id="dogInput" type="text" placeholder="Add a new dog to the list" style="width: 200px" />
-			<button class="add-dog">add +</button>
+				<input id="dogInput" type="text" placeholder="Add a new dog to the list" style="width: 200px" />
+				<button class="add-dog">add +</button>
 
-			<p>Testing out collection binding</p>
-			<ul data-region data-id="dogList"></ul>
+				<p>Testing out collection binding</p>
+				<ul data-region data-id="dogList"></ul>
 
-			<h2>Change title test</h2>
-			<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
-			<button class="change-title">change</button>
+				<h2>Change the subtitle for this page</h2>
+				<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
+				<button class="change-title">change</button>
+			</div>
 		</script>
 
 		<script data-id="Breed" type="text/template">
@@ -77,7 +81,9 @@
 		</script>
 
 		<script data-id="Dog" type="text/template">
-		<div class="dog">
+		<div	class="dog"
+				bind-class-checked="@done"
+				bind-class-disabled="@canceled">
 			<input type="checkbox"/>
 			<h5>My Dog</h5>
 			<p>Description goes here...</p>
@@ -85,7 +91,7 @@
 		</script>
 
 		<script data-id="DogItem" type="text/template">
-			<li><%= name %></li>
+			<li bind-text="@name"></li>
 		</script>
 		<!-- /templates -->
 
@@ -109,7 +115,12 @@
 		<script src='../lib/deps/jquery.js'></script>
 		<script src='../lib/deps/lodash.js'></script>
 		<script src='../lib/deps/backbone.js'></script>
+		<script src='../lib/mast.js'></script>
 		<!-- /dependencies -->
+
+
+		<!-- Build and expose a new global custom Framework -->
+		<script>new Framework({frameworkId: 'TEST', logLevel: 'warn'})</script>
 
 		<!--
 			Data
@@ -117,12 +128,7 @@
 
 			Load data (Backbone models and collections) for our app
 		-->
-		<script src="data.js"></script>
-		<script src='../lib/mast.js'></script>
-
-		<!-- Build and expose a new global custom Framework -->
-		<script>new Framework({frameworkId: 'TEST'})</script>
-
+		<script src="./data.js"></script>
 
 
 		<!--
@@ -146,6 +152,7 @@
 		-->
 		<script src="components/Body.js"></script>
 		<script src="components/Dog.js"></script>
+		<script src="components/DogItem.js"></script>
 		<script src="components/Home.js"></script>
 		<script src="components/About.js"></script>
 		<!-- /components -->

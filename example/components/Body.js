@@ -8,10 +8,7 @@
 TEST.define('Body', function () {
 	return {
 
-		beforeRender: function(cb) {
-			this.model = new Backbone.Model({title: 'Example page'});
-			cb();
-		},
+		model: TEST.data.Session,
 
 		events: {
 			// Trigger the %test subscription whenever a <h1>
@@ -35,11 +32,6 @@ TEST.define('Body', function () {
 			'click [destination="#home"]': '#home'
 		},
 
-		afterChange: {
-			title: function(newVal) {
-				this.$('.page-title').text(newVal);
-			}
-		},
 
 		// When %test subscription is triggered,
 		// log a note to the console
