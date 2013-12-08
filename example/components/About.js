@@ -80,10 +80,12 @@ TEST.define('About', function () {
 			this.dogList.append('DogItem', {model: model});
 		},
 
-		afterChange: {
-			title: function(newVal) {
-				this.$('.page-title').text(newVal);
-			}
-		}
+		// not necessary any more:
+		//
+		// afterChange: {
+		// 	title: function(newVal) {
+		// 		this.$('.page-title').text(newVal);
+		// 	}
+		// }
 	};
 });
