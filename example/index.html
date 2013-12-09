@@ -54,6 +54,9 @@
 				<h2>Change title</h2>
 				<input id="changeTitle" type="text" placeholder="Change the title" style="width: 200px" />
 				<button class="change-title">change</button>
+
+				<h2>Count Test</h2>
+				<ul data-region template="KittyItem" count="4"></ul>
 			</div>
 		</script>
 
@@ -76,7 +79,7 @@
 		<script data-id="Breed" type="text/template">
 		<div class="breed">
 			<h4>Daschund</h4>
-			<region data-id="contents" template="Dog" count="5"></region>
+			<region data-id="contents" template="Dog"></region>
 		</div>
 		</script>
 
@@ -91,6 +94,10 @@
 
 		<script data-id="DogItem" type="text/template">
 			<li bind-text="@name"></li>
+		</script>
+
+		<script data-id="KittyItem" type="text/template">
+			<li>Fluffy</li>
 		</script>
 		<!-- /templates -->
 
