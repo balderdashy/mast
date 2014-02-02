@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 	];
 
 
-	// Man they should totally make this stuff more declarative
+
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
 					debug: true
 				},
 				src: './lib/src/index.js',
-				dest: './lib/mast.js'
+				dest: './.tmp.mast.build.js'
 			}
 		}
 	});
