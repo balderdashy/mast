@@ -41,6 +41,7 @@ module.exports = function(grunt) {
 		watchify: {
 			dev: {
 				options: {
+					standalone: 'Mast',
 					debug: true
 				},
 				src: './lib/src/index.js',
@@ -49,6 +50,7 @@ module.exports = function(grunt) {
 
 			prod: {
 				options: {
+					standalone: 'Mast',
 					debug: false
 				},
 				src: './lib/src/index.js',
@@ -57,6 +59,7 @@ module.exports = function(grunt) {
 
 			devEnv: {
 				options: {
+					standalone: 'Mast',
 					keepalive: true,
 					debug: true
 				},
