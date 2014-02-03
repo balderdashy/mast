@@ -6,7 +6,7 @@
     "Mike McNeil <mike@balderdash.co>", "Gabe Hernandez <gabe@balderdash.co>"
   ],
   "description": "An extension to Backbone that has a more opinionated approach to developing your client side apps.",
-  "main": "lib/mast.js",
+  "main": "dist/mast.min.js",
   "keywords": [
     "Backbone",
     "Mast"
