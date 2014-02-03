@@ -3,13 +3,16 @@
   "version": "1.1.0",
   "homepage": "https://github.com/balderdashy/mast",
   "authors": [
-    "Mike McNeil <mike@balderdash.co>", "Gabe Hernandez <gabe@balderdash.co>"
+    "Mike McNeil <@mikermcneil>", "Gabe Hernandez <@ghernandez345>"
   ],
-  "description": "An extension to Backbone that has a more opinionated approach to developing your client side apps.",
+  "description": "An extension to Backbone that makes it easier to build client side apps, particularly SPAs, with less JavaScript.",
   "main": "dist/mast.min.js",
   "keywords": [
-    "Backbone",
-    "Mast"
+    "backbone",
+    "mast",
+    "balderdash",
+    "Angular",
+    "responsive"
   ],
   "license": "MIT",
   "ignore": [
