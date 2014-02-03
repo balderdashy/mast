@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					standalone: 'Mast',
 					debug: true
 				},
-				src: './lib/src/index.js',
+				src: './lib/index.js',
 				dest: './dist/mast.dev.js'
 			},
 
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 					standalone: 'Mast',
 					debug: false
 				},
-				src: './lib/src/index.js',
+				src: './lib/index.js',
 				dest: './dist/mast.min.js'
 			},
 
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 					keepalive: true,
 					debug: true
 				},
-				src: './lib/src/index.js',
+				src: './lib/index.js',
 				dest: './.tmp.mast.build.js'
 			}
 		}
