@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="../dist/mast.withDependencies.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <!-- <label>Name:</label>
+      <input type="text" ng-model="yourName" placeholder="Enter a name here">
+      <hr>
+      <h1>Hello {{yourName}}!</h1> -->
+
+      <region template="App"></region>
+    </div>
+
+
+
+  <script>Mast.raise({
+
+  	templates: {
+
+  		App: ''+
+  		'<ul data-region count="3">'+
+      '	<li><%= name %></li>'+
+      '</ul>'+
+  		'',
+  		//App: 'Hello world, it\'s <span bind-text="@email"></span> <div data-region="fooRegion"></div>',
+  		Bar: 'Bar component, still <%= email %>, <region template="Baz"></region>',
+  		Baz: '<region template="Bax"></region>',
+  		Bax: 'bax'
+  	},
+  	components: {
+  		App: {
+  			model: new Mast.Model({
+  				name: 'asdg',
+  				email: 'mike@balderdash.co'
+  			}),
+  			click: 'Bar -> fooRegion'
+  		}
+  	}
+
+  }); console.log('Mast has been raised.');</script>
+  </body>
+</html>
+
