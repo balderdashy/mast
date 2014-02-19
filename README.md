@@ -2,13 +2,20 @@
 
 Please visit the [wiki](https://github.com/balderdashy/mast/wiki) for examples and API documentation.
 
-> Warning :: The version of Mast in this repository is under active development and may or may not be stable.
+> Warning :: The version of Mast in this repository is under active development and may or may not be stable.  Check out bower for the latest stable release.
 
 ## What is this..?!
 
-Mast is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.
+Mast is a set of conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript. The JavaScript you *do* write, to add interactivity, uses Backbone/jQuery.
 
-Mast brings some of the more important conveniences from frameworks like Knockout and Angular and applies them to Backbone, with an eye towards practical, efficient development for medium to large teams (4+ developers)
+Mast brings some of the more important contributions from frameworks like Knockout and Angular and allows you to take advantage of them using Backbone Models, Collections, and Views, with an eye towards practical, efficient development for medium to large teams.  It's not designed to replace frameworks like Angular-- rather it exists to let you do the same thing in Backbone.
+
+Is Backbone better than Angular? I dunno-- that's a complex question.  Angular is really, really neat. But sometimes Backbone makes more sense, based on your requirements.  And that's one of the reasons this library exists.
+
+
+## Is this related to Sails?
+
+Nope! But the same folks built it, hence the nautical name.
 
 
 ## Getting Started with Mast
