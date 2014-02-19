@@ -15,11 +15,16 @@ Is Backbone better than Angular? I dunno-- that's a complex question.  Angular i
 
 ## Is this related to Sails?
 
-Nope! But the same folks built it, hence the nautical name.
+Nope! Mast is a client-side library for the browser, whereas Sails is a client-agnostic, API-oriented framework which is backend-only.  They're completely unrelated.  You can use Mast with Rails, Java, C#, Cordova, no server, whatever you want!  And of course, you can use Sails with any front-end library you like, or with a native iOS app, or as a raw API, or even from things like [household lamps](http://www.youtube.com/watch?v=OmcQZD_LIAE).
+
+But we're the same folks who built Sails, hence the nautical name.
+
+
+> Historical note:
+> The early versions of Sails were very different, and at one point, Sails was even bundled with Mast included.  We learned many lessons about separation of concerns between the client and the server since then.  The projects have been separate for a long time.
 
 
 ## Getting Started with Mast
->As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use Mast.
 
 ##Setting up Mast
 ###1. Grab the Mast file
