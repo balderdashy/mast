@@ -1,30 +1,30 @@
-# FRAMEWORK
+# Mast
 
 Please visit the [wiki](https://github.com/balderdashy/mast/wiki) for examples and API documentation.
 
-> Warning :: The version of FRAMEWORK in this repository is under active development and may or may not be stable.
+> Warning :: The version of Mast in this repository is under active development and may or may not be stable.
 
 ## What is this..?!
 
-FRAMEWORK is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.
+Mast is a set of browser UI conventions built on top of Backbone.js.  Aside from some other nice features, it is especially good for putting together single-page apps, since it specializes in allowing you to do so without writing any JavaScript.
 
-FRAMEWORK brings some of the more important conveniences from frameworks like Knockout and Angular and applies them to Backbone, with an eye towards practical, efficient development for medium to large teams (4+ developers)
+Mast brings some of the more important conveniences from frameworks like Knockout and Angular and applies them to Backbone, with an eye towards practical, efficient development for medium to large teams (4+ developers)
 
 
-## Getting Started with FRAMEWORK
->As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use FRAMEWORK.
+## Getting Started with Mast
+>As we said before, we don't really have the resources to provide much documentation here, but here's a brief guide to getting set up. We've included some quick tips for using it in a Sails.js (0.9.x) app, but you definitely don't need to use Sails in order to use Mast.
 
-##Setting up FRAMEWORK
-###1. Grab the FRAMEWORK file
-Add the `FRAMEWORK.dev.js` file to your project, and make sure you link to it before you reference any of your components. This file contains all of FRAMEWORK's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
+##Setting up Mast
+###1. Grab the Mast file
+Add the `mast.withDependencies.min.js` file to your project, and make sure you bring it in with a `<script>` tag before the `<script>` tags loading your components (or anything else using Mast). This file contains all of Mast's dependencies, so you don't need to have separate Backbone, jQuery and Underscore files in your application -- it's all there for you.
 
-###2. Raise FRAMEWORK
+###2. Raise Mast
 
-In order for FRAMEWORK to work its magic on your page, you need to `raise` it.  Paste this after all your other scripts:
+In order for Mast to work its magic on your page, you need to `raise` it.  Paste this after all your other scripts:
 
 ```html
 <script type="text/javascript">
-    FRAMEWORK.raise();
+    Mast.raise();
 </script>
 ```
 
@@ -195,12 +195,12 @@ And the "Portfolio" template like this:
 
 
 ## Making things interactive with Components
-Defining components gives you the power to make things more interactive. A really cool thing about FRAMEWORK, though, is that it has shortcuts to let you do some of this without writing JavaScript. Here's a quick walkthrough of how to set up components and add some simple interactivity to your app.
+Defining components gives you the power to make things more interactive. A really cool thing about Mast, though, is that it has shortcuts to let you do some of this without writing JavaScript. Here's a quick walkthrough of how to set up components and add some simple interactivity to your app.
 
 ###Defining a Component
 To create a component, make a JavaScript file in your app, and give it the same name as the template you want it to work for. Then, paste in the following bit of code, replacing `NameofTemplate` with the template you're using:
 ```javascript
-FRAMEWORK.define('NameOfTemplate', function() {
+Mast.define('NameOfTemplate', function() {
   return {
     //DO COOL STUFF IN HERE!
 
@@ -223,7 +223,7 @@ So it will look like: `'#path' : 'data-id@TemplateName'`
 It's pretty simple when you see it. Here is how we would set up navigation for our example website:
 
 ```javascript
-FRAMEWORK.define('Body', function() {
+Mast.define('Body', function() {
   return {
 
     '#'			: 'content@Home',
@@ -238,15 +238,15 @@ To navigate to the News section, for example, you can now use `<a href="#news">N
 
 
 ###Adding/Removing Classes
-FRAMEWORK has some simple shorthand for adding, removing, and toggling classes on jQuery events. Here's an example of how that works:
+Mast has some simple shorthand for adding, removing, and toggling classes on jQuery events. Here's an example of how that works:
 
 Let's go back to Example 2, where we implemented a list of emails. What if, when the user clicks on an email, you want to make it look different to show that it's been selected? Then, if they click it again, you want it to go back to normal.
 
-You could do that in regular jQuery, but FRAMEWORK speeds up the process:
+You could do that in regular jQuery, but Mast speeds up the process:
 
 Once you've styled up the `.selected` class for your email div, create your component:
 ```javascript
-FRAMEWORK.define('Email', function() {
+Mast.define('Email', function() {
   return {
 
   };
@@ -254,7 +254,7 @@ FRAMEWORK.define('Email', function() {
 ```
 Then add your `events`:
 ```javascript
-FRAMEWORK.define('Email', function() {
+Mast.define('Email', function() {
   return {
     events : {
       // jQuery events go here
@@ -266,11 +266,11 @@ FRAMEWORK.define('Email', function() {
 
 The events can be any [jQuery events](http://api.jquery.com/category/events/). In this case, we'll use a `.click()` event.
 
-In FRAMEWORK, we lay out events similarly to how we set up the navigation before. First, you include a string that has the name of the event, followed by the name of the element that triggers the event. In this case, it would be `'click div'`. Then `:`, and then a string that tells it what to do. The shorthand to toggle a class is `!`, so we would put `'! .selected'`.
+In Mast, we lay out events similarly to how we set up the navigation before. First, you include a string that has the name of the event, followed by the name of the element that triggers the event. In this case, it would be `'click div'`. Then `:`, and then a string that tells it what to do. The shorthand to toggle a class is `!`, so we would put `'! .selected'`.
 
 Altogether, it looks like:
 ```javascript
-FRAMEWORK.define('Email', function() {
+Mast.define('Email', function() {
   return {
     events : {
 
@@ -295,33 +295,33 @@ FRAMEWORK.define('Email', function() {
 ## Getting rid of those ugly `<script>` tags
 
 
-FRAMEWORK, like Backbone, supports Underscore templates by default (basically the same thing as EJS, JST).
+Mast, like Backbone, supports Underscore templates by default (basically the same thing as EJS, JST).
 Aside from the shortcut method we've been discussing up until now (the `<script>` tags), you can load templates as strings or underscore-compatible functions (if you want to precompile them).
-You can hook these templates up to FRAMEWORK in one of two ways:
+You can hook these templates up to Mast in one of two ways:
 
-+ Set `FRAMEWORK.templates.Foo = myTemplate`, where `Foo` is the desired id of your template e,g,
++ Set `Mast.templates.Foo = myTemplate`, where `Foo` is the desired id of your template e,g,
 ```javascript
-FRAMEWORK.templates.header = '<header>The header</header>';
-FRAMEWORK.templates.footer = '<footer>The footer</footer>';
+Mast.templates.header = '<header>The header</header>';
+Mast.templates.footer = '<footer>The footer</footer>';
 ```
 
-+ Pass in a collection of templates when you call `FRAMEWORK.raise()`, e.g.:
++ Pass in a collection of templates when you call `Mast.raise()`, e.g.:
 ```javascript
-FRAMEWORK.raise({
+Mast.raise({
   header: '<header>The header</header>',
   footer: '<footer>The footer</footer>'
 });
 ```
 
 
-This flexibility is crucial so that, regardless how the project is set up, you can count on FRAMEWORK to work.  If you're using AMD (e.g. RequireJS), for example, you might bring in your templates with the RequireJS template plugin.  At the end of the day, you'll stuff your templates into FRAMEWORK using one of the two techniques above.
+This flexibility is crucial so that, regardless how the project is set up, you can count on Mast to work.  If you're using AMD (e.g. RequireJS), for example, you might bring in your templates with the RequireJS template plugin.  At the end of the day, you'll stuff your templates into Mast using one of the two techniques above.
 
 
-## Using FRAMEWORK in a Sails.js App
+## Using Mast in a Sails.js App
 
 If you're already using Sails on the backend, here is a quick way to get started with some fancier template loading:
 
-+ Save the `FRAMEWORK.dev.js` file in `assets/linker/js`
++ Save the `Mast.dev.js` file in `assets/linker/js`
 
 + In `views/layout.ejs` paste the following after `<!--SCRIPTS END-->`:
 ```html
@@ -329,10 +329,10 @@ If you're already using Sails on the backend, here is a quick way to get started
 	 // Modify JST templates to eliminate the nasty parts of the file path
     _.each(JST, function (fn, path) {
       var id = path.match(/\/([^\/]+)\..+$/)[1];
-      FRAMEWORK.templates[id] = fn;
+      Mast.templates[id] = fn;
     });
 
-    FRAMEWORK.raise();
+    Mast.raise();
  </script>
 ```
 
@@ -385,28 +385,28 @@ This makes the templates a bit easier to set up. Now when you create a file in `
 <!--
 ## The old stuff
 
-### What is FRAMEWORK?
+### What is Mast?
 
-Productivity-enhancing front-end library based on Backbone.js.  FRAMEWORK takes standard conventions you use in every Backbone project and formalizes them.
+Productivity-enhancing front-end library based on Backbone.js.  Mast takes standard conventions you use in every Backbone project and formalizes them.
 
-There are 1,000 ways to build a jQuery script.  There are 100 ways to build a Backbone app.  FRAMEWORK takes it to the next level, providing standard conventions for DOM development.  It was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers.
+There are 1,000 ways to build a jQuery script.  There are 100 ways to build a Backbone app.  Mast takes it to the next level, providing standard conventions for DOM development.  It was built from the ground up for creating realtime web applications that work with handsets, tablets, and PC browers.
 
 
 ### Why Bother?
-With FRAMEWORK, building the front-end for your app is *faster*, *"funner"* and requires *fewer* lines of code.
+With Mast, building the front-end for your app is *faster*, *"funner"* and requires *fewer* lines of code.
 
 
 ## How It Works
-At its core, FRAMEWORK is made up of Components, Models, and Collections.  Components are very closely related to Backbone Views, and Models and Collections are exactly like their Backbone equivalents.
+At its core, Mast is made up of Components, Models, and Collections.  Components are very closely related to Backbone Views, and Models and Collections are exactly like their Backbone equivalents.
 
-FRAMEWORK introduces the concept of a Component, which is a minimal logical UI element which completely abstracts DOM templating.
+Mast introduces the concept of a Component, which is a minimal logical UI element which completely abstracts DOM templating.
 When you change the model, or change the template, for a component, it just works- the screen automatically gets updated.
 
-FRAMEWORK also enhances jQuery's DOM events by adding "pressEnter", "pressEscape", and "clickoutside", as well as providing access to global events, like $(window).scroll, from the events hash (no more worrying about whether the element you're binding to has focus or not!).
+Mast also enhances jQuery's DOM events by adding "pressEnter", "pressEscape", and "clickoutside", as well as providing access to global events, like $(window).scroll, from the events hash (no more worrying about whether the element you're binding to has focus or not!).
 
 
 
-> FRAMEWORK is an internal tool that we made open-source, because... well, we like open-source software :)
+> Mast is an internal tool that we made open-source, because... well, we like open-source software :)
 >
 > It *is* based off of Backbone, and it *does* happen to be a great accompaniment to Sails, but the last thing I want
 > is to give anyone the impression you should make your front-end decision based on your back-end framework, or even that they should be connected!
@@ -418,11 +418,11 @@ FRAMEWORK also enhances jQuery's DOM events by adding "pressEnter", "pressEscape
 
 > OK.  Enough of that.
 
-> I think FRAMEWORK is fantastic, and it has afforded great productivity gains for my team and our customers.
+> I think Mast is fantastic, and it has afforded great productivity gains for my team and our customers.
 > We don't yet have the resouces to provide publicly available documentation while still maintaining a professional level
-> of support for our customers already using FRAMEWORK.
+> of support for our customers already using Mast.
 
-> So all I can say for now is "use FRAMEWORK at your own risk."
+> So all I can say for now is "use Mast at your own risk."
 > If you feel comfortable reading Backbone's source, you're probably good to go.
 
 > Stay tuned!
@@ -441,4 +441,4 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/265f7e98e0872eaff2e2065bbe902f7d "githalytics.com")](http://githalytics.com/balderdashy/FRAMEWORK)
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/265f7e98e0872eaff2e2065bbe902f7d "githalytics.com")](http://githalytics.com/balderdashy/Mast)
