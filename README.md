@@ -2,7 +2,7 @@
 
 Please visit the [wiki](https://github.com/balderdashy/mast/wiki) for examples and API documentation.
 
-> Warning :: The version of Mast in this repository is under active development and may or may not be stable.  Check out bower for the latest stable release.
+> Warning :: This version of Mast in this repository is no longer actively developed and maintained.  Recent efforts have instead been devoted instead to building a similar paradigm on top of Vue.js.  If you're interested in contributing, [let us know](https://sailsjs.com/contact).
 
 ## What is this..?!
 
